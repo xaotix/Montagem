@@ -1,0 +1,119 @@
+﻿<Window x:Class="Montagem.ApontarFases"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Montagem"
+                  xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+        
+             mc:Ignorable="d" 
+             Width="950"
+        Height="350"
+        WindowStartupLocation="CenterScreen"
+        >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu VerticalAlignment="Center" Background="Transparent">
+            <MenuItem Header="Ferramentas">
+                <MenuItem Header="Adicionar" Click="adicionar_somando"></MenuItem>
+                <MenuItem Header="Ajustar Pesos Etapas" Click="ajusta_pesos"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Editar">
+                <MenuItem Header="Data Início" Click="editar_data_inicio"></MenuItem>
+                <MenuItem Header="Data Fim" Click="editar_data_fim"></MenuItem>
+                <MenuItem Header="Peso Etapa" Click="editar_peso"></MenuItem>
+                <MenuItem Header="Efetivo" Click="edita_efetivo"></MenuItem>
+                <MenuItem Header="Equipe" Click="edita_montador"></MenuItem>
+                <MenuItem Header="Área" Click="edita_area"></MenuItem>
+                <MenuItem Header="Peso Fase" Click="edita_peso_fase"></MenuItem>
+                <Separator></Separator>
+                <MenuItem Header="Descrição" Click="edita_etapa"></MenuItem>
+                <MenuItem Header="Cód." Click="edita_cod"></MenuItem>
+                <MenuItem Header="Apagar" Click="remover"></MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <telerik:RadGridView SelectionMode="Extended" ShowGroupPanel="True" x:Name="lista" ShowColumnFooters="True" AutoGenerateColumns="False"  FontSize="10" BorderThickness="0" Grid.Row="2" IsReadOnly="True" ShowSearchPanel="True" >
+            <telerik:RadGridView.Columns>
+                <telerik:GridViewDataColumn Header="Et." DataMemberBinding="{Binding pai.descricao}" Width="auto" >
+                    <telerik:GridViewDataColumn.AggregateFunctions>
+                        <telerik:CountFunction />
+                    </telerik:GridViewDataColumn.AggregateFunctions>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn Header="Cód." DataMemberBinding="{Binding cod}" Width="auto" />
+                <telerik:GridViewDataColumn Header="Desc." DataMemberBinding="{Binding descricao}" Width="*" />
+                <telerik:GridViewDataColumn Header="Início" IsFilterable="True" DataMemberBinding="{Binding inicio.datastr}" Width="auto" />
+                <telerik:GridViewDataColumn Header="Fim" IsFilterable="True" DataMemberBinding="{Binding fim.datastr}" Width="auto" />
+                <telerik:GridViewDataColumn Header="D" DataMemberBinding="{Binding dias}" Width="auto">
+                    <telerik:GridViewDataColumn.AggregateFunctions>
+                        <telerik:SumFunction />
+                    </telerik:GridViewDataColumn.AggregateFunctions>
+                </telerik:GridViewDataColumn>
+
+                <telerik:GridViewDataColumn Header="Equipe" DataMemberBinding="{Binding equipe}" Width="auto" />
+                <telerik:GridViewDataColumn Header="A" DataMemberBinding="{Binding area}" Width="auto">
+                    <telerik:GridViewDataColumn.AggregateFunctions>
+                        <telerik:SumFunction />
+                    </telerik:GridViewDataColumn.AggregateFunctions>
+                </telerik:GridViewDataColumn>
+               
+                <telerik:GridViewDataColumn Header="Efetivo" DataMemberBinding="{Binding efetivo}" Width="auto" >
+                    <telerik:GridViewDataColumn.AggregateFunctions>
+                        <telerik:SumFunction />
+                    </telerik:GridViewDataColumn.AggregateFunctions>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn Header="Peso Et." Width="150" DataMemberBinding="{Binding peso_fase, Mode=OneWay}">
+                    <telerik:GridViewDataColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  SemPorcentagem}" Value="{Binding Path=peso_fase, Mode=OneWay}" Minimum="0" Maximum="1" />
+                                <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding peso_fase, StringFormat='{}{0:0,0.00}'}"></Label>
+                            </Grid>
+                        </DataTemplate>
+                    </telerik:GridViewDataColumn.CellTemplate>
+                    <telerik:GridViewDataColumn.AggregateFunctions>
+                        <telerik:SumFunction />
+                    </telerik:GridViewDataColumn.AggregateFunctions>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn Header="Prev." Width="75" DataMemberBinding="{Binding previsto, Mode=OneWay}">
+                    <telerik:GridViewDataColumn.CellTemplate>
+                        <DataTemplate>
+                            <ProgressBar FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding Path=previsto, Mode=OneWay}" Minimum="0" Maximum="100" />
+                        </DataTemplate>
+                    </telerik:GridViewDataColumn.CellTemplate>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn Header="Real." Width="72" DataMemberBinding="{Binding realizado, Mode=OneWay}">
+                    <telerik:GridViewDataColumn.CellTemplate>
+                        <DataTemplate>
+                            <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding Path=realizado, Mode=OneWay}" Minimum="0" Maximum="100" />
+                        </DataTemplate>
+                    </telerik:GridViewDataColumn.CellTemplate>
+                </telerik:GridViewDataColumn>
+
+                <telerik:GridViewDataColumn  Width="auto" Header="Ações" >
+                    <telerik:GridViewDataColumn.CellTemplate>
+                        <DataTemplate>
+                            <WrapPanel>
+                                <Button Click="editar" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="Editar">
+                                    <WrapPanel>
+                                        <Image Width="16" Height="16" Source="Resources/document_edit3.png"></Image>
+                                    </WrapPanel>
+                                </Button>
+                                <Button Click="adicionar" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="Adicionar">
+                                    <WrapPanel>
+                                        <Image Width="16" Height="16" Source="Resources/list-add.png"></Image>
+                                    </WrapPanel>
+                                </Button>
+                            </WrapPanel>
+                        </DataTemplate>
+                    </telerik:GridViewDataColumn.CellTemplate>
+                </telerik:GridViewDataColumn>
+
+
+      </telerik:RadGridView.Columns>
+        </telerik:RadGridView>
+    </Grid>
+</Window>

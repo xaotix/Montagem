@@ -1,0 +1,35 @@
+﻿<mui:ModernWindow x:Class="Importador_Montagem.MainWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+                  Title="Avanço Obras" 
+                  Style="{StaticResource BlankWindow}"
+                   xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+                  Closing="ModernWindow_Closing"
+                  >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu Background="Transparent">
+            <MenuItem Header="Arquivo" Background="Transparent">
+                <MenuItem Header="Nova Obra" Click="criar_obra"></MenuItem>
+                <MenuItem Header="Apagar Obras" Click="apagar_obra"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Ferramendas" Background="Transparent">
+                <MenuItem Header="Visualizar XML" Click="visualiza_xml"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <telerik:RadGridView Background="Transparent" x:Name="lista" SelectionMode="Extended" AutoGenerateColumns="False"  FontSize="11" BorderThickness="0" Grid.Row="2" IsReadOnly="True" ShowSearchPanel="True" ShowGroupPanel="False" MouseDoubleClick="lista_MouseDoubleClick">
+            <telerik:RadGridView.Columns>
+                <telerik:GridViewDataColumn IsReadOnly="True"  Header="Pedido"          DataMemberBinding="{Binding contrato, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn IsReadOnly="True"  Header="Descrição"          DataMemberBinding="{Binding descricao, Mode=OneWay}" Width="*"></telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn IsReadOnly="True"  Header="Status"          DataMemberBinding="{Binding status, Mode=OneWay}" Width="*"></telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn IsReadOnly="True"  Header="Área"          DataMemberBinding="{Binding area, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn IsReadOnly="True"  Header="Engenheiro"          DataMemberBinding="{Binding engenheiro, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn IsReadOnly="True"  Header="Última Importação"          DataMemberBinding="{Binding ultima_importacao, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
+            </telerik:RadGridView.Columns>
+        </telerik:RadGridView>
+    </Grid>
+</mui:ModernWindow>

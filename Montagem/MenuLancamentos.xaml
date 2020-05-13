@@ -1,0 +1,69 @@
+﻿<Window x:Class="Montagem.MenuLancamentos"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Montagem"
+                  xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+        
+             mc:Ignorable="d" 
+            Width="500"
+        Height="500"
+        WindowState="Normal"
+        WindowStartupLocation="CenterOwner"
+        >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu Background="Transparent" VerticalAlignment="Center">
+            <MenuItem Header="Editar">
+                <MenuItem Header="Valores">
+                <MenuItem Header="Somar valor" Click="soma_valores"></MenuItem>
+                <MenuItem Header="Diminuir Valor" Click="diminui_valores"></MenuItem>
+                </MenuItem>
+                <MenuItem Header="Datas">
+                    <MenuItem Header="Somar Dias" Click="soma_dias"></MenuItem>
+                    <MenuItem Header="Diminuir Dias" Click="diminui_dias"></MenuItem>
+                </MenuItem>
+                <MenuItem Header="Equipe" Click="editar_equipe"></MenuItem>
+                <MenuItem Header="Descrição" Click="edita_descricao"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <telerik:RadGridView Grid.Row="10" SelectionMode="Extended" ShowGroupPanel="True" x:Name="lista" ShowColumnFooters="True" CanUserInsertRows="False" AutoGenerateColumns="False"  FontSize="10" BorderThickness="0"  IsReadOnly="True" ShowSearchPanel="True" >
+            <telerik:RadGridView.Columns>
+                <telerik:GridViewDataColumn Header="Data" DataMemberBinding="{Binding data}" Width="auto">
+                    <telerik:GridViewDataColumn.AggregateFunctions>
+                        <telerik:CountFunction/>
+                    </telerik:GridViewDataColumn.AggregateFunctions>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn Header="Semana" DataMemberBinding="{Binding data.semana}" Width="auto" />
+                <telerik:GridViewDataColumn Header="Dia" DataMemberBinding="{Binding data.dia_da_semana}" Width="auto" />
+                <telerik:GridViewDataColumn Header="Equipe" DataMemberBinding="{Binding responsavel}" Width="auto" />
+                <telerik:GridViewDataColumn Header="Desc." DataMemberBinding="{Binding descricao}" Width="*" />
+                <telerik:GridViewDataColumn Header="Valor" DataMemberBinding="{Binding valor}" Width="auto">
+                    <telerik:GridViewDataColumn.AggregateFunctions>
+                        <telerik:SumFunction />
+                    </telerik:GridViewDataColumn.AggregateFunctions>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn  Width="auto" Header="Ações" >
+                    <telerik:GridViewDataColumn.CellTemplate>
+                        <DataTemplate>
+                            <WrapPanel>
+                                <Button Click="editar" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="Editar">
+                                    <WrapPanel>
+                                        <Image Width="16" Height="16" Source="Resources/document_edit3.png"></Image>
+                                    </WrapPanel>
+                                </Button>
+                           </WrapPanel>
+                        </DataTemplate>
+                    </telerik:GridViewDataColumn.CellTemplate>
+                </telerik:GridViewDataColumn>
+
+
+            </telerik:RadGridView.Columns>
+        </telerik:RadGridView>
+
+    </Grid>
+</Window>

@@ -1,0 +1,432 @@
+﻿<mui:ModernWindow x:Class="Montagem.JanelaObra2"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                  xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+                  xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation" 
+                  xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+                  mc:Ignorable="d" 
+                  Title="ModernWindow"
+                  Style="{StaticResource BlankWindow}" Closing="ModernWindow_Closing" FontSize="10" WindowState="Maximized" Height="950" Width="950" MinWidth="950" MinHeight="550">
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu VerticalAlignment="Center" Background="Transparent">
+            <MenuItem Header="Arquivo" Background="Transparent">
+                <MenuItem Header="Importar LOB" Click="importa_lob"/>
+                <MenuItem Header="Abrir Pasta" Click="abre_pasta"/>
+                <MenuItem Header="Abrir Backups" Click="abre_backups"/>
+                <MenuItem Header="Salvar" Click="salvar_tudo"/>
+            </MenuItem>
+            <MenuItem Header="Ferramentas" Background="Transparent">
+                <MenuItem Header="Editar dados da Obra" Click="MenuItem_Click"/>
+                <MenuItem Header="Datas cronograma">
+                    <MenuItem Header="Editar inicio" Click="edita_inicio_cronograma"></MenuItem>
+                    <MenuItem Header="Editar fim" Click="edita_fim_cronograma"></MenuItem>
+                </MenuItem>
+                <!--<MenuItem Header="Editar Dados de Etapas e Apontamentos" Click="apontamento_global"/>-->
+                <MenuItem Header="Exportar Avanço" Click="exporta_avanco"></MenuItem>
+                <MenuItem Header="Importar Avanço" Click="importa_avanco"></MenuItem>
+                <MenuItem Header="Limpar apontamentos" Click="limpa_apontamentos"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Etapas" Background="Transparent">
+                <MenuItem Header="Ajustar Pesos Etapas" Click="ajusta_pesos_etapas"></MenuItem>
+                <MenuItem Header="Adicionar Apontamento" Click="adicionar_apontamento_fase"></MenuItem>
+                <MenuItem Header="Editar" >
+                    <MenuItem Header="Datas">
+                        <MenuItem Header="Início - Somar Dias" Click="soma_dias"></MenuItem>
+                        <MenuItem Header="Início - Diminuir Dias" Click="diminui_dias"></MenuItem>
+                        <MenuItem Header="Fim - Somar Dias" Click="soma_dias_fim"></MenuItem>
+                        <MenuItem Header="Fim - Diminuir Dias" Click="diminui_dias_fim"></MenuItem>
+                        <MenuItem Header="Editar Início" Click="editar_data_inicio"></MenuItem>
+                    <MenuItem Header="Editar Fim" Click="editar_data_fim"></MenuItem>
+                        
+                    </MenuItem>
+                    <!--<MenuItem Header="Peso Etapa" Click="editar_peso"></MenuItem>-->
+
+                    <MenuItem Header="Efetivo" Click="edita_efetivo"></MenuItem>
+                    <MenuItem Header="Equipe" Click="edita_montador"></MenuItem>
+                    <MenuItem Header="Área" Click="edita_area"></MenuItem>
+                    <MenuItem Header="Peso Fase" Click="edita_peso_fase"></MenuItem>
+                    <Separator></Separator>
+                    <MenuItem Header="Descrição" Click="edita_etapa"></MenuItem>
+                    <MenuItem Header="Cód." Click="edita_cod"></MenuItem>
+                    <MenuItem Header="Apagar" Click="remover"></MenuItem>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Recursos" Background="Transparent">
+                <MenuItem Header="Apagar" Click="apagar_recursos"></MenuItem>
+                <MenuItem Header="Editar">
+                    <MenuItem Header="Equipe" Click="editar_equipe"></MenuItem>
+                    <MenuItem Header="Ajustar Efetivo Conforme etapas vinculadas as equipes" Click="ajustar_efetivo"></MenuItem>
+                    <MenuItem Header="Apontamentos Previstos" Click="editar_apontamentos_previstos"></MenuItem>
+                    <MenuItem Header="Apontamentos Realizados" Click="editar_apontamentos_realizados"></MenuItem>
+                </MenuItem>
+            </MenuItem>
+            <!--<MenuItem Header="FTP" Background="Transparent" VerticalAlignment="Center">
+                --><!--<MenuItem Header="Enviar" Click="envia_ftp_avanco"></MenuItem>--><!--
+            </MenuItem>-->
+        </Menu>
+        <Grid Grid.Row="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="130"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Border CornerRadius="10" BorderThickness="2" BorderBrush="LightGray" Margin="5,5,5,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+            <Grid Margin="10,10,10,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                        <Label Margin="3,3,3,3" Name="titulo" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="10"></Label>
+                <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="0" Content="Início: "></Label>
+                <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="0" Content="Fim: "></Label>
+                <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="1" Content="Cronograma: "></Label>
+                <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="2" Content="{Binding inicio_cronograma}"></Label>
+                <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="1" Content="Cronograma: "></Label>
+                    <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="2" Content="{Binding fim_cronograma}"></Label>
+                <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="3" Content="Real: "></Label>
+                <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="4" Content="{Binding inicio_real}"></Label>
+                <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="3" Content="Real: "></Label>
+                <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="4" Content="{Binding fim_real}"></Label>
+                <Label Margin="3,3,3,3" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Content="Último Apontamento Exportado Em: "></Label>
+                <Label Margin="3,3,3,3" Grid.Row="3" Grid.Column="4" Content="{Binding emissao}"></Label>
+
+                
+                </Grid>
+                    <Grid Grid.Column="10" Width="350">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                    </Grid>
+                </Grid>
+                
+            </Border>
+
+            <TabControl Grid.Row="10">
+                <TabItem Header="Resumo">
+            <TabControl Grid.Column="10" Grid.Row="10">
+                <TabControl.Background>
+                    <ImageBrush ImageSource="Resources/Logo Medabil Vertical-01.png" Opacity="0.1" Stretch="Uniform"/>
+                </TabControl.Background>
+                <TabItem Header="Avanço">
+                        <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="250"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="150"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                           
+                            <Border Grid.Row="10" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                            <Grid x:Name="novo" Grid.Column="0"></Grid>
+                        </Border>
+                          
+                        <Grid >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+     
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                <Grid >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Label Name="lbl_desvio" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                    <lvc:Gauge Name="gauge_desvio" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
+
+                                        <lvc:Gauge.GaugeActiveFill>
+                                            <LinearGradientBrush>
+                                                <GradientStop Color="Green" Offset="0.0" />
+                                                <GradientStop Color="Orange" Offset="0.5" />
+                                                <GradientStop Color="Red" Offset="1.0" />
+                                            </LinearGradientBrush>
+                                        </lvc:Gauge.GaugeActiveFill>
+                                    </lvc:Gauge>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Column="1" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                <Grid >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Label Name="lbl_desvio1" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"></Label>
+                                    <lvc:Gauge Name="gauge_desvio1" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
+                                        <lvc:Gauge.GaugeActiveFill>
+                                            <LinearGradientBrush>
+                                                <GradientStop Color="Green" Offset="0.0" />
+                                                <GradientStop Color="Orange" Offset="1" />
+                                                <GradientStop Color="Red" Offset="1.0" />
+                                            </LinearGradientBrush>
+                                        </lvc:Gauge.GaugeActiveFill>
+                                    </lvc:Gauge>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Column="2" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                <Grid >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Label Name="lbl_desvio2" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                    <lvc:Gauge Name="gauge_desvio2" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
+                                        <lvc:Gauge.GaugeActiveFill>
+                                            <LinearGradientBrush>
+                                                <GradientStop Color="Green" Offset="0.0" />
+                                                <GradientStop Color="Orange" Offset="1" />
+                                                <GradientStop Color="Red" Offset="1.0" />
+                                            </LinearGradientBrush>
+                                        </lvc:Gauge.GaugeActiveFill>
+                                    </lvc:Gauge>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Column="3" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                <Grid >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Label Name="lbl_desvio3" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                    <lvc:Gauge Name="gauge_desvio3" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
+                                        <lvc:Gauge.GaugeActiveFill>
+                                            <LinearGradientBrush>
+                                                <GradientStop Color="Green" Offset="0.0" />
+                                                <GradientStop Color="Orange" Offset="0.7" />
+                                                <GradientStop Color="Red" Offset="1.0" />
+                                            </LinearGradientBrush>
+                                        </lvc:Gauge.GaugeActiveFill>
+                                    </lvc:Gauge>
+                                </Grid>
+                            </Border>
+                           
+                        </Grid>
+                    </Grid>
+                            <Border Grid.Column="10" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                <Grid x:Name="novo_resumo" Margin="5,5,5,5"></Grid>
+                            </Border>
+                        </Grid>
+
+                </TabItem>
+
+                <TabItem Header="Avanço Por Tarefa" Background="Transparent">
+                    <Grid>
+                        <ScrollViewer VerticalScrollBarVisibility="Visible"  Grid.Row="1">
+                            <StackPanel x:Name="painel_tarefas" Grid.Row="10"></StackPanel>
+                        </ScrollViewer>
+
+
+
+                    </Grid>
+
+                </TabItem>
+
+
+          
+                <TabItem Header="Recursos" Background="Transparent">
+                    <ScrollViewer VerticalScrollBarVisibility="Visible"  Grid.Row="1">
+
+
+
+                            <StackPanel x:Name="painel_recursos" Grid.Row="10"></StackPanel>
+
+      
+                        </ScrollViewer>
+
+                </TabItem>
+            </TabControl>
+                    
+                </TabItem>
+                <TabItem Header="Edição">
+                    <TabControl Grid.Row="10">
+                        <TabItem Header="Etapas" Background="Transparent">
+                            <telerik:RadGridView  Background="Transparent" SelectionMode="Extended" ShowGroupPanel="True" x:Name="lista_etapas" ShowColumnFooters="True" AutoGenerateColumns="False"  FontSize="10" BorderThickness="0" Grid.Row="2" IsReadOnly="False" ShowSearchPanel="True" >
+                                <telerik:RadGridView.Columns>
+                                    <telerik:GridViewDataColumn Header="Et." DataMemberBinding="{Binding pai.descricao}" Width="auto" >
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:CountFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="PEP" DataMemberBinding="{Binding pep}" Width="auto" IsReadOnly="False"/>
+                                    <telerik:GridViewDataColumn Header="Cód." DataMemberBinding="{Binding cod}" Width="auto" IsReadOnly="False" />
+                                    <telerik:GridViewDataColumn Header="Descrição" DataMemberBinding="{Binding descricao}" Width="*" IsReadOnly="False" />
+                                    <telerik:GridViewDataColumn Header="Início" IsFilterable="True" DataMemberBinding="{Binding inicio.datastr}" Width="auto"  IsReadOnly="True" />
+                                    <telerik:GridViewDataColumn Header="Fim" IsFilterable="True" DataMemberBinding="{Binding fim.datastr}" Width="auto"  IsReadOnly="True"/>
+                                    <telerik:GridViewDataColumn Header="D" DataMemberBinding="{Binding dias}" Width="auto"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="Área" DataMemberBinding="{Binding area}" Width="auto"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="Equipe" DataMemberBinding="{Binding equipe}" Width="auto"  IsReadOnly="False"/>
+                                    <telerik:GridViewDataColumn Header="Ef./Dia" DataMemberBinding="{Binding efetivo}" Width="auto"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="Total Ef." DataMemberBinding="{Binding total_efetivo}" Width="auto"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+
+
+
+
+                                    <telerik:GridViewDataColumn Header="Prev." Width="75" DataMemberBinding="{Binding previsto, Mode=OneWay}"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ProgressBar FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding Path=previsto, Mode=OneWay}" Minimum="0" Maximum="100" />
+                                            </DataTemplate>
+                                        </telerik:GridViewDataColumn.CellTemplate>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="Real." Width="75" DataMemberBinding="{Binding realizado, Mode=OneWay}"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding Path=realizado, Mode=OneWay}" Minimum="0" Maximum="100" />
+                                            </DataTemplate>
+                                        </telerik:GridViewDataColumn.CellTemplate>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="Peso Et." Width="50" DataMemberBinding="{Binding peso_fase, Mode=OneWay}"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  SemPorcentagem}" Value="{Binding Path=peso_fase, Mode=OneWay}" Minimum="0" Maximum="1" />
+                                                    <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding peso_fase, StringFormat='{}{0:0,0.00}'}"></Label>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </telerik:GridViewDataColumn.CellTemplate>
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn  Width="auto" Header="Ações"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <WrapPanel>
+                                                    <Button Click="editar_etapa_dados" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="Editar Propriedades">
+                                                        <WrapPanel>
+                                                            <Image Width="16" Height="16" Source="Resources/document_edit3.png"></Image>
+                                                        </WrapPanel>
+                                                    </Button>
+                                                    <Button Click="editar_etapa" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="Editar Apontamentos">
+                                                        <WrapPanel>
+                                                            <Image Width="16" Height="16" Source="Resources/office-calendar.png"></Image>
+                                                        </WrapPanel>
+                                                    </Button>
+                                                    <Button Click="adicionar_apontamento" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="Adicionar Apontamento">
+                                                        <WrapPanel>
+                                                            <Image Width="16" Height="16" Source="Resources/list-add.png"></Image>
+                                                        </WrapPanel>
+                                                    </Button>
+                                                </WrapPanel>
+                                            </DataTemplate>
+                                        </telerik:GridViewDataColumn.CellTemplate>
+                                    </telerik:GridViewDataColumn>
+
+
+                                </telerik:RadGridView.Columns>
+
+                            </telerik:RadGridView>
+                        </TabItem>
+                        <TabItem Header="Recursos e Efetivo">
+                            <telerik:RadGridView Grid.Row="0" Background="Transparent" SelectionMode="Extended" ShowGroupPanel="True" x:Name="lista" ShowColumnFooters="True" AutoGenerateColumns="False"  FontSize="10" BorderThickness="0" IsReadOnly="False" ShowSearchPanel="True" >
+                                <telerik:RadGridView.Columns>
+
+                                    <telerik:GridViewDataColumn Header="Recurso" DataMemberBinding="{Binding descricao}" Width="auto" IsReadOnly="False" />
+                                    <telerik:GridViewDataColumn Header="Equipe" DataMemberBinding="{Binding equipe}" Width="auto" IsReadOnly="False" />
+                                    <telerik:GridViewDataColumn Header="Disponível" Width="*" DataMemberBinding="{Binding total_previsto, Mode=OneWay}" IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <ProgressBar Foreground="LimeGreen" Height="20" Style="{StaticResource  SemPorcentagem}" Value="{Binding Path=total_disponivel, Mode=OneWay}" Minimum="0" Maximum="{Binding total_previsto}" />
+                                                    <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                        <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="U: "></Label>
+
+                                                        <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding total_utilizado, StringFormat='{}{0:0,0.00}'}"></Label>
+                                                        <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content=" - P: "></Label>
+                                                        <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding total_previsto, StringFormat='{}{0:0,0.00}'}"></Label>
+                                                    </WrapPanel>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </telerik:GridViewDataColumn.CellTemplate>
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+
+
+                                    <telerik:GridViewDataColumn  Width="auto" Header="Ações" IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <WrapPanel>
+                                                    <Button Click="editar_recurso" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="Editar">
+                                                        <WrapPanel>
+                                                            <Image Width="16" Height="16" Source="Resources/document_edit3.png"></Image>
+                                                        </WrapPanel>
+                                                    </Button>
+                                                    <Button Click="excluir_recurso" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="Excluir">
+                                                        <WrapPanel>
+                                                            <Image Width="16" Height="16" Source="Resources/dialog-error.png"></Image>
+                                                        </WrapPanel>
+                                                    </Button>
+                                                    <Button Click="editar_apontamentos_recurso" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="Editar Previsto">
+                                                        <WrapPanel>
+                                                            <Image Width="16" Height="16" Source="Resources/office-calendar.png"></Image>
+                                                        </WrapPanel>
+                                                    </Button>
+                                                    <Button Click="editar_apontamentos_recurso_realizado" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="Editar Realizado">
+                                                        <WrapPanel>
+                                                            <Image Width="16" Height="16" Source="Resources/office-calendar.png"></Image>
+                                                        </WrapPanel>
+                                                    </Button>
+                                                </WrapPanel>
+                                            </DataTemplate>
+                                        </telerik:GridViewDataColumn.CellTemplate>
+                                    </telerik:GridViewDataColumn>
+
+
+                                </telerik:RadGridView.Columns>
+                            </telerik:RadGridView>
+
+                        </TabItem>
+                    </TabControl>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</mui:ModernWindow>

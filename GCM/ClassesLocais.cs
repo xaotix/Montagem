@@ -47,8 +47,12 @@ namespace GCM_Offline
         [Browsable(false)]
         [XmlIgnore]
         public string nomearq { get; set; } = "obra.cfg";
-        public void Salvar(string pasta)
+        public void Salvar(string pasta = null)
         {
+            if(pasta == null)
+            {
+                pasta = this.diretorio;
+            }
             if (Directory.Exists(pasta))
             {
                 if (!pasta.EndsWith(@"\"))

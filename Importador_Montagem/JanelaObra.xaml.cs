@@ -74,6 +74,7 @@ namespace Importador_Montagem
                                       PointGeometry = LiveCharts.Wpf.DefaultGeometries.Circle,
                                       Stroke = Brushes.Blue,
                                       Fill = azul,
+                                      LineSmoothness = 0,
                                       Opacity = 0.5
                                   });
                         }
@@ -86,6 +87,7 @@ namespace Importador_Montagem
                                 PointGeometry = LiveCharts.Wpf.DefaultGeometries.Circle,
                                 Stroke = Brushes.Green,
                                 Fill = verd,
+                                LineSmoothness = 0,
                                 Opacity = 0.5
                             }); ;
                         }
@@ -116,6 +118,7 @@ namespace Importador_Montagem
                                 PointGeometry = LiveCharts.Wpf.DefaultGeometries.Square,
                                 Stroke = Brushes.Green,
                                 Fill = verd,
+
                                 Opacity = 0.5
                             });
                         }
@@ -180,19 +183,30 @@ namespace Importador_Montagem
             var t2 = lob.GetTotalSemanaAnterior2();
             var t3 = lob.GetTotalSemanaAnterior3();
 
+
+
+
+            this.lbl_desvio.Content = "Desvio \n" + t0.data;
             this.lbl_desvio1.Content = "Desvio \n" + t1.data;
             this.lbl_desvio2.Content = "Desvio \n" + t2.data;
             this.lbl_desvio3.Content = "Desvio \n" + t3.data;
+            var ss = this.lob.Subfases().Sum(x => x.GetPrevistoDistribuidoDias().Sum(y => y.previsto));
 
             this.gauge_desvio.Value = t0.desvio;
             this.gauge_desvio1.Value = t1.desvio;
             this.gauge_desvio2.Value = t2.desvio;
             this.gauge_desvio3.Value = t3.desvio;
 
+            this.gauge_dias_atraso.Value = lob.dias_atraso();
+
+
+
             this.gauge_desvio.GaugeActiveFill = getcordesvio(t0.desvio);
             this.gauge_desvio1.GaugeActiveFill = getcordesvio(t1.desvio);
             this.gauge_desvio2.GaugeActiveFill = getcordesvio(t2.desvio);
             this.gauge_desvio3.GaugeActiveFill = getcordesvio(t3.desvio);
+
+            this.gauge_dias_atraso.GaugeActiveFill = getcordesvio(-lob.dias_atraso());
 
             var avanco = lob.GetAvancos();
 
@@ -229,16 +243,20 @@ namespace Importador_Montagem
                 painel_tarefas.Children.Clear();
                 foreach (var s in tipos)
                 {
-                    var st = lob.GetAvancos(7, s);
+                    List<Avanco> st = new List<Avanco>();
+                    st.AddRange(lob.GetAvancos(7, s));
                     if (st.Count > 0)
                     {
                         var max = st.Select(x => x.previsto).ToList();
                         max.AddRange(st.Select(x => x.realizado));
                         max = max.OrderBy(x => x).ToList();
+                        double maximo = max.Last();
                         foreach (var p in st)
                         {
-                            p.previsto = Math.Round(p.previsto / max.Last() * 100, 2);
-                            p.realizado = Math.Round(p.realizado / max.Last() * 100, 2);
+                            p.previsto = Math.Round(p.previsto / maximo * 100, 2);
+                            p.realizado = Math.Round(p.realizado / maximo * 100, 2);
+                            p.avancos.Clear();
+                            p.descricao = "";
                         }
 
                         var graff = GetGrafico(st, true, true, true, "%", s);
@@ -270,9 +288,9 @@ namespace Importador_Montagem
             try
             {
                 painel_recursos.Children.Clear();
-                foreach (var e in lob.GetEfetivos())
+                foreach (var e in lob.GetEfetivosERecursos())
                 {
-                    var apon = e.GetAvancos();
+                    var apon = e.GetAvancosAcumulados();
                     var total = apon.Sum(x => x.previsto);
                     if (apon.Count > 0)
                     {
@@ -317,15 +335,28 @@ namespace Importador_Montagem
             Linhas,
             Colunas
         }
+
         public Brush getcordesvio(double valor)
         {
-            if (valor < -15)
+            if (valor < -30)
+            {
+                return Brushes.DarkRed;
+            }
+            else if (valor < -25)
             {
                 return Brushes.Red;
             }
-            else if (valor < -10)
+            else if (valor < -20)
+            {
+                return Brushes.Red;
+            }
+            else if (valor < -15)
             {
                 return Brushes.Orange;
+            }
+            else if (valor < -10)
+            {
+                return Brushes.Yellow;
             }
             else if (valor < -5)
             {
@@ -336,6 +367,10 @@ namespace Importador_Montagem
                 return Brushes.Green;
             }
         }
+
+
+
+
 
 
 

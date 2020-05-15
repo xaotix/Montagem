@@ -25,6 +25,10 @@ using LiveCharts;
 using System.Drawing.Imaging;
 using System.Runtime.Remoting;
 using Conexoes.Macros;
+using OfficeOpenXml.ConditionalFormatting;
+using Microsoft.Office.Interop.Outlook;
+using System.Drawing.Drawing2D;
+using System.Windows.Threading;
 
 namespace Montagem
 {
@@ -36,6 +40,8 @@ namespace Montagem
         public static LiveCharts.Wpf.CartesianChart GetGrafico(List<Avanco> avanco, bool prev = true, bool real = true, bool desv = false, string LegendaY = "Porcentagem", string sub_titulo = "", Tipo_Grafico tipo = Tipo_Grafico.Linhas, double min = 0, double max = 100, double previsto = 0, double realizado = 0)
         {
             LiveCharts.Wpf.CartesianChart novografico = new LiveCharts.Wpf.CartesianChart();
+            novografico.DisableAnimations = true;
+  
 
             try
             {
@@ -79,6 +85,7 @@ namespace Montagem
                                       PointGeometry = LiveCharts.Wpf.DefaultGeometries.Circle,
                                       Stroke = Brushes.Blue,
                                       Fill = azul,
+                                      LineSmoothness = 0,
                                       Opacity = 0.5
                                   });
                         }
@@ -91,6 +98,7 @@ namespace Montagem
                                 PointGeometry = LiveCharts.Wpf.DefaultGeometries.Circle,
                                 Stroke = Brushes.Green,
                                 Fill = verd,
+                                LineSmoothness = 0,
                                 Opacity = 0.5
                             }); ;
                         }
@@ -121,6 +129,7 @@ namespace Montagem
                                 PointGeometry = LiveCharts.Wpf.DefaultGeometries.Square,
                                 Stroke = Brushes.Green,
                                 Fill = verd,
+                                
                                 Opacity = 0.5
                             });
                         }
@@ -164,13 +173,16 @@ namespace Montagem
                 });
 
                 novografico.Series = SeriesCollection;
+             
                 IList<string> list = new List<string>(avanco.Select(x => "Sem. " + x.data.semana.ToString().PadLeft(2, '0') + "/" + x.data.ano + "\n" + x.data.dia.ToString().PadLeft(2, '0') + "/" + x.data.mes));
                 novografico.AxisX[0].Labels = list;
                 novografico.LegendLocation = LegendLocation.Bottom;
                 novografico.FontSize = 10;
 
+                novografico.Update();
+
             }
-            catch (Exception)
+            catch (System.Exception)
             {
 
             }
@@ -178,26 +190,38 @@ namespace Montagem
         }
         private void GerarGrafico()
         {
-
+            AtualizaListas();
 
             var t0 = lob.GetTotal();
             var t1 = lob.GetTotalSemanaAnterior();
             var t2 = lob.GetTotalSemanaAnterior2();
             var t3 = lob.GetTotalSemanaAnterior3();
 
+
+
+
+            this.lbl_desvio.Content = "Desvio \n" + t0.data;
             this.lbl_desvio1.Content = "Desvio \n" + t1.data;
             this.lbl_desvio2.Content = "Desvio \n" + t2.data;
             this.lbl_desvio3.Content = "Desvio \n" + t3.data;
-            var ss = this.lob.Subfases().Sum(x => x.GetPrevistoDistribuidoDias().Sum(y => y.valor));
+            this.lbl_dias_atraso.Content= "Dias \n em atraso:";
+            var ss = this.lob.Subfases().Sum(x => x.GetPrevistoDistribuidoDias().Sum(y => y.previsto));
+
             this.gauge_desvio.Value = t0.desvio;
             this.gauge_desvio1.Value = t1.desvio;
             this.gauge_desvio2.Value = t2.desvio;
             this.gauge_desvio3.Value = t3.desvio;
 
+            this.gauge_dias_atraso.Value = lob.dias_atraso();
+
+
+
             this.gauge_desvio.GaugeActiveFill = getcordesvio(t0.desvio);
             this.gauge_desvio1.GaugeActiveFill = getcordesvio(t1.desvio);
             this.gauge_desvio2.GaugeActiveFill = getcordesvio(t2.desvio);
             this.gauge_desvio3.GaugeActiveFill = getcordesvio(t3.desvio);
+
+            this.gauge_dias_atraso.GaugeActiveFill = getcordesvio(-lob.dias_atraso());
 
             var avanco = lob.GetAvancos();
 
@@ -232,32 +256,48 @@ namespace Montagem
                 var tipos = lob.Subfases().Select(x => x.descricao).Distinct().ToList();
 
                 painel_tarefas.Children.Clear();
-                foreach (var s in tipos)
+                foreach (var e in tipos)
                 {
-                    var st = lob.GetAvancos(7, s);
+                    List<Avanco> st = new List<Avanco>();
+                    st.AddRange(lob.GetAvancos(7, e));
                     if (st.Count > 0)
                     {
                         var max = st.Select(x => x.previsto).ToList();
                         max.AddRange(st.Select(x => x.realizado));
                         max = max.OrderBy(x => x).ToList();
+                        double maximo = max.Last();
                         foreach (var p in st)
                         {
-                            p.previsto = Math.Round(p.previsto / max.Last() * 100, 2);
-                            p.realizado = Math.Round(p.realizado / max.Last() * 100, 2);
+                            p.previsto = Math.Round(p.previsto / maximo * 100, 2);
+                            p.realizado = Math.Round(p.realizado / maximo * 100, 2);
+                            p.avancos.Clear();
+                            p.descricao = "";
                         }
 
-                        var graff = GetGrafico(st, true, true, true, "%", s);
+                        var graff = GetGrafico(st, true, true, true, "%", e);
                         graff.Height = 350;
                         graff.Margin = new Thickness(5, 5, 5, 5);
 
                         Border pp = new Border();
+                        StackPanel panel = new StackPanel();
                         pp.BorderThickness = new Thickness(1);
                         pp.BorderBrush = Brushes.LightGray;
                         pp.CornerRadius = new CornerRadius(5);
                         pp.Margin = new Thickness(5, 5, 5, 5);
+                        pp.Child = panel;
+                        System.Windows.Controls.Label label = new System.Windows.Controls.Label();
+                        label.Margin = new Thickness(5, 5, 2, 2);
+                        label.FontWeight = FontWeights.Bold;
+                        label.Content = e.ToString();
+                        label.FontSize = 14;
+                        System.Windows.Controls.Separator sep = new Separator();
+                        sep.BorderBrush = Brushes.LightGray;
+                        sep.BorderThickness = new Thickness(1);
 
+                        panel.Children.Add(label);
+                        panel.Children.Add(sep);
+                        panel.Children.Add(graff);
 
-                        pp.Child = graff;
                         painel_tarefas.Children.Add(pp);
                     }
 
@@ -268,16 +308,16 @@ namespace Montagem
 
 
             }
-            catch (Exception)
+            catch (System.Exception)
             {
             }
 
             try
             {
                 painel_recursos.Children.Clear();
-                foreach (var e in lob.GetEfetivos())
+                foreach (var e in lob.GetRecursos())
                 {
-                    var apon = e.GetAvancos();
+                    var apon = e.GetAvancosAcumulados();
                     var total = apon.Sum(x => x.previsto);
                     if (apon.Count > 0)
                     {
@@ -289,17 +329,80 @@ namespace Montagem
                                 var graff = GetGrafico(apon, true, true, false, "Total", e.descricao, Tipo_Grafico.Colunas, 0, max, e.total_previsto, e.total_utilizado);
                                 graff.Height = 350;
                                 graff.Margin = new Thickness(5, 5, 5, 5);
-
+                                
                                 Border pp = new Border();
+                                StackPanel panel = new StackPanel();
                                 pp.BorderThickness = new Thickness(1);
                                 pp.BorderBrush = Brushes.LightGray;
                                 pp.CornerRadius = new CornerRadius(5);
                                 pp.Margin = new Thickness(5, 5, 5, 5);
-                                pp.Child = graff;
+                                pp.Child = panel;
+                                System.Windows.Controls.Label label = new System.Windows.Controls.Label();
+                                label.Margin = new Thickness(5, 5, 2, 2);
+                                label.Content = e.ToString();
+                                label.FontWeight = FontWeights.Bold;
+                                label.FontSize = 14;
+                                System.Windows.Controls.Separator sep = new Separator();
+                                sep.BorderBrush = Brushes.LightGray;
+                                sep.BorderThickness = new Thickness(1);
+
+                                panel.Children.Add(label);
+                                panel.Children.Add(sep);
+                                panel.Children.Add(graff);
 
                                 painel_recursos.Children.Add(pp);
                             }
-                            catch (Exception)
+                            catch (System.Exception)
+                            {
+
+                            }
+                        }
+
+
+
+                    }
+
+                }
+
+                painel_efetivo.Children.Clear();
+                foreach (var e in lob.Getefetivos())
+                {
+                    var apon = e.GetAvancosAcumulados();
+                    var total = apon.Sum(x => x.previsto);
+                    if (apon.Count > 0)
+                    {
+                        var max = apon.Max(x => x.max);
+                        if (max > 0)
+                        {
+                            try
+                            {
+                                var graff = GetGrafico(apon, true, true, false, "Total", e.equipe, Tipo_Grafico.Colunas, 0, max, e.total_previsto, e.total_utilizado);
+                                graff.Height = 350;
+                                graff.Margin = new Thickness(5, 5, 5, 5);
+
+                                Border pp = new Border();
+                                StackPanel panel = new StackPanel();
+                                pp.BorderThickness = new Thickness(1);
+                                pp.BorderBrush = Brushes.LightGray;
+                                pp.CornerRadius = new CornerRadius(5);
+                                pp.Margin = new Thickness(5, 5, 5, 5);
+                                pp.Child = panel;
+                                System.Windows.Controls.Label label = new System.Windows.Controls.Label();
+                                label.Margin = new Thickness(5, 5, 2, 2);
+                                label.Content = "Efetivo " + e.equipe;
+                                label.FontWeight = FontWeights.Bold;
+                                label.FontSize = 14;
+                                System.Windows.Controls.Separator sep = new Separator();
+                                sep.BorderBrush = Brushes.LightGray;
+                                sep.BorderThickness = new Thickness(1);
+
+                                panel.Children.Add(label);
+                                panel.Children.Add(sep);
+                                panel.Children.Add(graff);
+
+                                painel_efetivo.Children.Add(pp);
+                            }
+                            catch (System.Exception)
                             {
 
                             }
@@ -311,12 +414,22 @@ namespace Montagem
 
                 }
             }
-            catch (Exception)
+            catch (System.Exception)
             {
             }
 
 
         }
+
+        private void AtualizaListas()
+        {
+            this.restricoes.ItemsSource = null;
+            this.restricoes.ItemsSource = this.lob.restricoes;
+
+            this.observacoes.ItemsSource = null;
+            this.observacoes.ItemsSource = this.lob.observacoes;
+        }
+
         public enum Tipo_Grafico
         {
             Linhas,
@@ -325,13 +438,25 @@ namespace Montagem
 
         public Brush getcordesvio(double valor)
         {
-            if (valor < -15)
+            if (valor < -30)
+            {
+                return Brushes.DarkRed;
+            }
+           else if (valor < -25)
             {
                 return Brushes.Red;
             }
-            else if (valor < -10)
+            else if (valor < -20)
+            {
+                return Brushes.Red;
+            }
+            else if (valor < -15)
             {
                 return Brushes.Orange;
+            }
+            else if (valor < -10)
+            {
+                return Brushes.Yellow;
             }
             else if (valor < -5)
             {
@@ -453,7 +578,7 @@ namespace Montagem
             Conexoes.Utilz.Propriedades(obra, true);
             if (Conexoes.Utilz.Pergunta("Salvar alterações?"))
             {
-                Update();
+               this.obra.Salvar();
 
             }
 
@@ -1235,6 +1360,200 @@ namespace Montagem
             var pcs = lista.SelectedItems.Cast<Recurso>().ToList().FindAll(x=>x.descricao.ToUpper().Contains("EFETIVO")).ToList();
             AjustaEfetivo(pcs);
         
+        }
+
+        private void ver_avanco(object sender, RoutedEventArgs e)
+        {
+            Funcoes.VerNodesAvancos(this.lob.GetAvancosAcumulados());
+        }
+
+        private void ver_avanco_subs(object sender, RoutedEventArgs e)
+        {
+            Funcoes.VerNodesAvancos(this.lob.GetAvancosSubEtapas());
+
+        }
+
+        private void Excluir_Restricao(object sender, RoutedEventArgs e)
+        {
+            var pp = ((FrameworkElement)sender).DataContext;
+
+           
+            if(pp is Restricao)
+            {
+                this.lob.restricoes.Remove(pp as Restricao);
+            }
+            else if (pp is Observacao)
+            {
+                this.lob.observacoes.Remove(pp as Observacao);
+            }
+            AtualizaListas();
+        }
+
+        private void add_restricao(object sender, RoutedEventArgs e)
+        {
+            Restricao pp = new Restricao();
+            pp.data = new Data(DateTime.Now);
+            bool status = false;
+
+            var peps = this.lob.Subfases().Select(x => x.pep).Distinct().ToList();
+            if(peps.Count>0)
+            {
+                string sle = Conexoes.Utilz.SelecionarObjeto(peps, null, "Selecione");
+                if(sle!=null)
+                {
+                    pp.pep = sle;
+                }
+            }
+
+
+            Conexoes.Utilz.Prompt(pp, out status, "Preencha", this);
+            if(status)
+            {
+                this.lob.restricoes.Add(pp);
+                this.lob.restricoes = this.lob.restricoes.OrderBy(x => x.data.Getdata()).ToList();
+                this.AtualizaListas();
+            }
+        }
+
+        private void Editar_Restricao(object sender, RoutedEventArgs e)
+        {
+            var pp = ((FrameworkElement)sender).DataContext;
+                bool status = false;
+            if(pp is Restricao)
+            {
+
+                Conexoes.Utilz.Prompt(pp, out status, "Preencha", this);
+                if (status)
+                {
+                    this.AtualizaListas();
+                }
+            }
+            else if(pp is Observacao)
+            {
+                Conexoes.Utilz.Prompt(pp, out status, "Preencha", this);
+                if (status)
+                {
+                    this.AtualizaListas();
+                }
+            }
+        }
+
+        private void add_observacao(object sender, RoutedEventArgs e)
+        {
+            Observacao pp = new Observacao();
+            pp.data = new Data(DateTime.Now);
+            bool status = false;
+
+
+
+            Conexoes.Utilz.Prompt(pp, out status, "Preencha", this);
+            if (status)
+            {
+                this.lob.observacoes.Add(pp);
+                this.lob.observacoes = this.lob.observacoes.OrderBy(x => x.data.Getdata()).ToList();
+                this.AtualizaListas();
+            }
+        }
+
+        private void tira_foto(object sender, RoutedEventArgs e)
+        {
+
+
+            try
+            {
+                Microsoft.Office.Interop.Outlook.Application outlookApp = new Microsoft.Office.Interop.Outlook.Application();
+                Microsoft.Office.Interop.Outlook._MailItem oMailItem = (Microsoft.Office.Interop.Outlook._MailItem)outlookApp.CreateItem(Microsoft.Office.Interop.Outlook.OlItemType.olMailItem);
+                Microsoft.Office.Interop.Outlook.Inspector oInspector = oMailItem.GetInspector;
+                Microsoft.Office.Interop.Outlook.Recipients oRecips = (Microsoft.Office.Interop.Outlook.Recipients)oMailItem.Recipients;
+
+                List<string> lstAllRecipients = new List<string>();
+
+                foreach (String recipient in lstAllRecipients)
+                {
+                    Microsoft.Office.Interop.Outlook.Recipient oRecip = (Microsoft.Office.Interop.Outlook.Recipient)oRecips.Add(recipient);
+                    oRecip.Resolve();
+                }
+
+                oMailItem.Subject = this.obra.ToString() + " Relatório de Montagem - Emissão: " +DateTime.Now;
+                oMailItem.BodyFormat = Microsoft.Office.Interop.Outlook.OlBodyFormat.olFormatHTML;
+                var pasta = Conexoes.Utilz.CriarPasta(this.obra.diretorio, "EXPORTAR");
+                var imagem_status = pasta + this.obra.contrato + "." + DateTime.Now.ToShortDateString().Replace("/", "-") + "_status.png";
+                var report = pasta + this.obra.contrato + "." + DateTime.Now.ToShortDateString().Replace("/", "-") + "_report.xlsx";
+
+                Conexoes.Utilz.Apagar(imagem_status);
+                Conexoes.Utilz.Apagar(report);
+
+                GCM_Offline.Excel.ExportarApontamentos(this.lob, this.obra, false, report);
+
+
+                if(File.Exists(report))
+                {
+                var attachment = oMailItem.Attachments.Add(report, Microsoft.Office.Interop.Outlook.OlAttachmentType.olByValue, oMailItem.Body.Length, Type.Missing);
+                }
+
+              
+
+
+
+
+
+                string novo = "<br>Resumo:<br><br>";
+                tela.Background = Brushes.White;
+                tela.UpdateLayout();
+                Conexoes.Utilz.GerarFoto(tela, imagem_status);
+                tela.Background = Brushes.Transparent;
+                tela.UpdateLayout();
+                novo = AddImagem(imagem_status, oMailItem, novo);
+
+
+
+
+
+
+
+
+
+
+                oMailItem.HTMLBody = oMailItem.HTMLBody.Replace("</body>", novo);
+                //oMailItem.Save();
+                oMailItem.Display(true);
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Deixe na aba 'Dados e Resumo' e tente novamente.\n\n\n\n"+ ex.Message + "\n\n" + ex.StackTrace);
+            }
+
+        }
+
+        private static string AddImagem(string imagem_status, _MailItem oMailItem, string novo)
+        {
+            //Attach image
+            var attachment = oMailItem.Attachments.Add(imagem_status, Microsoft.Office.Interop.Outlook.OlAttachmentType.olByValue, oMailItem.Body.Length, Type.Missing);
+
+            string imageCid = Conexoes.Utilz.getNome(imagem_status) + Conexoes.Utilz.RandomString(4);
+
+            attachment.PropertyAccessor.SetProperty(
+              "http://schemas.microsoft.com/mapi/proptag/0x3712001E"
+             , imageCid
+             );
+
+
+            string banner = string.Format(@"<br/><img src=""cid:{0}""></a></body>", imageCid);
+            novo = novo + banner;
+            return novo;
+        }
+
+        private void ModernWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            scrol.ScrollToBottom();
+            scrol.UpdateLayout();
+            scrol.ScrollToTop();
+
+        }
+
+        private void Adicionar_Restricao(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GCM_Offline;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,11 @@ namespace Montagem
 {
    public class Funcoes
     {
-
+        public static void VerNodesAvancos(List<Avanco> avancos)
+        {
+            Arvore pp = new Arvore(avancos);
+            pp.Show();
+        }
         public static GCM_Offline.Apontamento apontamento(string Titulo, GCM_Offline.Apontamento apontamento = null, bool valor = true, bool efetivo = false, bool responsavel = false, string titulo_responsavel = "Responsável", bool data = true)
         {
             AdicionarApontamento mm = new AdicionarApontamento(efetivo,valor,responsavel,apontamento);

@@ -126,12 +126,7 @@ namespace GCM_Offline
 
 
 
-                                    if (p.area<=0)
-                                    {
-                                        erros.Add("Linha " + L + " Valor área é obrigatório. Ajuste.");
-
-                                    }
-
+                                    
 
 
                                     //pula uma linha
@@ -199,6 +194,12 @@ namespace GCM_Offline
 
                                     if (p.fases.Count > 0)
                                     {
+                                        if (p.area <= 0)
+                                        {
+                                            erros.Add("Linha " + L + " Coluna H: Valor área é obrigatório. Ajuste.");
+
+                                        }
+
                                         if (!Conexoes.Utilz.ESoNumero(etapastr) | etapastr == "")
                                         {
                                             erros.Add("Célula [" + p.descricao + "] preenchimento inválido. Nome da etapa deve seguir o seguinte padrão: [ETAPA_001_DESCRICAO]");
@@ -604,7 +605,7 @@ namespace GCM_Offline
                     r.fim_cronograma = new Data(rel.Cells["M19"].Text);
                     r.status = Conexoes.Utilz.StringParaEnum<Status_Montagem>(rel.Cells["N12"].Text);
                     r.gerente = rel.Cells["F12"].Text;
-
+                    r.pedido = rel.Cells["R10"].Text;
                     w.somaProgresso();
                     #endregion
 
@@ -880,12 +881,10 @@ namespace GCM_Offline
         }
         public static bool ExportarApontamentos(Linha_de_Balanco dados, Obra obra, bool abrir, string Destino = null)
         {
-            if(!dados.emissao.valido)
-            {
-                dados.emissao = new Data(DateTime.Now);
-                dados.Salvar();
-               dados  =  dados.Carregar();
-            }
+            dados.emissao = new Data(DateTime.Now);
+            dados.Salvar();
+            dados = dados.Carregar();
+
             if (dados.inicio_real.Getdata()> dados.inicio.Getdata() | !dados.inicio_real.valido)
             {
                 dados.inicio_real.SetData(dados.inicio);
@@ -968,6 +967,11 @@ namespace GCM_Offline
 
                     foreach (var w in pck.Workbook.Worksheets)
                     {
+                        var max = dados.fim_real.Getdata();
+                        if(DateTime.Now<max)
+                        {
+                            max = DateTime.Now;
+                        }
                         //preenche a linha de balanço
                         if (w.Name.ToUpper() == "RELATORIO")
                         {
@@ -975,11 +979,85 @@ namespace GCM_Offline
                             w.Cells["F" + 12].Value = obra.gerente;
                             w.Cells["N" + 12].Value = dados.status;
                             w.Cells["R" + 10].Value = obra.contrato;
-                            //w.Cells["R" + 3].Value = dados.emissao.Getdata(); //coloquei formula que preenche com o dia de hoje
+                            w.Cells["R" + 12].Value = obra.engenheiro;
+                            w.Cells["A" + 1].Value = "v." + Application.ProductVersion;
+                            w.Cells["R" + 3].Value = max; //coloquei formula que preenche com o dia de hoje
                             w.Cells["F" + 19].Value = dados.inicio_cronograma.Getdata();
                             w.Cells["F" + 20].Value = dados.inicio_real.Getdata();
                             w.Cells["M" + 19].Value = dados.fim_cronograma.Getdata();
                             w.Cells["M" + 20].Value = dados.fim_real.Getdata();
+
+                            var dia_0 = Conexoes.Utilz.PrimeiroDiaDaSemana(max);
+                            var dia_1 = dia_0.AddDays(-7);
+                            var dia_2 = dia_0.AddDays(-14);
+                            var dia_3 = dia_0.AddDays(-21);
+                            var efetivos = dados.Getefetivos();
+                            w.Cells["P" + 27].Value = dia_0;
+                            w.Cells["Q" + 27].Value = dia_1;
+                            w.Cells["R" + 27].Value = dia_2;
+                            w.Cells["S" + 27].Value = "Total";
+
+
+                            int c = 0;
+                            foreach(var ef in efetivos)
+                            {
+                                var lancs = ef.GetAvancosAcumulados();
+                                if(c<=4)
+                                {
+                                    var linha = (29 + c);
+                                    var linha2 = (30 + c);
+                                    w.Cells["M" + linha].Value = ef.equipe;
+                                    w.Cells["S" + linha].Value = ef.total_previsto;
+                                    w.Cells["S" + linha2].Value = ef.total_utilizado;
+
+                                    var efd0 = lancs.Find(x => x.data.datastr == new Data(dia_0).datastr);
+                                    var efd1 = lancs.Find(x => x.data.datastr == new Data(dia_1).datastr);
+                                    var efd2 = lancs.Find(x => x.data.datastr == new Data(dia_2).datastr);
+                                    var efd3 = lancs.Find(x => x.data.datastr == new Data(dia_3).datastr);
+                                    if(efd0!=null)
+                                    {
+                                        w.Cells["P" + linha].Value = efd0.previsto;
+                                        w.Cells["P" + linha2].Value = efd0.realizado;
+                                    }
+                                    if (efd1 != null)
+                                    {
+                                        w.Cells["Q" + linha].Value = efd1.previsto;
+                                        w.Cells["Q" + linha2].Value = efd1.realizado;
+                                    }
+                                    if (efd2 != null)
+                                    {
+                                        w.Cells["R" + linha].Value = efd2.previsto;
+                                        w.Cells["R" + linha2].Value = efd2.realizado;
+                                    }
+                                 
+                                }
+                                c = c+2;
+                            }
+
+                            int lrestr = 51;
+                            foreach(var p in dados.restricoes)
+                            {
+                                if(lrestr<57)
+                                {
+                                    w.Cells["C" + lrestr].Value = p.pep;
+                                    w.Cells["F" + lrestr].Value = p.descricao;
+                                    lrestr++;
+                                }
+                            }
+
+                            int lobs = 64;
+                            foreach (var p in dados.observacoes)
+                            {
+                                if (lobs < 71)
+                                {
+                                    w.Cells["C" + lobs].Value = p.responsavel;
+                                    w.Cells["F" + lobs].Value = p.descricao;
+                                    lobs++;
+                                }
+                            }
+
+
+
                             ww.somaProgresso();
 
                         }
@@ -991,28 +1069,24 @@ namespace GCM_Offline
 
                             w.Cells["Q2"].Value = d_min;
 
-                            foreach (var e in dados.fases)
+                            foreach (var sub in dados.Subfases())
                             {
-                                foreach (var sub in e.fases)
-                                {
-                                    w.Cells["C" + l].Value = sub.descricao;
-                                    w.Cells["D" + l].Value = sub.cod;
-                                    w.Cells["E" + l].Value = sub.nomestr;
-                                    w.Cells["F" + l].Value = e.ToString().Replace("_", " ");
-                                    w.Cells["G" + l].Value = sub.equipe;
-                                    w.Cells["H" + l].Value = sub.efetivo;
-                                    w.Cells["I" + l].Value = sub.inicio.Getdata();
-                                    w.Cells["J" + l].Value = sub.fim.Getdata();
-                                    w.Cells["K" + l].Value = e.area;
-                                    w.Cells["L" + l].Value = e.peso_fase;
-                                    w.Cells["M" + l].Value = sub.peso_fase;
-                                    w.Cells["N" + l].Value = dados.area_total;
-                                    w.Cells["O" + l].Value = sub.pep;
-                                    w.Cells["P" + l].Value = sub.id;
-                                    l++;
-                                }
+                                w.Cells["C" + l].Value = sub.descricao;
+                                w.Cells["D" + l].Value = sub.cod;
+                                w.Cells["E" + l].Value = sub.nomestr;
+                                w.Cells["F" + l].Value = sub.pai.ToString().Replace("_", " ");
+                                w.Cells["G" + l].Value = sub.equipe;
+                                w.Cells["H" + l].Value = sub.efetivo;
+                                w.Cells["I" + l].Value = sub.inicio.Getdata();
+                                w.Cells["J" + l].Value = sub.fim.Getdata();
+                                w.Cells["K" + l].Value = sub.pai.area;
+                                w.Cells["L" + l].Value = sub.pai.peso_fase;
+                                w.Cells["M" + l].Value = sub.peso_fase;
+                                w.Cells["N" + l].Value = dados.area_total;
+                                w.Cells["O" + l].Value = sub.pep;
+                                w.Cells["P" + l].Value = sub.id;
+                                l++;
                             }
-
                             ww.somaProgresso();
                         }
                         else if (w.Name.ToUpper() == "RECURSOS")
@@ -1172,7 +1246,7 @@ namespace GCM_Offline
                                     if (dt.Count > 0)
                                     {
                                         //grava a linha do efetivo
-                                        w.Cells[ll - 1, dt[0].col].Value = lanc.valor;
+                                        w.Cells[ll - 1, dt[0].col].Value = lanc.previsto/100;
                                     }
                                     else
                                     {

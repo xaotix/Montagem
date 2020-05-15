@@ -5,11 +5,11 @@ using System.Windows.Media;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Apontamentos Montagem")]
-[assembly: AssemblyDescription("Ferramentas Para a Montagem")]
+[assembly: AssemblyTitle("Montagem Medabil")]
+[assembly: AssemblyDescription("Montagem Medabil")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Daniel Lins maciel")]
-[assembly: AssemblyProduct("Apontamentos Montagem")]
+[assembly: AssemblyProduct("Montagem Medabil")]
 [assembly: AssemblyCopyright("Copyright ©  2020 Medabil")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -36,5 +36,5 @@ using System.Windows.Media;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.11")]
-[assembly: AssemblyFileVersion("1.0.0.11")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]

@@ -20,7 +20,7 @@
                 <MenuItem Header="Limpar Apontamentos" Click="MenuItem_Click_1"></MenuItem>
                 <MenuItem Header="Limpar Etapas" Click="MenuItem_Click_2"></MenuItem>
             </MenuItem>
-            <MenuItem Header="Ferramentas">
+            <MenuItem Header="Ferramentas"  Background="Transparent">
                 <MenuItem Header="Editar dados da Obra" Click="MenuItem_Click_3"></MenuItem>
             </MenuItem>
         </Menu>
@@ -71,7 +71,6 @@
 
             </Border>
 
-
             <TabControl Grid.Column="10" Grid.Row="10">
                 <TabControl.Background>
                     <ImageBrush ImageSource="Resources/Logo Medabil Vertical-01.png" Opacity="0.1" Stretch="Uniform"/>
@@ -94,6 +93,7 @@
 
                             <Grid >
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
@@ -173,7 +173,24 @@
                                         </lvc:Gauge>
                                     </Grid>
                                 </Border>
-
+                                <Border Grid.Column="4" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                    <Grid >
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"></RowDefinition>
+                                            <RowDefinition Height="*"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <Label Name="lbl_dias_atraso" Content="Dias em atraso:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                        <lvc:Gauge Name="gauge_dias_atraso" From="0" To="30" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
+                                            <lvc:Gauge.GaugeActiveFill>
+                                                <LinearGradientBrush>
+                                                    <GradientStop Color="Red" Offset="0.0" />
+                                                    <GradientStop Color="Orange" Offset="0.7" />
+                                                    <GradientStop Color="Green" Offset="1.0" />
+                                                </LinearGradientBrush>
+                                            </lvc:Gauge.GaugeActiveFill>
+                                        </lvc:Gauge>
+                                    </Grid>
+                                </Border>
                             </Grid>
                         </Grid>
                         <Border Grid.Column="10" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
@@ -209,6 +226,7 @@
 
                 </TabItem>
             </TabControl>
+
         </Grid>
     </Grid>
 </mui:ModernWindow>

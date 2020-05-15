@@ -49,7 +49,7 @@ namespace GCM_Online
                 retorno.fases.Add(pp);
             }
 
-            foreach(var p in this.GetEfetivos())
+            foreach(var p in this.GetTodosRecursos())
             {
                 recs.Add(p.GetRecurso(retorno));
             }
@@ -103,7 +103,7 @@ namespace GCM_Online
         {
             List<FaseOnline> subs = new List<FaseOnline>();
             List<RecursoOnline> eft = new List<RecursoOnline>();
-            Conexoes.Wait w = new Conexoes.Wait(lob.Subfases().Count + lob.GetRecursos().Count + 10,"Salvando avanço...");
+            Conexoes.Wait w = new Conexoes.Wait(lob.Subfases().Count + lob.GetTodosRecursos().Count + 10,"Salvando avanço...");
             w.Show();
             w.somaProgresso();
             dbase.ApagarEtapas(this);
@@ -118,8 +118,6 @@ namespace GCM_Online
                     {
                         var lanc = new ApontamentoOnline(ap, this.id, sub.id);
                         lanc.Salvar();
-
-               
                     }
                 }
                 else
@@ -129,10 +127,10 @@ namespace GCM_Online
                 subs.Add(sub);
                 w.somaProgresso();
             }
-            foreach (var p in lob.GetRecursos())
+            foreach (var p in lob.GetTodosRecursos())
             {
                 var sub = new RecursoOnline(p, this.id);
-                var igual = this.GetEfetivos().Find(x => x.id_excel == sub.id_excel | (x.descricao == sub.descricao && x.tipo == sub.tipo));
+                var igual = this.GetTodosRecursos().Find(x => x.id_excel == sub.id_excel | (x.descricao == sub.descricao && x.tipo == sub.tipo));
                 if (igual != null)
                 {
                     sub.id = igual.id;
@@ -204,7 +202,7 @@ namespace GCM_Online
         }
         private List<RecursoOnline> _efetivos { get; set; }
         [Browsable(false)]
-        public List<RecursoOnline> GetEfetivos(bool atualizar = false)
+        public List<RecursoOnline> GetTodosRecursos(bool atualizar = false)
         {
             if (_efetivos == null | atualizar)
             {

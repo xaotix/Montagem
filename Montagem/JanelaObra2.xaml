@@ -8,8 +8,8 @@
                   xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
                   mc:Ignorable="d" 
                   Title="ModernWindow"
-                  Style="{StaticResource BlankWindow}" Closing="ModernWindow_Closing" FontSize="10" WindowState="Maximized" Height="950" Width="950" MinWidth="950" MinHeight="550">
-    <Grid>
+                  Style="{StaticResource BlankWindow}" Closing="ModernWindow_Closing" FontSize="10" WindowState="Maximized" Height="950" Width="950" MinWidth="950" MinHeight="550" Loaded="ModernWindow_Loaded">
+    <Grid Background="White">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="25"></RowDefinition>
@@ -29,9 +29,12 @@
                     <MenuItem Header="Editar fim" Click="edita_fim_cronograma"></MenuItem>
                 </MenuItem>
                 <!--<MenuItem Header="Editar Dados de Etapas e Apontamentos" Click="apontamento_global"/>-->
+
                 <MenuItem Header="Exportar Avanço" Click="exporta_avanco"></MenuItem>
                 <MenuItem Header="Importar Avanço" Click="importa_avanco"></MenuItem>
                 <MenuItem Header="Limpar apontamentos" Click="limpa_apontamentos"></MenuItem>
+                <MenuItem Header="Adicionar Restrição" Click="add_restricao"></MenuItem>
+                <MenuItem Header="Adicionar Observação" Click="add_observacao"></MenuItem>
             </MenuItem>
             <MenuItem Header="Etapas" Background="Transparent">
                 <MenuItem Header="Ajustar Pesos Etapas" Click="ajusta_pesos_etapas"></MenuItem>
@@ -43,8 +46,8 @@
                         <MenuItem Header="Fim - Somar Dias" Click="soma_dias_fim"></MenuItem>
                         <MenuItem Header="Fim - Diminuir Dias" Click="diminui_dias_fim"></MenuItem>
                         <MenuItem Header="Editar Início" Click="editar_data_inicio"></MenuItem>
-                    <MenuItem Header="Editar Fim" Click="editar_data_fim"></MenuItem>
-                        
+                        <MenuItem Header="Editar Fim" Click="editar_data_fim"></MenuItem>
+
                     </MenuItem>
                     <!--<MenuItem Header="Peso Etapa" Click="editar_peso"></MenuItem>-->
 
@@ -67,11 +70,20 @@
                     <MenuItem Header="Apontamentos Realizados" Click="editar_apontamentos_realizados"></MenuItem>
                 </MenuItem>
             </MenuItem>
+            <MenuItem Header="Avanços"  Background="Transparent">
+                <MenuItem Header="Visualizar Detalhado" Click="ver_avanco"></MenuItem>
+                <MenuItem Header="Visualizar Detalhado (SubEtapas)" Click="ver_avanco_subs"></MenuItem>
+            </MenuItem>
             <!--<MenuItem Header="FTP" Background="Transparent" VerticalAlignment="Center">
-                --><!--<MenuItem Header="Enviar" Click="envia_ftp_avanco"></MenuItem>--><!--
+                -->
+            <!--<MenuItem Header="Enviar" Click="envia_ftp_avanco"></MenuItem>-->
+            <!--
             </MenuItem>-->
         </Menu>
         <Grid Grid.Row="10">
+            <Grid.Background>
+                <ImageBrush ImageSource="Resources/Logo Medabil Vertical-01.png" Opacity="0.05" Stretch="Uniform"/>
+            </Grid.Background>
             <Grid.RowDefinitions>
                 <RowDefinition Height="130"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
@@ -82,193 +94,362 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-            <Grid Margin="10,10,10,10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                        <Label Margin="3,3,3,3" Name="titulo" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="10"></Label>
-                <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="0" Content="Início: "></Label>
-                <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="0" Content="Fim: "></Label>
-                <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="1" Content="Cronograma: "></Label>
-                <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="2" Content="{Binding inicio_cronograma}"></Label>
-                <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="1" Content="Cronograma: "></Label>
-                    <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="2" Content="{Binding fim_cronograma}"></Label>
-                <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="3" Content="Real: "></Label>
-                <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="4" Content="{Binding inicio_real}"></Label>
-                <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="3" Content="Real: "></Label>
-                <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="4" Content="{Binding fim_real}"></Label>
-                <Label Margin="3,3,3,3" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Content="Último Apontamento Exportado Em: "></Label>
-                <Label Margin="3,3,3,3" Grid.Row="3" Grid.Column="4" Content="{Binding emissao}"></Label>
-
-                
-                </Grid>
-                    <Grid Grid.Column="10" Width="350">
+                    <Grid Margin="10,10,10,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
+                        <Label Margin="3,3,3,3" Name="titulo" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="10"></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="0" Content="Início: "></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="0" Content="Fim: "></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="1" Content="Cronograma: "></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="2" Content="{Binding inicio_cronograma}"></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="1" Content="Cronograma: "></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="2" Content="{Binding fim_cronograma}"></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="3" Content="Real: "></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="4" Content="{Binding inicio_real}"></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="3" Content="Real: "></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="4" Content="{Binding fim_real}"></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Content="Último Apontamento Exportado Em: "></Label>
+                        <Label Margin="3,3,3,3" Grid.Row="3" Grid.Column="4" Content="{Binding emissao}"></Label>
+
+
+                    </Grid>
+                    <Grid Grid.Column="10"  Margin="5,5,5,5">
+
+                        <Button VerticalAlignment="Center" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="tira_foto"  ToolTip="Enviar Email" >
+                            <WrapPanel VerticalAlignment="Center">
+                                <Image Source="Resources/mail.png" Width="64" Height="64"  />
+                                <Label  Content="Criar Relatório" FontWeight="Bold" FontSize="15" VerticalAlignment="Center"></Label>
+                            </WrapPanel>
+                        </Button>
+                       
 
                     </Grid>
                 </Grid>
-                
+
             </Border>
 
-            <TabControl Grid.Row="10">
-                <TabItem Header="Resumo">
-            <TabControl Grid.Column="10" Grid.Row="10">
-                <TabControl.Background>
-                    <ImageBrush ImageSource="Resources/Logo Medabil Vertical-01.png" Opacity="0.1" Stretch="Uniform"/>
-                </TabControl.Background>
-                <TabItem Header="Avanço">
-                        <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="250"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="150"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
-                        </Grid.RowDefinitions>
-                           
-                            <Border Grid.Row="10" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                            <Grid x:Name="novo" Grid.Column="0"></Grid>
-                        </Border>
+            <TabControl Grid.Row="10" Background="Transparent">
+                <TabItem Header="Dados" Background="Transparent">
+
+                    <TabControl Background="Transparent">
+                        <TabItem Header="Resumo" Background="Transparent">
+                    <ScrollViewer x:Name="scrol">
+                        <Grid Grid.Column="10" Grid.Row="10" Name="tela">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="500"></RowDefinition>
+                                        <RowDefinition Height="300"></RowDefinition>
+                                    <RowDefinition Height="auto"></RowDefinition>
                           
-                        <Grid >
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-     
-                            </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                                <Grid >
+                                    </Grid.RowDefinitions>
+                            <Grid x:Name="grid_avanco">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="150"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid>
+
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"></RowDefinition>
+                                        <RowDefinition Height="150"></RowDefinition>
                                         <RowDefinition Height="*"></RowDefinition>
                                     </Grid.RowDefinitions>
-                                    <Label Name="lbl_desvio" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
-                                    <lvc:Gauge Name="gauge_desvio" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
 
-                                        <lvc:Gauge.GaugeActiveFill>
-                                            <LinearGradientBrush>
-                                                <GradientStop Color="Green" Offset="0.0" />
-                                                <GradientStop Color="Orange" Offset="0.5" />
-                                                <GradientStop Color="Red" Offset="1.0" />
-                                            </LinearGradientBrush>
-                                        </lvc:Gauge.GaugeActiveFill>
-                                    </lvc:Gauge>
+                                    <Border Grid.Row="1" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,4.6,5.2,4.8" Grid.ColumnSpan="2">
+                                        <Grid x:Name="novo" Grid.Column="0"></Grid>
+                                    </Border>
+
+                                    <Grid Grid.ColumnSpan="2" Margin="0,0,0.2,0.4" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                            <Grid >
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto"></RowDefinition>
+                                                    <RowDefinition Height="*"></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <Label Name="lbl_desvio" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                                <lvc:Gauge Name="gauge_desvio" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
+
+                                                    <lvc:Gauge.GaugeActiveFill>
+                                                        <LinearGradientBrush>
+                                                            <GradientStop Color="Green" Offset="0.0" />
+                                                            <GradientStop Color="Orange" Offset="0.5" />
+                                                            <GradientStop Color="Red" Offset="1.0" />
+                                                        </LinearGradientBrush>
+                                                    </lvc:Gauge.GaugeActiveFill>
+                                                </lvc:Gauge>
+                                            </Grid>
+                                        </Border>
+                                        <Border Grid.Column="1" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                            <Grid >
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto"></RowDefinition>
+                                                    <RowDefinition Height="*"></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <Label Name="lbl_desvio1" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"></Label>
+                                                <lvc:Gauge Name="gauge_desvio1" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
+                                                    <lvc:Gauge.GaugeActiveFill>
+                                                        <LinearGradientBrush>
+                                                            <GradientStop Color="Green" Offset="0.0" />
+                                                            <GradientStop Color="Orange" Offset="1" />
+                                                            <GradientStop Color="Red" Offset="1.0" />
+                                                        </LinearGradientBrush>
+                                                    </lvc:Gauge.GaugeActiveFill>
+                                                </lvc:Gauge>
+                                            </Grid>
+                                        </Border>
+                                        <Border Grid.Column="2" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                            <Grid >
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto"></RowDefinition>
+                                                    <RowDefinition Height="*"></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <Label Name="lbl_desvio2" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                                <lvc:Gauge Name="gauge_desvio2" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
+                                                    <lvc:Gauge.GaugeActiveFill>
+                                                        <LinearGradientBrush>
+                                                            <GradientStop Color="Green" Offset="0.0" />
+                                                            <GradientStop Color="Orange" Offset="1" />
+                                                            <GradientStop Color="Red" Offset="1.0" />
+                                                        </LinearGradientBrush>
+                                                    </lvc:Gauge.GaugeActiveFill>
+                                                </lvc:Gauge>
+                                            </Grid>
+                                        </Border>
+                                        <Border Grid.Column="3" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                            <Grid >
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto"></RowDefinition>
+                                                    <RowDefinition Height="*"></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <Label Name="lbl_desvio3" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                                <lvc:Gauge Name="gauge_desvio3" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
+                                                    <lvc:Gauge.GaugeActiveFill>
+                                                        <LinearGradientBrush>
+                                                            <GradientStop Color="Green" Offset="0.0" />
+                                                            <GradientStop Color="Orange" Offset="0.7" />
+                                                            <GradientStop Color="Red" Offset="1.0" />
+                                                        </LinearGradientBrush>
+                                                    </lvc:Gauge.GaugeActiveFill>
+                                                </lvc:Gauge>
+                                            </Grid>
+                                        </Border>
+                                        <Border Grid.Column="4" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                            <Grid >
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto"></RowDefinition>
+                                                    <RowDefinition Height="*"></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <Label Name="lbl_dias_atraso" Content="Dias em atraso:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                                <lvc:Gauge Name="gauge_dias_atraso" From="0" To="30" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
+                                                    <lvc:Gauge.GaugeActiveFill>
+                                                        <LinearGradientBrush>
+                                                            <GradientStop Color="Red" Offset="0.0" />
+                                                            <GradientStop Color="Orange" Offset="0.7" />
+                                                            <GradientStop Color="Green" Offset="1.0" />
+                                                        </LinearGradientBrush>
+                                                    </lvc:Gauge.GaugeActiveFill>
+                                                </lvc:Gauge>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
                                 </Grid>
-                            </Border>
-                            <Border Grid.Column="1" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                                <Grid >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"></RowDefinition>
-                                        <RowDefinition Height="*"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Label Name="lbl_desvio1" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"></Label>
-                                    <lvc:Gauge Name="gauge_desvio1" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
-                                        <lvc:Gauge.GaugeActiveFill>
-                                            <LinearGradientBrush>
-                                                <GradientStop Color="Green" Offset="0.0" />
-                                                <GradientStop Color="Orange" Offset="1" />
-                                                <GradientStop Color="Red" Offset="1.0" />
-                                            </LinearGradientBrush>
-                                        </lvc:Gauge.GaugeActiveFill>
-                                    </lvc:Gauge>
+                                <Grid Grid.Column="10">
+
+
+                                    <Border Grid.Row="2" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                        <Grid x:Name="novo_resumo" Margin="5,5,5,5"></Grid>
+                                    </Border>
                                 </Grid>
-                            </Border>
-                            <Border Grid.Column="2" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                                <Grid >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"></RowDefinition>
-                                        <RowDefinition Height="*"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Label Name="lbl_desvio2" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
-                                    <lvc:Gauge Name="gauge_desvio2" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
-                                        <lvc:Gauge.GaugeActiveFill>
-                                            <LinearGradientBrush>
-                                                <GradientStop Color="Green" Offset="0.0" />
-                                                <GradientStop Color="Orange" Offset="1" />
-                                                <GradientStop Color="Red" Offset="1.0" />
-                                            </LinearGradientBrush>
-                                        </lvc:Gauge.GaugeActiveFill>
-                                    </lvc:Gauge>
+                            </Grid>
+
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                            <Grid>
+                                                <WrapPanel  Margin="5,0,0,0">
+                                                    <Button VerticalAlignment="Center" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="add_restricao"  ToolTip="Adicionar" >
+                                                        <WrapPanel VerticalAlignment="Center">
+                                                            <Image Source="Resources/botao_add.png" Width="16" Height="16"  />
+                                                        </WrapPanel>
+                                                    </Button>
+                                                    <Label Content="Restrições" Background="Transparent" VerticalAlignment="Center" FontWeight="Bold" FontSize="12"/>
+
+                                                </WrapPanel>
+                                                <ScrollViewer   Margin="0,25,0,0">
+                                                    <ListView  Background="Transparent" SelectionMode="Extended" x:Name="restricoes" FontSize="10" BorderThickness="0" Grid.Row="2">
+                                                        <ListView.ItemContainerStyle>
+                                                            <Style TargetType="{x:Type ListViewItem}">
+                                                                <Style.Setters>
+                                                                    <Setter Property="Template">
+                                                                        <Setter.Value>
+                                                                            <ControlTemplate TargetType="{x:Type ListViewItem}">
+
+                                                                                <StackPanel  >
+                                                                                    <WrapPanel VerticalAlignment="Center" Margin="5,2,2,2">
+
+                                                                                        <Button BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="Excluir_Restricao" VerticalAlignment="Center" ToolTip="Excluir" >
+                                                                                            <WrapPanel VerticalAlignment="Center">
+                                                                                                <Image Source="Resources/dialog-error.png" Width="16" Height="16"  />
+                                                                                            </WrapPanel>
+                                                                                        </Button>
+                                                                                        <Button BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="Editar_Restricao" VerticalAlignment="Center" ToolTip="Editar" >
+                                                                                            <WrapPanel VerticalAlignment="Center">
+                                                                                                <Image Source="Resources/document_edit3.png" Width="16" Height="16"  />
+                                                                                            </WrapPanel>
+                                                                                        </Button>
+                                                                                        <TextBlock Margin="5,0,0,0" FontWeight="Bold" Text="{Binding pep}" VerticalAlignment="Center"/>
+
+
+                                                                                    </WrapPanel>
+                                                                                    <WrapPanel VerticalAlignment="Center" Margin="10,2,2,2">
+                                                                                        <TextBlock FontSize="10"  Margin="0,2,2,2" Text="{Binding descricao}" TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" MaxWidth="{Binding RelativeSource={RelativeSource AncestorType={x:Type WrapPanel}}, Path=ActualWidth}" Height="auto" MaxHeight="50"/>
+
+                                                                                    </WrapPanel>
+                                                                                    <Separator BorderBrush="Black" BorderThickness="1" Foreground="{x:Null}"></Separator>
+
+                                                                                </StackPanel>
+                                                                            </ControlTemplate>
+
+                                                                        </Setter.Value>
+
+                                                                    </Setter>
+
+                                                                </Style.Setters>
+
+                                                            </Style>
+
+                                                        </ListView.ItemContainerStyle>
+
+
+
+
+
+                                                    </ListView>
+                                                </ScrollViewer>
+                                            </Grid>
+
+
+
+                                        </Border>
+                                        <Border Grid.Column="1" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                            <Grid>
+                                                <WrapPanel  Margin="5,0,0,0">
+                                                    <Button VerticalAlignment="Center" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="add_observacao"  ToolTip="Adicionar" >
+                                                        <WrapPanel VerticalAlignment="Center">
+                                                            <Image Source="Resources/botao_add.png" Width="16" Height="16"  />
+                                                        </WrapPanel>
+                                                    </Button>
+                                                    <Label Content="Observações" Background="Transparent" VerticalAlignment="Center" FontSize="12" FontWeight="Bold"></Label>
+
+                                                </WrapPanel>
+                                                <ScrollViewer   Margin="0,25,0,0">
+                                                    <ListView  Background="Transparent" SelectionMode="Extended" x:Name="observacoes" FontSize="10" BorderThickness="0" Grid.Row="2">
+                                                        <ListView.ItemContainerStyle>
+                                                            <Style TargetType="{x:Type ListViewItem}">
+                                                                <Style.Setters>
+                                                                    <Setter Property="Template">
+                                                                        <Setter.Value>
+                                                                            <ControlTemplate TargetType="{x:Type ListViewItem}">
+
+                                                                                <StackPanel>
+                                                                                    <WrapPanel VerticalAlignment="Center" Margin="5,2,2,2">
+
+                                                                                        <Button BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="Excluir_Restricao" VerticalAlignment="Center" ToolTip="Excluir" >
+                                                                                            <WrapPanel VerticalAlignment="Center">
+                                                                                                <Image Source="Resources/dialog-error.png" Width="16" Height="16"  />
+                                                                                            </WrapPanel>
+                                                                                        </Button>
+                                                                                        <Button BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="Editar_Restricao" VerticalAlignment="Center" ToolTip="Editar" >
+                                                                                            <WrapPanel VerticalAlignment="Center">
+                                                                                                <Image Source="Resources/document_edit3.png" Width="16" Height="16"  />
+                                                                                            </WrapPanel>
+                                                                                        </Button>
+                                                                                        <TextBlock Margin="5,0,0,0" FontWeight="Bold" Text="{Binding responsavel}" VerticalAlignment="Center"/>
+
+
+                                                                                    </WrapPanel>
+                                                                                    <WrapPanel VerticalAlignment="Center" Margin="10,2,2,2">
+                                                                                        <TextBlock FontSize="10"  Margin="0,2,2,2" Text="{Binding descricao}" TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" MaxWidth="{Binding RelativeSource={RelativeSource AncestorType={x:Type WrapPanel}}, Path=ActualWidth}" Height="auto" MaxHeight="50"/>
+                                                                                    </WrapPanel>
+                                                                                    <Separator BorderBrush="Black" BorderThickness="1" Foreground="{x:Null}"></Separator>
+
+                                                                                </StackPanel>
+                                                                            </ControlTemplate>
+
+                                                                        </Setter.Value>
+
+                                                                    </Setter>
+
+                                                                </Style.Setters>
+
+                                                            </Style>
+
+                                                        </ListView.ItemContainerStyle>
+
+
+
+
+
+                                                    </ListView>
+
+                                                </ScrollViewer>
+
+
+
+
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                            
+                            
+                                    <Grid x:Name="grid_efetivo" Grid.Row="2">
+                                        <StackPanel x:Name="painel_efetivo"></StackPanel>
+                                    </Grid>
+
+
+
+
+
                                 </Grid>
-                            </Border>
-                            <Border Grid.Column="3" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                                <Grid >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"></RowDefinition>
-                                        <RowDefinition Height="*"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Label Name="lbl_desvio3" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
-                                    <lvc:Gauge Name="gauge_desvio3" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
-                                        <lvc:Gauge.GaugeActiveFill>
-                                            <LinearGradientBrush>
-                                                <GradientStop Color="Green" Offset="0.0" />
-                                                <GradientStop Color="Orange" Offset="0.7" />
-                                                <GradientStop Color="Red" Offset="1.0" />
-                                            </LinearGradientBrush>
-                                        </lvc:Gauge.GaugeActiveFill>
-                                    </lvc:Gauge>
-                                </Grid>
-                            </Border>
-                           
-                        </Grid>
-                    </Grid>
-                            <Border Grid.Column="10" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                                <Grid x:Name="novo_resumo" Margin="5,5,5,5"></Grid>
-                            </Border>
-                        </Grid>
+                    </ScrollViewer>
+                            
+                        </TabItem>
+                        <TabItem Header="Resumo Por Tarefa" Background="Transparent">
+                            <ScrollViewer>
+                            <StackPanel x:Name="painel_tarefas"></StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+                        <TabItem Header="Recursos" Background="Transparent">
+                            <ScrollViewer>
+                            <StackPanel x:Name="painel_recursos"></StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+                    </TabControl>
 
                 </TabItem>
-
-                <TabItem Header="Avanço Por Tarefa" Background="Transparent">
-                    <Grid>
-                        <ScrollViewer VerticalScrollBarVisibility="Visible"  Grid.Row="1">
-                            <StackPanel x:Name="painel_tarefas" Grid.Row="10"></StackPanel>
-                        </ScrollViewer>
-
-
-
-                    </Grid>
-
-                </TabItem>
-
-
-          
-                <TabItem Header="Recursos" Background="Transparent">
-                    <ScrollViewer VerticalScrollBarVisibility="Visible"  Grid.Row="1">
-
-
-
-                            <StackPanel x:Name="painel_recursos" Grid.Row="10"></StackPanel>
-
-      
-                        </ScrollViewer>
-
-                </TabItem>
-            </TabControl>
-                    
-                </TabItem>
-                <TabItem Header="Edição">
-                    <TabControl Grid.Row="10">
+                <TabItem Header="Edição" Background="Transparent">
+                    <TabControl Grid.Row="10" Background="Transparent">
                         <TabItem Header="Etapas" Background="Transparent">
                             <telerik:RadGridView  Background="Transparent" SelectionMode="Extended" ShowGroupPanel="True" x:Name="lista_etapas" ShowColumnFooters="True" AutoGenerateColumns="False"  FontSize="10" BorderThickness="0" Grid.Row="2" IsReadOnly="False" ShowSearchPanel="True" >
                                 <telerik:RadGridView.Columns>

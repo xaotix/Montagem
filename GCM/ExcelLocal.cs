@@ -477,7 +477,7 @@ namespace GCM_Offline
             }
 
             retorno.AjustaPesosEtapas();
-
+            retorno.CalcularEfetivosPrevistos();
 
             var fases_iguais = retorno.Subfases().GroupBy(x => x.pep).ToList().FindAll(x => x.Count() > 1);
 
@@ -529,7 +529,7 @@ namespace GCM_Offline
             Linha_de_Balanco r = new Linha_de_Balanco();
             r.arquivoexcel = path;
 
-            Conexoes.Wait w = new Conexoes.Wait(5,"Importando Planilha...");
+            Conexoes.Wait w = new Conexoes.Wait(5,"Importando Planilha... " + path);
             w.Show();
             try
             {
@@ -552,30 +552,30 @@ namespace GCM_Offline
                     if (rel == null)
                     {
                         w.Close();
-                        MessageBox.Show("Aba 'Relatorio' não encontrada. abortado.");
+         
                         status = false;
-                        return new Linha_de_Balanco();
+                        return new Linha_de_Balanco() { msgerro = "Aba 'Relatório' não encontrada" }; ;
                     }
                     if (av == null)
                     {
                         w.Close();
-                        MessageBox.Show("Aba 'Avanço' não encontrada. abortado.");
+                        
                         status = false;
-                        return new Linha_de_Balanco();
+                        return new Linha_de_Balanco() { msgerro = "Aba avanço não encontrada" };
                     }
                     if (rec == null)
                     {
                         w.Close();
-                        MessageBox.Show("Aba 'Recursos' não encontrada. abortado.");
+
                         status = false;
-                        return new Linha_de_Balanco();
+                        return new Linha_de_Balanco() { msgerro = "Aba 'Recursos' não encontrada" };
                     }
                     if (lob == null)
                     {
                         w.Close();
-                        MessageBox.Show("Aba 'LOB' não encontrada. abortado.");
+      
                         status = false;
-                        return new Linha_de_Balanco();
+                        return new Linha_de_Balanco() { msgerro = "Aba 'LOB' não encontrada. abortado." };
                     }
                     var cels_efetivo = new List<ExcelRange>();
                     cels_efetivo.Add( rec.Cells["B4"]);
@@ -592,9 +592,9 @@ namespace GCM_Offline
                     if (cels_efetivo.Count>0)
                     {
                         w.Close();
-                        MessageBox.Show("Aba  'Recursos', Linhas B4, B39, B40 e B41 são reservadas somente para efetivo. Se contém um efetivo, coloque a palavra 'Efetivo' na coluna B, (Equipamento).");
+
                         status = false;
-                        return new Linha_de_Balanco();
+                        return new Linha_de_Balanco() { msgerro = "Aba  'Recursos', Linhas B4, B39, B40 e B41 são reservadas somente para efetivo. Se contém um efetivo, coloque a palavra 'Efetivo' na coluna B, (Equipamento)." };
                     }
 
 
@@ -606,6 +606,74 @@ namespace GCM_Offline
                     r.status = Conexoes.Utilz.StringParaEnum<Status_Montagem>(rel.Cells["N12"].Text);
                     r.gerente = rel.Cells["F12"].Text;
                     r.pedido = rel.Cells["R10"].Text;
+                    r.engenheiro_excel = rel.Cells["R12"].Text;
+                    r.descricao_excel = rel.Cells["F10"].Text;
+
+                    r.versao_planilha = rel.Cells["A1"].Text;
+                    atual.versao_planilha = rel.Cells["A1"].Text;
+                    r.motivo_desvio = rel.Cells["G29"].Text;
+
+                    #region Planos de Ação
+                    for (int i = 42; i < 46; i++)
+                    {
+                        var acao = rel.Cells["C" + i].Value;
+                        if (acao != null)
+                        {
+                            PlanoDeAcao pp = new PlanoDeAcao();
+                            pp.acao = acao.ToString();
+                            pp.data = new Data(rel.Cells["S" + i]);
+                            pp.responsavel = rel.Cells["Q" + i].Text;
+
+                            if (pp.acao.Replace(" ", "") != "")
+                            {
+                                if(!pp.data.valido)
+                                {
+                                    pp.data = new Data(atual._data_max);
+                                }
+                                r.planosdeacao.Add(pp);
+                            }
+                        }
+
+                    }
+                    #endregion
+                    #region Restrições de Material
+                    for (int i = 51; i < 58; i++)
+                    {
+                        var pep = rel.Cells["C" + i].Value;
+                        if (pep != null)
+                        {
+                            Restricao pp = new Restricao();
+                            pp.pep = pep.ToString();
+                            pp.data = new Data(atual._data_max);
+                            pp.descricao = rel.Cells["F" + i].Text;
+
+                            if (pp.pep!="" && pp.descricao.Replace(" ", "") != "")
+                            {
+                                r.restricoes.Add(pp);
+                            }
+                        }
+
+                    }
+                    #endregion
+                    #region Observações
+                    for (int i = 64; i < 71; i++)
+                    {
+                        var descricao = rel.Cells["F" + i].Value;
+                        if (descricao != null)
+                        {
+                            Observacao pp = new Observacao();
+                            pp.descricao = descricao.ToString();
+                            pp.data = new Data(atual._data_max);
+                            pp.responsavel = rel.Cells["C" + i].Text;
+
+                            if (pp.descricao.Replace(" ", "") != "")
+                            {
+                                r.observacoes.Add(pp);
+                            }
+                        }
+
+                    }
+                    #endregion
                     w.somaProgresso();
                     #endregion
 
@@ -649,7 +717,7 @@ namespace GCM_Offline
                                 }
 
                             }
-                            if ( (previsto > 0 | utilizado > 0 | pp.previsto.Count>0))
+                            if ( (previsto > 0 | utilizado > 0 | pp.previsto.Count>0 | pp.descricao!=""))
                             {
 
                             r.recursos__previstos.Add(pp);
@@ -693,7 +761,7 @@ namespace GCM_Offline
                                 }
 
                             }
-                            r.supervisor.Add(pp);
+                            r.recursos__previstos.Add(pp);
                         }
                     }
                     w.somaProgresso();
@@ -707,9 +775,10 @@ namespace GCM_Offline
                         {
                             var valores = rec.Cells["I" + i + ":KL" + i].ToList().FindAll(x => x.Value != null);
                             Recurso pp = new Recurso();
-                            pp.motivo = motivo;
+                            pp.descricao = motivo;
                             pp.tipo = Tipo_Recurso.Improdutividade;
                             pp.lob = r;
+                            pp.equipe = "N/A";
                             pp.id = id;
                             pp.Getid(atual);
                             if (pp.id == "")
@@ -729,7 +798,7 @@ namespace GCM_Offline
                                 }
 
                             }
-                            r.improdutividade.Add(pp);
+                            r.recursos__previstos.Add(pp);
                         }
                     }
                     w.somaProgresso();
@@ -830,23 +899,35 @@ namespace GCM_Offline
 
                     if(salvar)
                     {
-                        pck.SaveAs(new FileInfo(path));
+                        try
+                        {
+                            pck.SaveAs(new FileInfo(path));
+                        }
+                        catch (Exception ex)
+                        {
+
+                            if(Conexoes.Utilz.Pergunta("Parece que o arquivo está aberto. Feche o arquivo e clique em 'Sim', se o erro persistir, clique em não.\n\n\n" + ex.Message +"\n" + ex.StackTrace))
+                            {
+                                goto retentar;
+                            }
+                        }
+                    
                     }
                 }
             }
             catch (Exception ex)
             {
 
-                if (Conexoes.Utilz.Pergunta("Tentar novamente?\n\n" + ex.Message + "\n" + ex.StackTrace))
+                w.Close();
+
+                if (Conexoes.Utilz.Pergunta("Tentar novamente?.\n\n\n" + ex.Message + "\n" + ex.StackTrace))
                 {
-                    w.Close();
                     goto retentar;
                 }
-                else
-                {
-                    status = false;
-                    return new Linha_de_Balanco();
-                }
+                status = false;
+
+
+                return new Linha_de_Balanco() { msgerro = ex.Message + "\n\n" + ex.StackTrace };
 
             }
             var peps = r.Subfases().Select(x => x.pep).GroupBy(x => x).ToList();
@@ -855,14 +936,16 @@ namespace GCM_Offline
             if(pps.Count>0)
             {
                 w.Close();
-                MessageBox.Show("Há peps repetidos dentro desse arquivo. Ajuste os peps (Aba LOB, coluna O)");
+                r.msgerro = "Há peps repetidos dentro desse arquivo. Ajuste os peps (Aba LOB, coluna O)";
                 status = false;
+              
                 return r;
             }
             if(psp.Count>0)
             {
                 w.Close();
-                MessageBox.Show("Há peps em branco dentro desse arquivo. Ajuste os peps (Aba LOB, coluna O)");
+
+                r.msgerro = "Há peps em branco dentro desse arquivo. Ajuste os peps (Aba LOB, coluna O)";
                 status = false;
                 return r;
             }
@@ -879,31 +962,48 @@ namespace GCM_Offline
             w.Close();
             return r;
         }
-        public static bool ExportarApontamentos(Linha_de_Balanco dados, Obra obra, bool abrir, string Destino = null)
+        public static bool ExportarApontamentos(Linha_de_Balanco atual, Obra obra, bool abrir, string Destino = null)
         {
-            dados.emissao = new Data(DateTime.Now);
-            dados.Salvar();
-            dados = dados.Carregar();
-
-            if (dados.inicio_real.Getdata()> dados.inicio.Getdata() | !dados.inicio_real.valido)
+            atual.emissao = new Data(atual._data_max);
+            if (Directory.Exists(atual.diretorio))
             {
-                dados.inicio_real.SetData(dados.inicio);
+                atual.Salvar();
+                atual = atual.Carregar();
             }
 
-            if (dados.fim_real.Getdata() < dados.fim.Getdata() | !dados.fim_real.valido)
+
+            if(obra.contrato == "")
             {
-                dados.fim_real.SetData(dados.fim);
+                obra.contrato = atual.pedido;
+            }
+            if(obra.engenheiro =="")
+            {
+                obra.engenheiro = atual.engenheiro_excel;
+            }
+            if(obra.gerente=="")
+            {
+                obra.gerente = atual.gerente;
             }
 
-            if(!dados.inicio_cronograma.valido)
+            if (atual.inicio_real.Getdata()> atual.inicio.Getdata() | !atual.inicio_real.valido)
             {
-                dados.inicio_cronograma.SetData(dados.inicio_real);
+                atual.inicio_real.SetData(atual.inicio);
             }
-            if(!dados.fim_cronograma.valido)
+
+            if (atual.fim_real.Getdata() < atual.fim.Getdata() | !atual.fim_real.valido)
             {
-                dados.fim_cronograma.SetData(dados.fim_real);
+                atual.fim_real.SetData(atual.fim);
             }
-            var d_min = dados.inicio.Getdata();
+
+            if(!atual.inicio_cronograma.valido)
+            {
+                atual.inicio_cronograma.SetData(atual.inicio_real);
+            }
+            if(!atual.fim_cronograma.valido)
+            {
+                atual.fim_cronograma.SetData(atual.fim_real);
+            }
+            var d_min = atual.inicio.Getdata();
 
             if (Destino == null)
             {
@@ -962,80 +1062,95 @@ namespace GCM_Offline
 
                     pck.Workbook.CalcMode = ExcelCalcMode.Automatic;
 
-                    dados.AjustaPesosEtapas();
+                    atual.AjustaPesosEtapas();
                     ww.somaProgresso();
 
                     foreach (var w in pck.Workbook.Worksheets)
                     {
-                        var max = dados.fim_real.Getdata();
-                        if(DateTime.Now<max)
+                        var max = atual._data_max.Getdata();
+                        if(atual._data_max.Getdata()< max)
                         {
-                            max = DateTime.Now;
+                            max = atual._data_max.Getdata();
                         }
                         //preenche a linha de balanço
                         if (w.Name.ToUpper() == "RELATORIO")
                         {
                             w.Cells["F" + 10].Value = obra.nome_obra;
-                            w.Cells["F" + 12].Value = obra.gerente;
-                            w.Cells["N" + 12].Value = dados.status;
                             w.Cells["R" + 10].Value = obra.contrato;
+
+                            w.Cells["F" + 12].Value = obra.gerente;
+                            w.Cells["N" + 12].Value = atual.status;
                             w.Cells["R" + 12].Value = obra.engenheiro;
+
+                            w.Cells["F" + 19].Value = atual.inicio_cronograma.Getdata();
+                            w.Cells["M" + 19].Value = atual.fim_cronograma.Getdata();
+                            w.Cells["F" + 20].Value = atual.inicio_real.Getdata();
+                            w.Cells["M" + 20].Value = atual.fim_real.Getdata();
+
+                            w.Cells["G" + 29].Value = atual.motivo_desvio;
                             w.Cells["A" + 1].Value = "v." + Application.ProductVersion;
-                            w.Cells["R" + 3].Value = max; //coloquei formula que preenche com o dia de hoje
-                            w.Cells["F" + 19].Value = dados.inicio_cronograma.Getdata();
-                            w.Cells["F" + 20].Value = dados.inicio_real.Getdata();
-                            w.Cells["M" + 19].Value = dados.fim_cronograma.Getdata();
-                            w.Cells["M" + 20].Value = dados.fim_real.Getdata();
-
-                            var dia_0 = Conexoes.Utilz.PrimeiroDiaDaSemana(max);
-                            var dia_1 = dia_0.AddDays(-7);
-                            var dia_2 = dia_0.AddDays(-14);
-                            var dia_3 = dia_0.AddDays(-21);
-                            var efetivos = dados.Getefetivos();
-                            w.Cells["P" + 27].Value = dia_0;
-                            w.Cells["Q" + 27].Value = dia_1;
-                            w.Cells["R" + 27].Value = dia_2;
-                            w.Cells["S" + 27].Value = "Total";
+                            w.Cells["R" + 3].Value = new Data(max).Getdata(); //coloquei formula que preenche com o dia de hoje
 
 
-                            int c = 0;
-                            foreach(var ef in efetivos)
+
+                            var efetivos = atual.Getefetivos();
+                            var dts = efetivos.SelectMany(x => x.GetAvancosAcumulados()).ToList().Select(x => x.data).GroupBy(x => x.datastr).Select(x => x.First()).ToList().FindAll(x=>x.Getdata() <=max);
+
+                            if(efetivos.Count>0)
                             {
-                                var lancs = ef.GetAvancosAcumulados();
-                                if(c<=4)
-                                {
-                                    var linha = (29 + c);
-                                    var linha2 = (30 + c);
-                                    w.Cells["M" + linha].Value = ef.equipe;
-                                    w.Cells["S" + linha].Value = ef.total_previsto;
-                                    w.Cells["S" + linha2].Value = ef.total_utilizado;
+                                var dia_0 = dts.Max(x => x.Getdata());
+                                var dia_1 = dia_0.AddDays(-7);
+                                var dia_2 = dia_0.AddDays(-14);
+                                var dia_3 = dia_0.AddDays(-21);
 
-                                    var efd0 = lancs.Find(x => x.data.datastr == new Data(dia_0).datastr);
-                                    var efd1 = lancs.Find(x => x.data.datastr == new Data(dia_1).datastr);
-                                    var efd2 = lancs.Find(x => x.data.datastr == new Data(dia_2).datastr);
-                                    var efd3 = lancs.Find(x => x.data.datastr == new Data(dia_3).datastr);
-                                    if(efd0!=null)
+
+                                w.Cells["P" + 27].Value = dia_0;
+                                w.Cells["Q" + 27].Value = dia_1;
+                                w.Cells["R" + 27].Value = dia_2;
+                                w.Cells["S" + 27].Value = "Total Obra";
+
+
+                                int c = 0;
+                                foreach (var ef in efetivos)
+                                {
+                                    var lancs = ef.GetAvancosAcumulados();
+
+                                    if (c <= 4)
                                     {
-                                        w.Cells["P" + linha].Value = efd0.previsto;
-                                        w.Cells["P" + linha2].Value = efd0.realizado;
+                                        var linha = (29 + c);
+                                        var linha2 = (30 + c);
+                                        w.Cells["M" + linha].Value = ef.equipe;
+                                        w.Cells["S" + linha].Value = ef.total_previsto;
+                                        w.Cells["S" + linha2].Value = ef.total_utilizado;
+
+                                        var efd0 = lancs.Find(x => x.data.datastr == new Data(dia_0).datastr);
+                                        var efd1 = lancs.Find(x => x.data.datastr == new Data(dia_1).datastr);
+                                        var efd2 = lancs.Find(x => x.data.datastr == new Data(dia_2).datastr);
+                                        var efd3 = lancs.Find(x => x.data.datastr == new Data(dia_3).datastr);
+                                        if (efd0 != null)
+                                        {
+                                            w.Cells["P" + linha].Value = efd0.previsto;
+                                            w.Cells["P" + linha2].Value = efd0.realizado;
+                                        }
+                                        if (efd1 != null)
+                                        {
+                                            w.Cells["Q" + linha].Value = efd1.previsto;
+                                            w.Cells["Q" + linha2].Value = efd1.realizado;
+                                        }
+                                        if (efd2 != null)
+                                        {
+                                            w.Cells["R" + linha].Value = efd2.previsto;
+                                            w.Cells["R" + linha2].Value = efd2.realizado;
+                                        }
+
                                     }
-                                    if (efd1 != null)
-                                    {
-                                        w.Cells["Q" + linha].Value = efd1.previsto;
-                                        w.Cells["Q" + linha2].Value = efd1.realizado;
-                                    }
-                                    if (efd2 != null)
-                                    {
-                                        w.Cells["R" + linha].Value = efd2.previsto;
-                                        w.Cells["R" + linha2].Value = efd2.realizado;
-                                    }
-                                 
+                                    c = c + 2;
                                 }
-                                c = c+2;
                             }
+                          
 
                             int lrestr = 51;
-                            foreach(var p in dados.restricoes)
+                            foreach(var p in atual.restricoes)
                             {
                                 if(lrestr<57)
                                 {
@@ -1046,7 +1161,7 @@ namespace GCM_Offline
                             }
 
                             int lobs = 64;
-                            foreach (var p in dados.observacoes)
+                            foreach (var p in atual.observacoes)
                             {
                                 if (lobs < 71)
                                 {
@@ -1055,7 +1170,17 @@ namespace GCM_Offline
                                     lobs++;
                                 }
                             }
-
+                            int obss = 42;
+                            foreach (var p in atual.planosdeacao)
+                            {
+                                if (obss < 46)
+                                {
+                                    w.Cells["C" + obss].Value = p.acao;
+                                    w.Cells["Q" + obss].Value = p.responsavel;
+                                    w.Cells["S" + obss].Value = p.data.Getdata();
+                                    obss++;
+                                }
+                            }
 
 
                             ww.somaProgresso();
@@ -1067,9 +1192,9 @@ namespace GCM_Offline
                             int l0 = 5;
                             int l = l0;
 
-                            w.Cells["Q2"].Value = d_min;
+                            //w.Cells["Q2"].Value = d_min;
 
-                            foreach (var sub in dados.Subfases())
+                            foreach (var sub in atual.Subfases())
                             {
                                 w.Cells["C" + l].Value = sub.descricao;
                                 w.Cells["D" + l].Value = sub.cod;
@@ -1082,7 +1207,7 @@ namespace GCM_Offline
                                 w.Cells["K" + l].Value = sub.pai.area;
                                 w.Cells["L" + l].Value = sub.pai.peso_fase;
                                 w.Cells["M" + l].Value = sub.peso_fase;
-                                w.Cells["N" + l].Value = dados.area_total;
+                                w.Cells["N" + l].Value = atual.area_total;
                                 w.Cells["O" + l].Value = sub.pep;
                                 w.Cells["P" + l].Value = sub.id;
                                 l++;
@@ -1092,8 +1217,8 @@ namespace GCM_Offline
                         else if (w.Name.ToUpper() == "RECURSOS")
                         {
                             var datas = w.Cells["I3:KL3"].ToList().Select(x => new Data(x)).ToList().FindAll(x => x.valido).ToList();
-                            var efetivos = dados.recursos__previstos.FindAll(x => x.descricao.ToUpper().Contains("EFETIVO"));
-                            var outros = dados.recursos__previstos.FindAll(x => !x.descricao.ToUpper().Contains("EFETIVO"));
+                            var efetivos = atual.recursos__previstos.FindAll(x => x.descricao.ToUpper().Contains("EFETIVO"));
+                            var outros = atual.recursos__previstos.FindAll(x => !x.descricao.ToUpper().Contains("EFETIVO") && x.tipo == Tipo_Recurso.Recurso);
                             //começa na coluna g
                             int col_0 = 9;
                             List<int> l_efetivos = new List<int> { 4, 39, 40, 41 };
@@ -1144,15 +1269,15 @@ namespace GCM_Offline
                                 ll++;
                             }
 
-
+                            var supervisores = atual.recursos__previstos.FindAll(x => x.tipo == Tipo_Recurso.Supervisor);
                             //supervisores
                             ll = 45;
-                            for (int i = 0; i < dados.supervisor.Count; i++)
+                            for (int i = 0; i < supervisores.Count; i++)
                             {
-                                var lancs = dados.supervisor[i];
+                                var lancs = supervisores[i];
 
-                                w.Cells["A" + ll].Value = lancs.supervisor;
-                                w.Cells["B" + ll].Value = lancs.cargo;
+                                w.Cells["A" + ll].Value = lancs.equipe;
+                                w.Cells["B" + ll].Value = lancs.descricao;
                                 w.Cells["C" + ll].Value = lancs.total_previsto;
                                 foreach (var lanc in lancs.GetApontamentos())
                                 {
@@ -1166,14 +1291,15 @@ namespace GCM_Offline
                                 }
                                 ll++;
                             }
+                            var improdutividades = atual.recursos__previstos.FindAll(x => x.tipo == Tipo_Recurso.Improdutividade);
 
                             //improdutividade
                             ll = 56;
-                            for (int i = 0; i < dados.supervisor.Count; i++)
+                            for (int i = 0; i < improdutividades.Count; i++)
                             {
-                                var lancs = dados.supervisor[i];
+                                var lancs = improdutividades[i];
 
-                                w.Cells["B" + ll].Value = lancs.motivo;
+                                w.Cells["B" + ll].Value = lancs.descricao;
                                 w.Cells["C" + ll].Value = lancs.total_previsto;
                                 foreach (var lanc in lancs.GetApontamentos())
                                 {
@@ -1205,7 +1331,7 @@ namespace GCM_Offline
                             DateTime t1 = d_min;
                            
                             var datas= w.Cells["J2:LY2"].ToList().Select(x=> new Data(x)).ToList().FindAll(x=> x.valido).ToList();
-                            foreach (var subetapa in dados.Subfases())
+                            foreach (var subetapa in atual.Subfases())
                             {
                                 //w.Cells["B" + (ll-1)].Value = subetapa.ToString();
                                 //w.Cells["C" + (ll-1)].Value = etapa.ToString();
@@ -1283,7 +1409,7 @@ namespace GCM_Offline
                         else if(w.Name.ToUpper() == "DADOS_GRAFICO")
                         {
                             var datas = w.Cells["B1:LQ1"].ToList().Select(x => new Data(x)).ToList().FindAll(x => x.valido).ToList();
-                            var dt_Max = dados.fim;
+                            var dt_Max = atual.fim;
                             var dt_final = datas.Find(x => x.datastr == dt_Max.datastr);
 
                             if(dt_final!=null)
@@ -1296,6 +1422,7 @@ namespace GCM_Offline
                         ww.somaProgresso();
                         //pck.Save();
                     }
+                    //pck.Workbook.Calculate();
                     pck.SaveAs(new FileInfo(Destino));
                     ww.somaProgresso();
                     ww.Close();

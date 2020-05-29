@@ -8,6 +8,13 @@ namespace GCM_Offline
 {
     public class Vars
     {
+        public static string versionamento
+        {
+            get
+            {
+                return System.Windows.Forms.Application.StartupPath + @"\versionamento.txt";
+            }
+        }
         public static string template_avanco
         {
             get

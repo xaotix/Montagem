@@ -6,6 +6,8 @@
                   Style="{StaticResource BlankWindow}"
                    xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
                   Closing="ModernWindow_Closing"
+                  WindowState="Maximized"
+                  Loaded="ModernWindow_Loaded"
                   >
     <Grid>
         <Grid.RowDefinitions>
@@ -14,10 +16,18 @@
         </Grid.RowDefinitions>
         <Menu Background="Transparent">
             <MenuItem Header="Arquivo" Background="Transparent">
+                <MenuItem Header="Importar Obra" Click="importar"></MenuItem>
+                <MenuItem Header="Importar Pasta" Click="importar_pasta"></MenuItem>
                 <MenuItem Header="Nova Obra" Click="criar_obra"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Seleção" Background="Transparent">
                 <MenuItem Header="Apagar Obras" Click="apagar_obra"></MenuItem>
+                <MenuItem Header="Mudar Status" Click="mudar_status"></MenuItem>
             </MenuItem>
             <MenuItem Header="Ferramendas" Background="Transparent">
+                <MenuItem Header="Exportar Relatório Resumo" Click="relatorio_excel"></MenuItem>
+                <Separator></Separator>
+                <MenuItem Header="Criar Linha de Balanço" Click="nova_linha_de_balanco"></MenuItem>
                 <MenuItem Header="Visualizar XML" Click="visualiza_xml"></MenuItem>
             </MenuItem>
         </Menu>

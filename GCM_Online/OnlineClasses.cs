@@ -1,4 +1,5 @@
 ﻿
+
 using Conexoes.Macros;
 using DB;
 using GCM_Offline;
@@ -22,11 +23,13 @@ namespace GCM_Online
         {
             Linha_de_Balanco retorno = new Linha_de_Balanco();
             retorno.emissao = this.ultima_importacao;
-            retorno.gerente = this.gerente;
             retorno.inicio_cronograma = this.inicio;
             retorno.inicio_real = this.inicio;
             retorno.pedido = this.contrato;
             retorno.status = this.status;
+            retorno.descricao_excel = this.descricao;
+            retorno.engenheiro_excel = this.engenheiro;
+            retorno.gerente = this.gerente;
            
             foreach(var s in this.GetLancamentos())
             {
@@ -56,10 +59,27 @@ namespace GCM_Online
 
          
 
-            retorno.recursos__previstos = recs.FindAll(x => x.tipo == Tipo_Recurso.Recurso);
+            retorno.recursos__previstos = recs.FindAll(x => x.tipo != Tipo_Recurso.Custo);
             retorno.recursos_custo = recs.FindAll(x => x.tipo == Tipo_Recurso.Custo);
-            retorno.improdutividade = recs.FindAll(x => x.tipo == Tipo_Recurso.Improdutividade);
-            retorno.supervisor = recs.FindAll(x => x.tipo == Tipo_Recurso.Supervisor);
+
+
+            if(_xml!=null)
+            {
+                try
+                {
+                    Linha_de_Balanco ps = Conexoes.Utilz.LerSerializado<Linha_de_Balanco>(_xml);
+                    retorno.observacoes.AddRange(ps.observacoes);
+                    retorno.restricoes.AddRange(ps.restricoes);
+                    retorno.planosdeacao.AddRange(ps.planosdeacao);
+                    retorno.versao_planilha = ps.versao_planilha;
+                    retorno.motivo_desvio = ps.motivo_desvio;
+                }
+                catch (Exception)
+                {
+
+                }
+
+            }
 
             retorno.Ajustes();
 
@@ -74,7 +94,7 @@ namespace GCM_Online
             }
             return _Lancamento;
         }
-        public GCM_Offline.Status_Montagem status { get; set; } = Status_Montagem.EM_ANDAMENTO;
+        public GCM_Offline.Status_Montagem status { get; set; } = Status_Montagem.NAO_IMPORTADA;
         [Browsable(false)]
         public Data inicio
         {
@@ -107,6 +127,9 @@ namespace GCM_Online
             w.Show();
             w.somaProgresso();
             dbase.ApagarEtapas(this);
+            dbase.ApagarRecursos(this);
+
+
             foreach (var p in lob.Subfases())
             {
                 var sub = new FaseOnline(p, this.id);
@@ -130,21 +153,13 @@ namespace GCM_Online
             foreach (var p in lob.GetTodosRecursos())
             {
                 var sub = new RecursoOnline(p, this.id);
-                var igual = this.GetTodosRecursos().Find(x => x.id_excel == sub.id_excel | (x.descricao == sub.descricao && x.tipo == sub.tipo));
-                if (igual != null)
-                {
-                    sub.id = igual.id;
-                }
                 sub.Salvar();
                 if (sub.id > 0)
                 {
                     foreach (var ap in p.GetApontamentos().FindAll(x=>x.valor>0 | x.efetivo>0))
                     {
                         var lanc = new ApontamentoOnline(ap, this.id, sub.id);
-
                         lanc.Salvar();
-
-
                     }
                 }
                 else
@@ -159,10 +174,20 @@ namespace GCM_Online
 
 
             this.ultima_importacao = new Data(DateTime.Now);
+            this.descricao = lob.descricao_excel;
+            this.engenheiro = lob.engenheiro_excel;
+            this.gerente = lob.gerente;
+            this.contrato = lob.pedido;
+            this.status = lob.status;
+
+            this._xml = Conexoes.Utilz.RetornarSerializado(lob);
+
             this.Salvar();
             w.somaProgresso();
             w.Close();
+            this.GetSubEtapas(true);
         }
+        private string _xml { get; set; }
         public override string ToString()
         {
             return this.contrato + " - " + this.descricao;
@@ -218,13 +243,14 @@ namespace GCM_Online
         public Contrato(DB.Linha s)
         {
             this.id = s.Get("id").Int;
-            this.contrato = s.Get("contrato").ToString();
-            this.descricao = s.Get("descricao").ToString();
-            this.engenheiro = s.Get("engenheiro").ToString();
-            this.gerente = s.Get("gerente").ToString();
+            this.contrato = s.Get("contrato").ToString().ToUpper();
+            this.descricao = s.Get("descricao").ToString().ToUpper();
+            this.engenheiro = s.Get("engenheiro").ToString().ToUpper();
+            this.gerente = s.Get("gerente").ToString().ToUpper();
             this.area = s.Get("area").Double();
             this.status = Conexoes.Utilz.StringParaEnum<GCM_Offline.Status_Montagem>(s.Get("status").ToString());
             this.ultima_importacao = new Data(s.Get("ultima_importacao").Data);
+           
         }
         public Contrato()
         {
@@ -241,6 +267,8 @@ namespace GCM_Online
             l.Add("area", area);
             l.Add("ultima_importacao", ultima_importacao.ToString());
 
+
+
             return l;
         }
         public void Salvar()
@@ -253,6 +281,15 @@ namespace GCM_Online
             {
             Conexoes.DBases.BancoRM.DB.Update(new List<DB.Celula> { new DB.Celula("id", id) }, GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_obras);
             }
+
+
+            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", this.id) }, Vars.db, Vars.tb_xml);
+            var ss = this.Getlob();
+            //as fases ele pega da dbase normal
+            ss.fases.Clear();
+            var sxml = Conexoes.Utilz.RetornarSerializado<Linha_de_Balanco>(ss);
+            Conexoes.DBases.BancoRM.DB.Cadastro(new List<Celula> { new Celula("id_obra", this.id), new Celula("xml", sxml) }, Vars.db,Vars.tb_xml);
+            this._xml = sxml;
         }
     }
     public class FaseOnline
@@ -367,15 +404,14 @@ namespace GCM_Online
         public Recurso GetRecurso(Linha_de_Balanco lob)
         {
             Recurso r = new Recurso();
-            r.cargo = this.cargo;
             r.custo_mensal = this.custo_mensal;
             r.descricao = this.descricao;
             r.diaria_util = this.diaria_util;
             r.equipe = this.equipe;
             r.id = this.id_excel;
             r.lob = lob;
-            r.motivo = this.motivo;
-            r.supervisor = this.supervisor;
+            r.descricao = this.descricao;
+            r.equipe = this.equipe;
             r.valor_previsto_importado = this.valor_previsto_importado;
             r.tipo = this.tipo;
 
@@ -403,9 +439,9 @@ namespace GCM_Online
             l.Add("id_excel", id_excel);
             l.Add("tipo", tipo.ToString());
             l.Add("equipe", equipe);
-            l.Add("supervisor", supervisor);
-            l.Add("motivo", motivo);
-            l.Add("cargo", cargo);
+            //l.Add("supervisor", supervisor);
+            //l.Add("motivo", motivo);
+            //l.Add("cargo", cargo);
             l.Add("descricao", descricao);
             l.Add("custo_mensal", custo_mensal);
             l.Add("diaria_util", diaria_util);
@@ -430,9 +466,9 @@ namespace GCM_Online
         public string id_excel { get; set; } = "";
         public Tipo_Recurso tipo { get; set; } = Tipo_Recurso.Recurso;
         public string equipe { get; set; } = "";
-        public string supervisor { get; set; } = "";
-        public string motivo { get; set; } = "";
-        public string cargo { get; set; } = "";
+        //public string supervisor { get; set; } = "";
+        //public string motivo { get; set; } = "";
+        //public string cargo { get; set; } = "";
         public string descricao { get; set; } = "";
         public double custo_mensal { get; set; } = 0;
         public double diaria_util { get; set; } = 0;
@@ -446,9 +482,9 @@ namespace GCM_Online
             this.id_excel = s.Get("id_excel").ToString();
             this.tipo = Conexoes.Utilz.StringParaEnum<Tipo_Recurso>(s.Get("tipo").ToString());
             this.equipe = s.Get("equipe").ToString();
-            this.supervisor = s.Get("supervisor").ToString();
-            this.motivo = s.Get("motivo").ToString();
-            this.cargo = s.Get("cargo").ToString();
+            //this.supervisor = s.Get("supervisor").ToString();
+            //this.motivo = s.Get("motivo").ToString();
+            //this.cargo = s.Get("cargo").ToString();
             this.custo_mensal = s.Get("custo_mensal").Double();
             this.descricao = s.Get("descricao").ToString();
             this.diaria_util = s.Get("diaria_util").Double();
@@ -458,15 +494,14 @@ namespace GCM_Online
         }
         public RecursoOnline(Recurso p, int id_obra)
         {
-            this.cargo = p.cargo;
+
             this.custo_mensal = p.custo_mensal;
             this.descricao = p.descricao;
             this.diaria_util = p.diaria_util;
             this.equipe = p.equipe;
             this.id_excel = p.id;
             this.id_obra = id_obra;
-            this.motivo = p.motivo;
-            this.supervisor = p.supervisor;
+
             this.tipo = p.tipo;
             this.valor_previsto_importado = p.valor_previsto_importado;
             this.inicio.SetData(p.inicio);
@@ -563,6 +598,7 @@ namespace GCM_Online
     public static class Vars
     {
         public static string db { get; set; } = "painel_de_obras2";
+        public static string tb_xml { get; set; } = "gcm_obras_xml";
         public static string tb_subetapas { get; set; } = "gcm_subetapas";
         public static string tb_efetivos { get; set; } = "gcm_efetivos";
         public static string template_resumo
@@ -642,6 +678,7 @@ namespace GCM_Online
             Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_efetivos);
             Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
             Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_subetapas);
+            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_xml);
         }
         public static void Apagar(FaseOnline ob)
         {
@@ -666,6 +703,11 @@ namespace GCM_Online
             Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_subetapas);
             Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
         }
+        public static void ApagarRecursos(Contrato ob)
+        {
+            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_efetivos);
+            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
+        }
         public static List<Contrato> obras(bool update = false)
         {
             if(_obras == null | update)
@@ -676,6 +718,7 @@ namespace GCM_Online
                 {
                     _obras.Add(new Contrato(s));
                 }
+            _obras = _obras.OrderBy(x => x.descricao).ToList();
             }
             return _obras;
 

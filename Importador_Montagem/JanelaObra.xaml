@@ -7,6 +7,7 @@
                    xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation" 
                     xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
                   mc:Ignorable="d"
+                  WindowState="Maximized"
                   Title="ModernWindow"
                   Style="{StaticResource BlankWindow}" FontSize="10" Height="606.4" Width="676">
     <Grid>
@@ -15,190 +16,362 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Menu Background="Transparent" VerticalAlignment="Center">
-            <MenuItem Header="Arquivo" Background="Transparent">
+            <!--<MenuItem Header="Arquivo" Background="Transparent">
                 <MenuItem Header="Importar Avanço" Click="MenuItem_Click"></MenuItem>
                 <MenuItem Header="Limpar Apontamentos" Click="MenuItem_Click_1"></MenuItem>
                 <MenuItem Header="Limpar Etapas" Click="MenuItem_Click_2"></MenuItem>
-            </MenuItem>
+            </MenuItem>-->
             <MenuItem Header="Ferramentas"  Background="Transparent">
                 <MenuItem Header="Editar dados da Obra" Click="MenuItem_Click_3"></MenuItem>
+                <MenuItem Header="Exportar Avanço" Click="Export_avanco"></MenuItem>
             </MenuItem>
         </Menu>
         <Grid Grid.Row="10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="130"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
-            <Border CornerRadius="10" BorderThickness="2" BorderBrush="LightGray" Margin="5,5,5,5">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="auto"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Grid Margin="10,10,10,10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Label Margin="3,3,3,3" Content="Dados da Obra"></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="0" Content="Início: "></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="0" Content="Fim: "></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="1" Content="Cronograma: "></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="2" Content="{Binding inicio_cronograma}"></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="1" Content="Cronograma: "></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="2" Content="{Binding fim_cronograma}"></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="3" Content="Real: "></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="1" Grid.Column="4" Content="{Binding inicio_real}"></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="3" Content="Real: "></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="2" Grid.Column="4" Content="{Binding fim_real}"></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Content="Último Apontamento Exportado Em: "></Label>
-                        <Label Margin="3,3,3,3" Grid.Row="3" Grid.Column="4" Content="{Binding emissao}"></Label>
 
-
-                    </Grid>
-
-                </Grid>
-
-            </Border>
-
+            <TabControl Grid.Row="10">
+                <TabItem Header="Resumo">
             <TabControl Grid.Column="10" Grid.Row="10">
                 <TabControl.Background>
                     <ImageBrush ImageSource="Resources/Logo Medabil Vertical-01.png" Opacity="0.1" Stretch="Uniform"/>
                 </TabControl.Background>
                 <TabItem Header="Avanço">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="250"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="150"></RowDefinition>
-                                <RowDefinition Height="*"></RowDefinition>
-                            </Grid.RowDefinitions>
+                            <ScrollViewer x:Name="scrol">
+                                <Grid Grid.Column="10" Grid.Row="10" Name="tela">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"></RowDefinition>
+                                        <RowDefinition Height="500"></RowDefinition>
+                                        <RowDefinition Height="auto" MaxHeight="300"></RowDefinition>
+                                        <RowDefinition Height="auto"></RowDefinition>
 
-                            <Border Grid.Row="10" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                                <Grid x:Name="novo" Grid.Column="0"></Grid>
-                            </Border>
+                                    </Grid.RowDefinitions>
+                                    <WrapPanel Margin="2,2,2,2" HorizontalAlignment="Right">
+                                        <Label Content="Data cálculo:" FontSize="20" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                                        <DatePicker Grid.Column="0" Width="150" FontSize="20" Background="#FFE2FF00" VerticalAlignment="Center" x:Name="data_padrao"  SelectedDateChanged="atualizar"/>
 
-                            <Grid >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    </WrapPanel>
+                                    <Grid x:Name="grid_avanco" Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                            <ColumnDefinition Width="0"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid>
 
-                                </Grid.ColumnDefinitions>
-                                <Border Grid.Column="0" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                                    <Grid >
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"></RowDefinition>
-                                            <RowDefinition Height="*"></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <Label Name="lbl_desvio" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
-                                        <lvc:Gauge Name="gauge_desvio" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="150"></RowDefinition>
+                                                <RowDefinition Height="*"></RowDefinition>
+                                            </Grid.RowDefinitions>
 
-                                            <lvc:Gauge.GaugeActiveFill>
-                                                <LinearGradientBrush>
-                                                    <GradientStop Color="Green" Offset="0.0" />
-                                                    <GradientStop Color="Orange" Offset="0.5" />
-                                                    <GradientStop Color="Red" Offset="1.0" />
-                                                </LinearGradientBrush>
-                                            </lvc:Gauge.GaugeActiveFill>
-                                        </lvc:Gauge>
-                                    </Grid>
-                                </Border>
-                                <Border Grid.Column="1" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                                    <Grid >
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"></RowDefinition>
-                                            <RowDefinition Height="*"></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <Label Name="lbl_desvio1" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"></Label>
-                                        <lvc:Gauge Name="gauge_desvio1" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
-                                            <lvc:Gauge.GaugeActiveFill>
-                                                <LinearGradientBrush>
-                                                    <GradientStop Color="Green" Offset="0.0" />
-                                                    <GradientStop Color="Orange" Offset="1" />
-                                                    <GradientStop Color="Red" Offset="1.0" />
-                                                </LinearGradientBrush>
-                                            </lvc:Gauge.GaugeActiveFill>
-                                        </lvc:Gauge>
-                                    </Grid>
-                                </Border>
-                                <Border Grid.Column="2" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                                    <Grid >
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"></RowDefinition>
-                                            <RowDefinition Height="*"></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <Label Name="lbl_desvio2" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
-                                        <lvc:Gauge Name="gauge_desvio2" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
-                                            <lvc:Gauge.GaugeActiveFill>
-                                                <LinearGradientBrush>
-                                                    <GradientStop Color="Green" Offset="0.0" />
-                                                    <GradientStop Color="Orange" Offset="1" />
-                                                    <GradientStop Color="Red" Offset="1.0" />
-                                                </LinearGradientBrush>
-                                            </lvc:Gauge.GaugeActiveFill>
-                                        </lvc:Gauge>
-                                    </Grid>
-                                </Border>
-                                <Border Grid.Column="3" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                                    <Grid >
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"></RowDefinition>
-                                            <RowDefinition Height="*"></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <Label Name="lbl_desvio3" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
-                                        <lvc:Gauge Name="gauge_desvio3" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
-                                            <lvc:Gauge.GaugeActiveFill>
-                                                <LinearGradientBrush>
-                                                    <GradientStop Color="Green" Offset="0.0" />
-                                                    <GradientStop Color="Orange" Offset="0.7" />
-                                                    <GradientStop Color="Red" Offset="1.0" />
-                                                </LinearGradientBrush>
-                                            </lvc:Gauge.GaugeActiveFill>
-                                        </lvc:Gauge>
-                                    </Grid>
-                                </Border>
-                                <Border Grid.Column="4" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                                    <Grid >
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"></RowDefinition>
-                                            <RowDefinition Height="*"></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <Label Name="lbl_dias_atraso" Content="Dias em atraso:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
-                                        <lvc:Gauge Name="gauge_dias_atraso" From="0" To="30" Value="0" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5">
-                                            <lvc:Gauge.GaugeActiveFill>
-                                                <LinearGradientBrush>
-                                                    <GradientStop Color="Red" Offset="0.0" />
-                                                    <GradientStop Color="Orange" Offset="0.7" />
-                                                    <GradientStop Color="Green" Offset="1.0" />
-                                                </LinearGradientBrush>
-                                            </lvc:Gauge.GaugeActiveFill>
-                                        </lvc:Gauge>
-                                    </Grid>
-                                </Border>
-                            </Grid>
-                        </Grid>
-                        <Border Grid.Column="10" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
-                            <Grid x:Name="novo_resumo" Margin="5,5,5,5"></Grid>
-                        </Border>
-                    </Grid>
+                                            <Border Grid.Row="1" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,4.6,5.2,4.8" Grid.ColumnSpan="2">
+                                                <Grid x:Name="novo" Grid.Column="0"></Grid>
+                                            </Border>
 
-                </TabItem>
+                                            <Grid Grid.ColumnSpan="2" Margin="0,0,0.2,0.4" >
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="*"></ColumnDefinition>
+
+                                                </Grid.ColumnDefinitions>
+                                                <Border Grid.Column="0" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                                    <Grid >
+
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="auto"></RowDefinition>
+                                                            <RowDefinition Height="*"></RowDefinition>
+                                                            <RowDefinition Height="18"></RowDefinition>
+                                                            <RowDefinition Height="18"></RowDefinition>
+                                                        </Grid.RowDefinitions>
+                                                        <Label Name="lbl_desvio" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                                        <lvc:Gauge Name="gauge_desvio" ToColor="Green" FromColor="DarkRed" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="1" Margin="5,5,5,5"/>
+
+                                                        <ProgressBar Foreground="LightSkyBlue" FontSize="10" Style="{StaticResource  SemPorcentagem}" x:Name="prg_previsto" Minimum="0" Maximum="100" Grid.Row="2" />
+                                                        <Label  FontSize="10"  Name="lbl_previsto" Content="Previsto" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+
+                                                        <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  SemPorcentagem}" x:Name="prg_realizado" Minimum="0" Maximum="100" Grid.Row="3" />
+                                                        <Label FontSize="10" Name="lbl_realizado" Content="Realizado" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+
+
+                                                    </Grid>
+                                                </Border>
+                                                <Border Grid.Column="1" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                                    <Grid >
+                                                        <Grid >
+
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="auto"></RowDefinition>
+                                                                <RowDefinition Height="*"></RowDefinition>
+                                                                <RowDefinition Height="18"></RowDefinition>
+                                                                <RowDefinition Height="18"></RowDefinition>
+                                                            </Grid.RowDefinitions>
+                                                            <Label Name="lbl_desvio1" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                                            <lvc:Gauge Name="gauge_desvio1" ToColor="Green" FromColor="DarkRed" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="1" Margin="5,5,5,5"/>
+
+                                                            <ProgressBar Foreground="LightSkyBlue" FontSize="10" Style="{StaticResource  SemPorcentagem}" x:Name="prg_previsto1" Minimum="0" Maximum="100" Grid.Row="2" />
+                                                            <Label  FontSize="10"  Name="lbl_previsto1" Content="Previsto" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+
+                                                            <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  SemPorcentagem}" x:Name="prg_realizado1" Minimum="0" Maximum="100" Grid.Row="3" />
+                                                            <Label FontSize="10" Name="lbl_realizado1" Content="Realizado" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+
+
+                                                        </Grid>
+
+                                                    </Grid>
+                                                </Border>
+                                                <Border Grid.Column="2" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                                    <Grid >
+                                                        <Grid >
+
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="auto"></RowDefinition>
+                                                                <RowDefinition Height="*"></RowDefinition>
+                                                                <RowDefinition Height="18"></RowDefinition>
+                                                                <RowDefinition Height="18"></RowDefinition>
+                                                            </Grid.RowDefinitions>
+                                                            <Label Name="lbl_desvio2" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                                            <lvc:Gauge Name="gauge_desvio2" ToColor="Green" FromColor="DarkRed" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="1" Margin="5,5,5,5"/>
+
+                                                            <ProgressBar Foreground="LightSkyBlue" FontSize="10" Style="{StaticResource  SemPorcentagem}" x:Name="prg_previsto2" Minimum="0" Maximum="100" Grid.Row="2" />
+                                                            <Label  FontSize="10"  Name="lbl_previsto2" Content="Previsto" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+
+                                                            <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  SemPorcentagem}" x:Name="prg_realizado2" Minimum="0" Maximum="100" Grid.Row="3" />
+                                                            <Label FontSize="10" Name="lbl_realizado2" Content="Realizado" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+
+
+                                                        </Grid>
+
+                                                    </Grid>
+                                                </Border>
+                                                <Border Grid.Column="3" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                                    <Grid >
+                                                        <Grid >
+
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="auto"></RowDefinition>
+                                                                <RowDefinition Height="*"></RowDefinition>
+                                                                <RowDefinition Height="18"></RowDefinition>
+                                                                <RowDefinition Height="18"></RowDefinition>
+                                                            </Grid.RowDefinitions>
+                                                            <Label Name="lbl_desvio3" Content="Desvio:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                                            <lvc:Gauge Name="gauge_desvio3" ToColor="Green" FromColor="DarkRed" From="0" To="-15" Value="0" LabelsVisibility="Collapsed" Grid.Row="1" Margin="5,5,5,5"/>
+
+                                                            <ProgressBar Foreground="LightSkyBlue" FontSize="10" Style="{StaticResource  SemPorcentagem}" x:Name="prg_previsto3" Minimum="0" Maximum="100" Grid.Row="2" />
+                                                            <Label  FontSize="10"  Name="lbl_previsto3" Content="Previsto" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+
+                                                            <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  SemPorcentagem}" x:Name="prg_realizado3" Minimum="0" Maximum="100" Grid.Row="3" />
+                                                            <Label FontSize="10" Name="lbl_realizado3" Content="Realizado" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+
+
+                                                        </Grid>
+                                                    </Grid>
+                                                </Border>
+                                                <Border Grid.Column="4" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                                    <Grid >
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="auto"></RowDefinition>
+                                                            <RowDefinition Height="*"></RowDefinition>
+                                                        </Grid.RowDefinitions>
+                                                        <Label Name="lbl_dias_atraso" Content="Dias em atraso:" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="5"></Label>
+                                                        <lvc:Gauge Name="gauge_dias_atraso" From="0" To="15" Value="0" ToColor="Red" FromColor="LightGreen" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5"/>
+
+
+                                                    </Grid>
+                                                </Border>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid Grid.Column="10">
+
+
+                                            <Border Grid.Row="2" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                                <Grid x:Name="novo_resumo" Margin="5,5,5,5"></Grid>
+                                            </Border>
+                                        </Grid>
+                                    </Grid>
+
+                                    <Grid Grid.Row="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                            <Grid>
+                                                <WrapPanel  Margin="5,0,0,0">
+                                                    
+                                                    <Label Content="Restrições" Background="Transparent" VerticalAlignment="Center" FontWeight="Bold" FontSize="12"/>
+
+                                                </WrapPanel>
+
+                                                <ListView  Margin="0,25,0,0" Background="Transparent" SelectionMode="Extended" x:Name="restricoes" FontSize="10" BorderThickness="0" Grid.Row="2">
+                                                    <ListView.ItemContainerStyle>
+                                                        <Style TargetType="{x:Type ListViewItem}">
+                                                            <Style.Setters>
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+
+                                                                            <StackPanel  >
+                                                                                <WrapPanel VerticalAlignment="Center" Margin="5,2,2,2">
+
+                                                                                    
+                                                                                    
+                                                                                    <TextBlock Margin="5,0,0,0" FontWeight="Bold" Text="{Binding pep}" VerticalAlignment="Center"/>
+
+
+                                                                                </WrapPanel>
+                                                                                <WrapPanel VerticalAlignment="Center" Margin="10,2,2,2">
+                                                                                    <TextBlock FontSize="10"  Margin="0,2,2,2" Text="{Binding descricao}" TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" MaxWidth="{Binding RelativeSource={RelativeSource AncestorType={x:Type WrapPanel}}, Path=ActualWidth}" Height="auto" MaxHeight="50"/>
+
+                                                                                </WrapPanel>
+                                                                                <Separator BorderBrush="Black" BorderThickness="1" Foreground="{x:Null}"></Separator>
+
+                                                                            </StackPanel>
+                                                                        </ControlTemplate>
+
+                                                                    </Setter.Value>
+
+                                                                </Setter>
+
+                                                            </Style.Setters>
+
+                                                        </Style>
+
+                                                    </ListView.ItemContainerStyle>
+
+
+
+
+
+                                                </ListView>
+
+                                            </Grid>
+
+
+
+                                        </Border>
+                                        <Border Grid.Column="1" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                            <Grid>
+                                                <WrapPanel  Margin="5,0,0,0">
+                                                  
+                                                    <Label Content="Observações" Background="Transparent" VerticalAlignment="Center" FontSize="12" FontWeight="Bold"></Label>
+
+                                                </WrapPanel>
+
+                                                <ListView   Margin="0,25,0,0"  Background="Transparent" SelectionMode="Extended" x:Name="observacoes" FontSize="10" BorderThickness="0" Grid.Row="2">
+                                                    <ListView.ItemContainerStyle>
+                                                        <Style TargetType="{x:Type ListViewItem}">
+                                                            <Style.Setters>
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+
+                                                                            <StackPanel>
+                                                                                <WrapPanel VerticalAlignment="Center" Margin="5,2,2,2">
+
+                                                                                 
+                                                                                   
+                                                                                    <TextBlock Margin="5,0,0,0" FontWeight="Bold" Text="{Binding responsavel}" VerticalAlignment="Center"/>
+
+
+                                                                                </WrapPanel>
+                                                                                <WrapPanel VerticalAlignment="Center" Margin="10,2,2,2">
+                                                                                    <TextBlock FontSize="10"  Margin="0,2,2,2" Text="{Binding descricao}" TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" MaxWidth="{Binding RelativeSource={RelativeSource AncestorType={x:Type WrapPanel}}, Path=ActualWidth}" Height="auto" MaxHeight="50"/>
+                                                                                </WrapPanel>
+                                                                                <Separator BorderBrush="Black" BorderThickness="1" Foreground="{x:Null}"></Separator>
+
+                                                                            </StackPanel>
+                                                                        </ControlTemplate>
+
+                                                                    </Setter.Value>
+
+                                                                </Setter>
+
+                                                            </Style.Setters>
+
+                                                        </Style>
+
+                                                    </ListView.ItemContainerStyle>
+
+
+
+
+
+                                                </ListView>
+
+
+
+
+
+                                            </Grid>
+                                        </Border>
+                                        <Border Grid.Column="3" BorderThickness="1" CornerRadius="5" BorderBrush="LightGray" Margin="5,5,5,5">
+                                            <Grid>
+                                                <WrapPanel  Margin="5,0,0,0">
+                                                    
+                                                    <Label Content="Planos de ação" Background="Transparent" VerticalAlignment="Center" FontSize="12" FontWeight="Bold"></Label>
+
+                                                </WrapPanel>
+                                                <ListView Margin="0,25,0,0"  Background="Transparent" SelectionMode="Extended" x:Name="planosdeacao" FontSize="10" BorderThickness="0" Grid.Row="2">
+                                                    <ListView.ItemContainerStyle>
+                                                        <Style TargetType="{x:Type ListViewItem}">
+                                                            <Style.Setters>
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+
+                                                                            <StackPanel>
+                                                                                <WrapPanel VerticalAlignment="Center" Margin="5,2,2,2">
+
+                                                                                
+                                                                                   
+                                                                                    <TextBlock Margin="5,0,0,0" FontWeight="Bold" Text="{Binding responsavel}" VerticalAlignment="Center"/>
+
+
+                                                                                </WrapPanel>
+                                                                                <WrapPanel VerticalAlignment="Center" Margin="10,2,2,2">
+                                                                                    <TextBlock FontSize="10"  Margin="0,2,2,2" Text="{Binding acao}" TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" MaxWidth="{Binding RelativeSource={RelativeSource AncestorType={x:Type WrapPanel}}, Path=ActualWidth}" Height="auto" MaxHeight="50"/>
+                                                                                </WrapPanel>
+                                                                                <Separator BorderBrush="Black" BorderThickness="1" Foreground="{x:Null}"></Separator>
+
+                                                                            </StackPanel>
+                                                                        </ControlTemplate>
+
+                                                                    </Setter.Value>
+
+                                                                </Setter>
+
+                                                            </Style.Setters>
+
+                                                        </Style>
+
+                                                    </ListView.ItemContainerStyle>
+
+
+
+
+
+                                                </ListView>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+
+
+                                    <Grid x:Name="grid_efetivo" Grid.Row="3">
+                                        <StackPanel x:Name="painel_efetivo"></StackPanel>
+                                    </Grid>
+
+
+
+
+
+                                </Grid>
+                            </ScrollViewer>
+                        </TabItem>
 
                 <TabItem Header="Avanço Por Tarefa" Background="Transparent">
                     <Grid>
@@ -224,6 +397,119 @@
 
                     </ScrollViewer>
 
+                </TabItem>
+            </TabControl>
+                    
+                </TabItem>
+                <TabItem Header="Dados" Background="Transparent">
+                    <TabControl Grid.Row="10" Background="Transparent">
+                        <TabItem Header="Etapas" Background="Transparent">
+                            <telerik:RadGridView  Background="Transparent" SelectionMode="Extended" ShowGroupPanel="True" x:Name="lista_etapas" ShowColumnFooters="True" AutoGenerateColumns="False"  FontSize="10" BorderThickness="0" Grid.Row="2" IsReadOnly="False" ShowSearchPanel="True" >
+                                <telerik:RadGridView.Columns>
+                                    <telerik:GridViewDataColumn Header="Et." DataMemberBinding="{Binding pai.descricao}" Width="auto" >
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:CountFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="PEP" DataMemberBinding="{Binding pep}" Width="auto" IsReadOnly="False"/>
+                                    <telerik:GridViewDataColumn Header="Cód." DataMemberBinding="{Binding cod}" Width="auto" IsReadOnly="False" />
+                                    <telerik:GridViewDataColumn Header="Descrição" DataMemberBinding="{Binding descricao}" Width="*" IsReadOnly="False" />
+                                    <telerik:GridViewDataColumn Header="Início" IsFilterable="True" DataMemberBinding="{Binding inicio.datastr}" Width="auto"  IsReadOnly="True" />
+                                    <telerik:GridViewDataColumn Header="Fim" IsFilterable="True" DataMemberBinding="{Binding fim.datastr}" Width="auto"  IsReadOnly="True"/>
+                                    <telerik:GridViewDataColumn Header="D" DataMemberBinding="{Binding dias}" Width="auto"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="Área" DataMemberBinding="{Binding area}" Width="auto"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="Equipe" DataMemberBinding="{Binding equipe}" Width="auto"  IsReadOnly="False"/>
+                                    <telerik:GridViewDataColumn Header="Ef./Dia" DataMemberBinding="{Binding efetivo}" Width="auto"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="Total Ef." DataMemberBinding="{Binding total_efetivo}" Width="auto"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+
+
+
+
+                                    <telerik:GridViewDataColumn Header="Prev." Width="75" DataMemberBinding="{Binding previsto, Mode=OneWay}"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ProgressBar FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding Path=previsto, Mode=OneWay}" Minimum="0" Maximum="100" />
+                                            </DataTemplate>
+                                        </telerik:GridViewDataColumn.CellTemplate>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="Real." Width="75" DataMemberBinding="{Binding realizado, Mode=OneWay}"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding Path=realizado, Mode=OneWay}" Minimum="0" Maximum="100" />
+                                            </DataTemplate>
+                                        </telerik:GridViewDataColumn.CellTemplate>
+                                    </telerik:GridViewDataColumn>
+                                    <telerik:GridViewDataColumn Header="Peso Et." Width="50" DataMemberBinding="{Binding peso_fase, Mode=OneWay}"  IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  SemPorcentagem}" Value="{Binding Path=peso_fase, Mode=OneWay}" Minimum="0" Maximum="1" />
+                                                    <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding peso_fase, StringFormat='{}{0:0,0.00}'}"></Label>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </telerik:GridViewDataColumn.CellTemplate>
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+
+
+
+                                </telerik:RadGridView.Columns>
+
+                            </telerik:RadGridView>
+                        </TabItem>
+                        <TabItem Header="Recursos e Efetivo">
+                            <telerik:RadGridView Grid.Row="0" Background="Transparent" SelectionMode="Extended" ShowGroupPanel="True" x:Name="lista" ShowColumnFooters="True" AutoGenerateColumns="False"  FontSize="10" BorderThickness="0" IsReadOnly="False" ShowSearchPanel="True" >
+                                <telerik:RadGridView.Columns>
+
+                                    <telerik:GridViewDataColumn Header="Recurso" DataMemberBinding="{Binding descricao}" Width="auto" IsReadOnly="False" />
+                                    <telerik:GridViewDataColumn Header="Equipe" DataMemberBinding="{Binding equipe}" Width="auto" IsReadOnly="False" />
+                                    <telerik:GridViewDataColumn Header="Disponível" Width="*" DataMemberBinding="{Binding total_previsto, Mode=OneWay}" IsReadOnly="True">
+                                        <telerik:GridViewDataColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <ProgressBar Foreground="LimeGreen" Height="20" Style="{StaticResource  SemPorcentagem}" Value="{Binding Path=total_disponivel, Mode=OneWay}" Minimum="0" Maximum="{Binding total_previsto}" />
+                                                    <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                        <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="U: "></Label>
+
+                                                        <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding total_utilizado, StringFormat='{}{0:0,0.00}'}"></Label>
+                                                        <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content=" - P: "></Label>
+                                                        <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding total_previsto, StringFormat='{}{0:0,0.00}'}"></Label>
+                                                    </WrapPanel>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </telerik:GridViewDataColumn.CellTemplate>
+                                        <telerik:GridViewDataColumn.AggregateFunctions>
+                                            <telerik:SumFunction />
+                                        </telerik:GridViewDataColumn.AggregateFunctions>
+                                    </telerik:GridViewDataColumn>
+
+
+   
+
+
+                                </telerik:RadGridView.Columns>
+                            </telerik:RadGridView>
+
+                        </TabItem>
+                    </TabControl>
                 </TabItem>
             </TabControl>
 

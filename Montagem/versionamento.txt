@@ -1,0 +1,24 @@
+V 1.1.0.10 - Correção de Fórmulas na planilha Template de Linha de Balanço. 
+		     Ordenação de etapas alterada para etapas e não mais datas.
+			 Importação de recursos ajustada para reconhecer a equipe inserida e calcular o efetivo previsto
+
+V 1.1.0.9 - Correção nos apontamentos da aba 'Recursos', datas não batiam com o que estava lançado.
+V 1.1.0.8 - Correção na importação de apontamentos de improdutividade e da aba 'Recursos', ajustes de interface
+V 1.1.0.7 - Adicionado barras de progresso com previsto e realizado abaixo do desvio
+V 1.1.0.6 - Corrigido bug que duplicava as equipes
+V 1.1.0.5 - Ajustes gerais
+V 1.1.0.4 - Revisão de Interface
+V 1.1.0.3 - Corrigido bug que exportava as observações em branco
+V 1.1.0.2 - Ajuste na LOB (correção que estava a planilha bloqueada).
+V 1.1.0.1 - Ajuste no gráfico de desvio.
+V 1.1.0.0 - Nova versão, com inúmeras funcionalidades novas.
+
+
+================================================================================
+V 1.0.0.6 - Ajuste nos cálculos de pesos de etapas.
+V 1.0.0.5 - Ajustes gerais
+V 1.0.0.4 - Revisão de Interface
+V 1.0.0.3 - Correção de bug dos recursos, adição de gráficos
+V 1.0.0.2 - Implementação dos recursos
+V 1.0.0.1 - Correção de bug dos pesos ao tentar importar a LOB
+V 1.0.0.0 - Emissão Inicial

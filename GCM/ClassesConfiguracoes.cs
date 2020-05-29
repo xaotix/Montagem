@@ -16,11 +16,16 @@ namespace GCM_Offline
         [DisplayName("Equipamentos")]
         public bool apontamentos_recursos { get; set; } = true;
         [Category("Importar")]
-        [DisplayName("Improdutividade")]
-        public bool apontamentos_improdutividade { get; set; } = true;
+        [DisplayName("Observações")]
+        public bool observacoes { get; set; } = true;
         [Category("Importar")]
-        [DisplayName("Supervisores")]
-        public bool apontamentos_supervisor { get; set; } = true;
+        [DisplayName("Restrições")]
+        public bool restricoes { get; set; } = true;
+        [Category("Importar")]
+        [DisplayName("Planos de Ação")]
+        public bool planosdeacao { get; set; } = true;
+
+
 
         [Category("Importar")]
         [DisplayName("Novos")]

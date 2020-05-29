@@ -35,25 +35,53 @@ namespace GCM_Offline
         DESMOBILIZADA,
         TRANCADA,
         NAO_IMPORTADA,
+        NOVA,
     }
     [Serializable]
     public class Linha_de_Balanco : INotifyPropertyChanged
     {
+        public string motivo_desvio { get; set; } = "";
+        [Browsable(false)]
+        public string versao_planilha { get; set; } = "";
+        public Avanco GetEfetivoSemana(Data data)
+        {
+            List<Avanco> ret = new List<Avanco>();
+            foreach(var p in this.Getefetivos())
+            {
+                ret.Add(p.GetAvanco(data.Getdata()));
+            }
+            return new Avanco(data, ret, "Avancos", data,false);
+
+        }
+        public Avanco diarias_efetivo()
+        {
+            var previsto = this.GetEfetivosERecursos().FindAll(x => x.descricao.ToUpper().Contains("EFETIVO")).Sum(X => X.total_previsto);
+            var realizado = this.GetEfetivosERecursos().FindAll(x => x.descricao.ToUpper().Contains("EFETIVO")).Sum(X => X.GetApontamentos().Sum(x=>x.valor));
+            return new Avanco(this._data_max, previsto, realizado, "Diárias", 1, this._data_max,false);
+        }
+        public override string ToString()
+        {
+            return this.pedido + " - " + this.descricao_excel;
+        }
+        [XmlIgnore]
+        [Browsable(false)]
+        public Data _data_max { get; set; } = new Data(DateTime.Now);
+        public List<PlanoDeAcao> planosdeacao { get; set; } = new List<PlanoDeAcao>();
         public List<Restricao> restricoes { get; set; } = new List<Restricao>();
         public List<Observacao> observacoes { get; set; } = new List<Observacao>();
-        public int dias_atraso()
+        public int dias_atraso(Data data)
         {
-            var tot = GetTotal();
+            var tot = GetTotal(data);
 
-            if(this.fim_cronograma.Getdata()<DateTime.Now && tot.realizado<100)
+            if(this.fim_cronograma.Getdata()< data.Getdata() && tot.realizado<100)
             {
-                return (DateTime.Now - this.fim_cronograma.Getdata()).Days;
+                return (data.Getdata() - this.fim_cronograma.Getdata()).Days;
             }
             return 0;
         }
         public List<Avanco> GetAvancosSubEtapas()
         {
-            return this.Subfases().Select(x => new Avanco(x.inicio_real, x.GetPrevistoDistribuidoDias(), "De:" + x.inicio_real + " até " + x.fim_real + " " + x.ToString())).ToList();
+            return this.Subfases().Select(x => new Avanco(x.inicio_real, x.GetPrevistoDistribuidoDias(), "De:" + x.inicio_real + " até " + x.fim_real + " " + x.ToString(),this._data_max,true)).ToList();
         }
         public List<Avanco> GetAvancosAcumulados()
         {
@@ -67,28 +95,28 @@ namespace GCM_Offline
             }
             return retorno;
         }
-        public Avanco GetTotal()
+        public Avanco GetTotal(Data data)
         {
-            return GetAvanco(new Data(DateTime.Now));
+            return GetAvanco(data);
         }
-        public Avanco GetTotalSemanaAnterior()
+        public Avanco GetTotalSemanaAnterior(Data data)
         {
-            var primeiro = Conexoes.Utilz.PrimeiroDiaDaSemana(DateTime.Now);
+            var primeiro = Conexoes.Utilz.PrimeiroDiaDaSemana(data.Getdata());
             return GetAvanco(new Data(primeiro.AddDays(-7)));
         }
-        public Avanco GetTotalSemanaAnterior2()
+        public Avanco GetTotalSemanaAnterior2(Data data)
         {
-            var primeiro = Conexoes.Utilz.PrimeiroDiaDaSemana(DateTime.Now);
+            var primeiro = Conexoes.Utilz.PrimeiroDiaDaSemana(data.Getdata());
             return GetAvanco(new Data(primeiro.AddDays(-14)));
         }
-        public Avanco GetTotalSemanaAnterior3()
+        public Avanco GetTotalSemanaAnterior3(Data data)
         {
-            var primeiro = Conexoes.Utilz.PrimeiroDiaDaSemana(DateTime.Now);
+            var primeiro = Conexoes.Utilz.PrimeiroDiaDaSemana(data.Getdata());
             return GetAvanco(new Data(primeiro.AddDays(-21)));
         }
-        public Avanco GetTotalSemanaAnterior4()
+        public Avanco GetTotalSemanaAnterior4(Data data)
         {
-            var primeiro = Conexoes.Utilz.PrimeiroDiaDaSemana(DateTime.Now);
+            var primeiro = Conexoes.Utilz.PrimeiroDiaDaSemana(data.Getdata());
             return GetAvanco(new Data(primeiro.AddDays(-28)));
         }
         public Avanco GetAvanco(Data data = null, List<Fase> fases = null,string descricao = null)
@@ -102,7 +130,7 @@ namespace GCM_Offline
             List<Avanco> pp = new List<Avanco>();
             pp.Add(previsto);
             pp.Add(realizado);
-            return new Avanco(data, pp);
+            return new Avanco(data, pp,"", this._data_max,true);
         }
         #region property
         [Browsable(false)]
@@ -301,7 +329,7 @@ namespace GCM_Offline
                 {
                     return _inicio_cronograma;
                 }
-                return new Data(DateTime.Now);
+                return new Data(this._data_max);
             }
             set
             {
@@ -354,6 +382,10 @@ namespace GCM_Offline
         }
         private string _gerente { get; set; } = "";
 
+        [Browsable(false)]
+        public string descricao_excel { get; set; } = "";
+        [Browsable(false)]
+        public string engenheiro_excel { get; set; } = "";
 
         [Category("Obra")]
         [DisplayName("Pedido")]
@@ -361,7 +393,7 @@ namespace GCM_Offline
         {
             get
             {
-                return _pedido;
+                return _pedido.ToUpper();
             }
             set
             {
@@ -394,6 +426,7 @@ namespace GCM_Offline
             
             this.Salvar(this.diretorio);
             this.Getapontamentos().Salvar(this.diretorio);
+            this._apontamentos = null;
             this.GetDiario().Salvar(this.diretorio);
         }
         public void SetPesoAvanco(Fase fase)
@@ -411,9 +444,9 @@ namespace GCM_Offline
 
         [XmlIgnore]
         private Apontamentos _apontamentos { get; set; }
-        public Apontamentos Getapontamentos()
+        public Apontamentos Getapontamentos( bool atualizar = false)
         {
-            if (_apontamentos == null)
+            if (_apontamentos == null| atualizar)
             {
                 if (Directory.Exists(diretorio))
                 {
@@ -500,7 +533,7 @@ namespace GCM_Offline
                     }
                 }
             }
-            return new Linha_de_Balanco();
+            return new Linha_de_Balanco() { diretorio = diretorio };
         }
         public void Salvar(string diretorio = null)
         {
@@ -741,11 +774,33 @@ namespace GCM_Offline
 
         }
 
+        public void CalcularEfetivosPrevistos()
+        {
+            List<string> equipes = this.Subfases().Select(x => x.equipe).Distinct().ToList().FindAll(x=>x.ToUpper()!="INDEFINIDO").ToList();
+
+            for (int i = 0; i < this.recursos__previstos.Count; i++)
+            {
+                if(this.recursos__previstos[i].descricao.ToUpper().Contains("EFETIVO"))
+                {
+                    if(this.recursos__previstos[i].equipe.ToUpper() =="INDEFINIDO")
+                    {
+                        if(equipes.Count>0)
+                        {
+                            this.recursos__previstos[i].equipe = equipes.Last();
+                            equipes.Remove(this.recursos__previstos[i].equipe);
+                        }
+                    }
+                    var tot = GetEfetivoPrevisto(this.recursos__previstos[i]);
+                    this.recursos__previstos[i].valor_previsto_importado = tot.Sum(x => x.total_efetivo);
+                }
+            }
+        }
         public List<Fase> GetEfetivoPrevisto(Recurso p)
         {
             if(p.equipe!="" && p.descricao.ToUpper().Contains("EFETIVO"))
             {
-                return this.Subfases().FindAll(x => x.equipe.ToUpper().Replace(" ", "") == p.equipe.ToUpper().Replace(" ", ""));
+                var ps = this.Subfases().FindAll(x => x.equipe.ToUpper().Replace(" ", "") == p.equipe.ToUpper().Replace(" ", ""));
+                return ps;
             }
             return new List<Fase>();
         }
@@ -756,14 +811,14 @@ namespace GCM_Offline
         public string arquivoexcel { get; set; } = "";
         public List<Fase> Subfases()
         {
-            return this.fases.SelectMany(x => x.fases).ToList().OrderBy(x=>x.inicio_real.Getdata()).ToList();
+            return this.fases.SelectMany(x => x.fases).ToList().OrderBy(x=>x.pep).ToList();
         }
         public List<Recurso> GetTodosRecursos()
         {
             List<Recurso> retorno = new List<Recurso>();
             retorno.AddRange(this.recursos__previstos);
-            retorno.AddRange(this.improdutividade);
-            retorno.AddRange(this.supervisor);
+            //retorno.AddRange(this.improdutividade);
+            //retorno.AddRange(this.supervisor);
 
             return retorno;
         }
@@ -799,12 +854,12 @@ namespace GCM_Offline
             return retorno;
         }
         public List<Recurso> recursos__previstos { get; set; } = new List<Recurso>();
-        public List<Recurso> supervisor { get; set; } = new List<Recurso>();
-        public List<Recurso> improdutividade { get; set; } = new List<Recurso>();
+        //public List<Recurso> supervisor { get; set; } = new List<Recurso>();
+        //public List<Recurso> improdutividade { get; set; } = new List<Recurso>();
 
         public List<Recurso> Getefetivos()
         {
-            return this.recursos__previstos.FindAll(x => x.descricao.ToUpper().Contains("EFETIVO"));
+            return this.recursos__previstos.FindAll(x => x.descricao.ToUpper().Contains("EFETIVO")).GroupBy(x=>x.equipe).Select(x=>x.First()).ToList();
 
         }
        
@@ -841,9 +896,9 @@ namespace GCM_Offline
             if(retorno.Count>0)
             {
                 var max = retorno.Max(x => x.data.Getdata());
-                if(max>=DateTime.Now)
+                if(max>=this._data_max.Getdata())
                 {
-                    retorno.Add(GetAvanco(new Data(DateTime.Now), fases));
+                    retorno.Add(GetAvanco(this._data_max, fases));
                     retorno = retorno.OrderBy(x => x.data.Getdata()).ToList();
                 }
             }
@@ -862,7 +917,7 @@ namespace GCM_Offline
             //var vars = fases.Select(a => new Avanco(a.inicio, a.GetPrevistoDistribuidoDias().ToList().FindAll(x => x.data.Getdata() <= dmax.Getdata()).OrderBy(x => x.data.Getdata()).ToList())).ToList();
             var vars = fases.SelectMany(a => a.GetPrevistoDistribuidoDias().ToList().FindAll(x => x.data.Getdata() <= dmax.Getdata()).OrderBy(x => x.data.Getdata()).ToList()).ToList();
  
-            var apon = new Avanco(new Data(dmax.Getdata()), vars);
+            var apon = new Avanco(new Data(dmax.Getdata()), vars,"", this._data_max,true);
             return apon;
         }
         public Data primeiro_dia()
@@ -881,12 +936,12 @@ namespace GCM_Offline
                 fases = fases.FindAll(x => x.descricao == descricao);
             }
             var valor = fases.Select(x => x.GetSomaApontamentos(new Data(dmax.Getdata()))).ToList();
-            var apon = new Avanco(new Data(dmax.Getdata()),valor);
+            var apon = new Avanco(new Data(dmax.Getdata()),valor,"", this._data_max, true);
             return apon;
         }
         public Linha_de_Balanco()
         {
-
+        
         }
     }
     [Serializable]
@@ -917,6 +972,7 @@ namespace GCM_Offline
         [XmlIgnore]
         [Browsable(false)]
         public int linha { get; set; } = 0;
+        [Browsable(false)]
         public string datastr
         {
             get
@@ -929,6 +985,7 @@ namespace GCM_Offline
                 return "";
             }
         }
+        [Browsable(false)]
         public bool valido
         {
             get
@@ -974,6 +1031,7 @@ namespace GCM_Offline
             return data1;
         }
         private int _ano { get; set; } = 2001;
+        [DisplayName("Ano")]
         public int ano
         {
             get
@@ -989,6 +1047,7 @@ namespace GCM_Offline
             }
         }
         private int _mes { get; set; } = 01;
+        [DisplayName("Mês")]
         public int mes
         {
             get
@@ -1006,6 +1065,7 @@ namespace GCM_Offline
             }
         }
         private int _dia { get; set; } = 01;
+        [DisplayName("Dia")]
         public int dia
         {
             get
@@ -1023,6 +1083,7 @@ namespace GCM_Offline
             }
         }
         [XmlIgnore]
+        [Browsable(false)]
         public int semana
         {
             get
@@ -1030,6 +1091,7 @@ namespace GCM_Offline
                 return GetSemana();
             }
         }
+        [Browsable(false)]
         public string dia_da_semana
         {
             get
@@ -1053,6 +1115,8 @@ namespace GCM_Offline
             {
                 SetData(data);
             }
+            
+           
         }
         public Data Add(int dias)
         {
@@ -1197,7 +1261,7 @@ namespace GCM_Offline
             {
                 var prev = prevs.Find(x => x.data.datastr == dt.datastr);
                 var real = reals.Find(x => x.data.datastr == dt.datastr);
-                Avanco pp = new Avanco(dt, prev != null ? prev.valor:0, real != null ? real.valor:0,"",1);
+                Avanco pp = new Avanco(dt, prev != null ? prev.valor:0, real != null ? real.valor:0,"",1, this.lob._data_max,false);
                 retorno.Add(pp);
             }
             return retorno;
@@ -1256,6 +1320,7 @@ namespace GCM_Offline
             }
             return retorno;
         }
+
         public List<Avanco> GetAvancosAcumulados(bool update = false, int dias = 7, Data dmax = null)
         {
             List<Avanco> retorno = new List<Avanco>();
@@ -1287,17 +1352,27 @@ namespace GCM_Offline
             var prev = GetPrevistoAcumulado(dias, dt);
             var real = GerRealizadoAcumulado(dias, dt);
             List<Avanco> retorno = new List<Avanco>();
- 
-            return new Avanco(new Data(dt), prev.valor, real.valor,this.ToString(),1);
+            retorno.Add(prev);
+            retorno.Add(real);
+
+            return new Avanco(new Data(dt), retorno, "", new Data(dt),false);
+            //return new Avanco(new Data(dt), prev.previsto, real.realizado,this.ToString(),1, this.lob._data_max);
         }
-        public Apontamento GetPrevistoAcumulado(int dias, DateTime dt)
+        public Avanco GetPrevistoAcumulado(int dias, DateTime dt)
         {
             var prev = this.GetPrevistos();
-            return new Apontamento(new Data(dt), prev.FindAll(x => x.data.Getdata() <= dt && x.data.Getdata() >= dt.AddDays(-dias+1)).Sum(x => x.valor));
+
+            List<Avanco> avancos = prev.FindAll(x => x.data.Getdata() <= dt && x.data.Getdata() >= dt.AddDays(-dias + 1)).Select(x => new Avanco(x.data, x.valor, 0, "", 1, new Data(dt),false)).ToList();
+
+            return new Avanco(new Data(dt), avancos, "", new Data(dt),false);
+
+            //return new Apontamento(new Data(dt), prev.FindAll(x => x.data.Getdata() <= dt && x.data.Getdata() >= dt.AddDays(-dias+1)).Sum(x => x.valor));
         }
-        public Apontamento GerRealizadoAcumulado(int dias, DateTime dt)
+        public Avanco GerRealizadoAcumulado(int dias, DateTime dt)
         {
-            return new Apontamento(new Data(dt), this.GetApontamentos().FindAll(x => x.data.Getdata() <= dt && x.data.Getdata() >= dt.AddDays(-dias+1)).Sum(x => x.valor));
+            List<Avanco> realizados = this.GetApontamentos().FindAll(x => x.data.Getdata() <= dt && x.data.Getdata() >= dt.AddDays(-dias + 1)).Select(x => new Avanco(x.data, 0, x.valor, "", 1, new Data(dt),false)).ToList();
+            return new Avanco(new Data(dt), realizados, "", new Data(dt),false);
+            //return new Apontamento(new Data(dt), this.GetApontamentos().FindAll(x => x.data.Getdata() <= dt && x.data.Getdata() >= dt.AddDays(-dias+1)).Sum(x => x.valor));
         }
         [Browsable(false)]
         public Tipo_Recurso tipo { get; set; } = Tipo_Recurso.Recurso;
@@ -1319,12 +1394,12 @@ namespace GCM_Offline
             }
         }
         private string _equipe { get; set; } = "";
-        [Browsable(false)]
-        public string supervisor { get; set; } = "";
-        [Browsable(false)]
-        public string motivo { get; set; } = "";
-        [Browsable(false)]
-        public string cargo { get; set; } = "";
+        //[Browsable(false)]
+        //public string supervisor { get; set; } = "";
+        //[Browsable(false)]
+        //public string motivo { get; set; } = "";
+        //[Browsable(false)]
+        //public string cargo { get; set; } = "";
         [Browsable(false)]
         public string chave
         {
@@ -1492,6 +1567,10 @@ namespace GCM_Offline
         {
             get
             {
+                if(this.tipo ==  Tipo_Recurso.Improdutividade)
+                {
+                    return total_utilizado;
+                }
                 return this.valor_previsto_importado;
             }
         }
@@ -1502,10 +1581,12 @@ namespace GCM_Offline
             {
 
                 var s = this.total_previsto - this.total_utilizado;
+
                 if (s > 0)
                 {
                     return s;
                 }
+
                 return 0;
             }
         }
@@ -1519,7 +1600,7 @@ namespace GCM_Offline
         }
         public override string ToString()
         {
-            return this.descricao + " [P: " + this.total_previsto + " U: " + this.total_utilizado + "]";
+            return "[" + this.tipo + "]" + this.descricao + " [P: " + this.total_previsto + " U: " + this.total_utilizado + "]";
         }
         [Browsable(false)]
         public List<Apontamento> previsto { get; set; } = new List<Apontamento>();
@@ -1599,14 +1680,14 @@ namespace GCM_Offline
             int c = 0;
             foreach (var dia in dias_uteis)
             {
-                retorno.Add(new Avanco(new Data(dia), (valor_dia + (c==dias_uteis.Count-1?resto:0)) * (peso_fase?this.peso_fase:1) *100,0,this.ToString(), this.peso_fase));
+                retorno.Add(new Avanco(new Data(dia), (valor_dia + (c==dias_uteis.Count-1?resto:0)) * (peso_fase?this.peso_fase:1) *100,0,this.ToString(), this.peso_fase, this.lob._data_max, true));
                 c++;
             }
             return retorno;
         }
         public Avanco GetSomaApontamentos(Data ate)
         {
-            return new Avanco(new Data(ate.Getdata()), this.GetApontamentos().FindAll(x => x.data.Getdata() <= ate.Getdata()).Select(x => new Avanco(new Data(x.data.Getdata()),0, x.valor * this.peso_fase,x.ToString(), this.peso_fase)).ToList());
+            return new Avanco(new Data(ate.Getdata()), this.GetApontamentos().FindAll(x => x.data.Getdata() <= ate.Getdata()).Select(x => new Avanco(new Data(x.data.Getdata()),0, x.valor * this.peso_fase,x.ToString(), this.peso_fase, this.lob._data_max, true)).ToList(),"", this.lob._data_max, true);
         }
         public override string ToString()
         {
@@ -2142,7 +2223,7 @@ namespace GCM_Offline
                     }
                 }
             }
-            return new Apontamentos();
+            return new Apontamentos() { diretorio = diretorio };
         }
         public List<Apontamento> apontamentos { get; set; } = new List<Apontamento>();
         public Apontamentos()
@@ -2238,6 +2319,13 @@ namespace GCM_Offline
     [Serializable]
     public class Avanco
     {
+        public void SetDataMax(Data data)
+        {
+            this._data_max = _data_max;
+        }
+        [XmlIgnore]
+        [Browsable(false)]
+        public Data _data_max { get; set; }
         public double peso { get; set; } = 1;
         public double previsto_peso
         {
@@ -2267,15 +2355,23 @@ namespace GCM_Offline
         {
             get
             {
+
                 //var sm = data.GetSemana();
                 //var sm_2 = new Data(DateTime.Now).GetSemana() + DateTime.Now.Year;
-                if(data.Getdata() <= DateTime.Now)
+                var dt = this._data_max.Getdata();
+                if(_data_max!=null)
+                {
+                    dt = _data_max.Getdata();
+                }
+
+                if(data.Getdata() <= dt)
                 {
                 return Math.Round(realizado - previsto,2);
                 }
                 return 0;
             }
         }
+        public bool porcentagem { get; set; } = true;
         public double max
         {
            get
@@ -2309,7 +2405,17 @@ namespace GCM_Offline
             {
                 if(avancos.Count>0)
                 {
-                    return avancos.Sum(x => x.previsto);
+                    var p = avancos.Sum(x => x.previsto);
+                   if(p>100 && porcentagem)
+                    {
+                        return 100;
+                    }
+
+                    return p;
+                }
+                if(_previsto> 100 && porcentagem)
+                {
+                    return 100;
                 }
                 return _previsto;
             }
@@ -2325,7 +2431,16 @@ namespace GCM_Offline
             {
                 if (avancos.Count > 0)
                 {
-                    return avancos.Sum(x => x.realizado);
+                    var p = avancos.Sum(x => x.realizado);
+                    if (p > 100 && porcentagem)
+                    {
+                        return 100;
+                    }
+                    return p;
+                }
+                if (_realizado > 100 && porcentagem)
+                {
+                    return 100;
                 }
                 return _realizado;
             }
@@ -2339,21 +2454,23 @@ namespace GCM_Offline
         {
 
         }
-        public Avanco(Data data, double previsto, double realizado, string descricao, double peso)
+        public Avanco(Data data, double previsto, double realizado, string descricao, double peso, Data data_max, bool porcentagem)
         {
             this.data = data;
             this.previsto = previsto;
             this.realizado = realizado;
             this.descricao = descricao;
             this.peso = peso;
-
+            this._data_max = data_max;
+            this.porcentagem = porcentagem;
         }
-        
-        public Avanco(Data data, List<Avanco> avancos, string descricao = "")
+        public Avanco(Data data, List<Avanco> avancos, string descricao, Data data_max, bool porcentagem)
         {
             this.data = data;
             this.avancos = new List<Avanco>(avancos.FindAll(x => x.previsto > 0 | x.realizado > 0).ToList().OrderBy(x => x.data.Getdata()).ToList());
             this.descricao = descricao;
+            this._data_max = data_max;
+            this.porcentagem = porcentagem;
         }
 
     }
@@ -2509,6 +2626,85 @@ namespace GCM_Offline
         private string _descricao { get; set; } = "";
 
         public Observacao()
+        {
+
+        }
+    }
+
+
+    [Serializable]
+    public class PlanoDeAcao : INotifyPropertyChanged
+    {
+        public override string ToString()
+        {
+            return this.data + " - " + this.responsavel + " - " + this.acao;
+        }
+        #region property
+        [Browsable(false)]
+        public event PropertyChangedEventHandler PropertyChanged;
+        [Browsable(false)]
+        public void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        [Browsable(false)]
+        private void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+
+        [DisplayName("Data")]
+        [ExpandableObject]
+        public Data data
+        {
+            get
+            {
+                return _data;
+            }
+            set
+            {
+                _data = value;
+                NotifyPropertyChanged("data");
+            }
+        }
+        private Data _data { get; set; } = new Data();
+
+
+        [DisplayName("Responsável")]
+        public string responsavel
+        {
+            get
+            {
+                return _responsavel;
+            }
+            set
+            {
+                _responsavel = value;
+                NotifyPropertyChanged("responsavel");
+            }
+        }
+        private string _responsavel { get; set; } = "";
+        [DisplayName("Ação")]
+        public string acao
+        {
+            get
+            {
+                return _acao;
+            }
+            set
+            {
+                _acao = value;
+                NotifyPropertyChanged("acao");
+            }
+        }
+        private string _acao { get; set; } = "";
+
+        public PlanoDeAcao()
         {
 
         }

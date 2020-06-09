@@ -1,7 +1,16 @@
+Última Atualização: 09/06/2020
+Daniel Lins Maciel - daniel.maciel@medabil.com.br - Equipe de Inovação
+=====================================================================================================================
+V 1.1.0.14 - Criação de Efetivos baseado no nome das equipes nas etapas.
+			 Ajustes na Linha de Balanço (Campo nome da equipe de montagem).
+V 1.1.0.13 - Ajustes na planilha Avanço: Gestão visual dos pesos das etapas.
+			 Adicionado verificação de pesos de etapas com divergências.
+V 1.1.0.12 - Corrigido Bug na LOB ao importar que pulava etapas
+V 1.1.0.11 - Adicionado funcionalidade que reconhece Linhas de Balanço com fórmulas editadas. (Linhas em branco)
 V 1.1.0.10 - Correção de Fórmulas na planilha Template de Linha de Balanço. 
 		     Ordenação de etapas alterada para etapas e não mais datas.
 			 Importação de recursos ajustada para reconhecer a equipe inserida e calcular o efetivo previsto
-
+===================================================================================================================
 V 1.1.0.9 - Correção nos apontamentos da aba 'Recursos', datas não batiam com o que estava lançado.
 V 1.1.0.8 - Correção na importação de apontamentos de improdutividade e da aba 'Recursos', ajustes de interface
 V 1.1.0.7 - Adicionado barras de progresso com previsto e realizado abaixo do desvio
@@ -12,8 +21,6 @@ V 1.1.0.3 - Corrigido bug que exportava as observações em branco
 V 1.1.0.2 - Ajuste na LOB (correção que estava a planilha bloqueada).
 V 1.1.0.1 - Ajuste no gráfico de desvio.
 V 1.1.0.0 - Nova versão, com inúmeras funcionalidades novas.
-
-
 ================================================================================
 V 1.0.0.6 - Ajuste nos cálculos de pesos de etapas.
 V 1.0.0.5 - Ajustes gerais

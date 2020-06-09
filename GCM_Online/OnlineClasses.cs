@@ -17,8 +17,54 @@ using System.Windows.Media.Animation;
 
 namespace GCM_Online
 {
+    public class VisaoInicial
+    {
+        public double latitude { get; set; } = 0;
+        public double longitude { get; set; } = 0;
+        public double peso_planejado { get; set; } = 0;
+        public double peso_produzido { get; set; } = 0;
+        public double peso_embarcado { get; set; } = 0;
+        public double peso_montado { get; set; } = 0;
+        public double previsto { get; set; } = 0;
+        public double liberado_engenharia { get; set; } = 0;
+        public double er
+        {
+            get
+            {
+                return this.liberado_engenharia;
+            }
+        }
+        public double fr
+        {
+            get
+            {
+                return Math.Round(this.peso_produzido / this.peso_planejado * 100, 2);
+            }
+        }
+        public double lr
+        {
+            get
+            {
+                return Math.Round(this.peso_embarcado / this.peso_planejado * 100, 2);
+            }
+        }
+        public double es { get; set; } = 0;
+        public double fs { get; set; } = 0;
+        public double ls { get; set; } = 0;
+        public double realizado { get; set; } = 0;
+        public int dias_atraso { get; set; } = 0;
+        public double desvio
+        {
+            get
+            {
+                return -Math.Round(previsto - realizado,1);
+            }
+        }
+    }
     public class Contrato
     {
+        [Browsable(false)]
+        public Linha_de_Balanco lob_tela { get; set; } = new Linha_de_Balanco();
         public Linha_de_Balanco Getlob()
         {
             Linha_de_Balanco retorno = new Linha_de_Balanco();
@@ -206,6 +252,11 @@ namespace GCM_Online
         public string gerente { get; set; } = "";
         [DisplayName("Área")]
         public double area { get; set; } = 0;
+
+       
+
+        public VisaoInicial tela { get; set; } = new VisaoInicial();
+
         private List<FaseOnline> _subetapas { get; set; }
         public List<FaseOnline> Subfases()
         {
@@ -240,7 +291,7 @@ namespace GCM_Online
             }
             return _efetivos;
         }
-        public Contrato(DB.Linha s)
+        public Contrato(DB.Linha s, DB.Linha painel)
         {
             this.id = s.Get("id").Int;
             this.contrato = s.Get("contrato").ToString().ToUpper();
@@ -250,7 +301,24 @@ namespace GCM_Online
             this.area = s.Get("area").Double();
             this.status = Conexoes.Utilz.StringParaEnum<GCM_Offline.Status_Montagem>(s.Get("status").ToString());
             this.ultima_importacao = new Data(s.Get("ultima_importacao").Data);
-           
+
+            this.lob_tela = this.Getlob();
+            var atual = this.lob_tela.GetTotal(this.ultima_importacao);
+            //this.previsto_obra = vv.Get("previsto_obra").Double();
+            this.tela.previsto = atual.previsto;
+            this.tela.realizado = atual.realizado;
+            this.tela.dias_atraso = this.lob_tela.dias_atraso(this.ultima_importacao);
+            this.tela.es = painel.Get("es").Double();
+            this.tela.fs = painel.Get("fs").Double();
+            this.tela.latitude = painel.Get("latitude").Double(15);
+            this.tela.longitude = painel.Get("longitude").Double(15);
+            this.tela.ls = painel.Get("ls").Double();
+            this.tela.peso_embarcado = painel.Get("peso_embarcado").Double();
+            this.tela.peso_montado = painel.Get("peso_montado").Double();
+            this.tela.peso_planejado = painel.Get("peso_planejado").Double();
+            this.tela.peso_produzido = painel.Get("peso_produzido").Double();
+            this.tela.liberado_engenharia = painel.Get("liberado_engenharia").Double();
+
         }
         public Contrato()
         {
@@ -610,6 +678,8 @@ namespace GCM_Online
         }
         public static string tb_lancamentos { get; set; } = "gcm_lancamentos";
         public static string tb_obras { get; set; } = "gcm_obras";
+        public static string tb_view_pedidos { get; set; } = "montagem_pedidos";
+        public static string pedidos_planejamento_copia { get; set; } = "pedidos_planejamento_copia";
     }
     public static class dbase
     {
@@ -708,16 +778,32 @@ namespace GCM_Online
             Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_efetivos);
             Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
         }
+
         public static List<Contrato> obras(bool update = false)
         {
             if(_obras == null | update)
             {
                 _obras = new List<Contrato>();
                 var obs = Conexoes.DBases.BancoRM.DB.Consulta("select * from " + Vars.db + "."  + Vars.tb_obras);
-                foreach(var s in obs.Linhas)
+                var painel = Conexoes.DBases.BancoRM.DB.Consulta("select * from " + "comum" + "."  + Vars.pedidos_planejamento_copia);
+
+                Conexoes.Wait w = new Conexoes.Wait(obs.Linhas.Count, "Carregando obras...");
+                w.Show();
+                foreach (var s in obs.Linhas)
                 {
-                    _obras.Add(new Contrato(s));
+                    var spp = painel.Linhas.Find(x => x.Get("pedido").ToString().ToUpper() == s.Get("contrato").ToString().ToUpper());
+                    if(spp==null)
+                    {
+                        spp = painel.Linhas.Find(x => s.Get("contrato").ToString().ToUpper().Contains(x.Get("contrato").ToString().ToUpper()) && Conexoes.Utilz.CortarStringDireita(s.Get("contrato").ToString(), 3) == Conexoes.Utilz.CortarStringDireita(x.Get("pedido").ToString(), 3));
+                    }
+                    if(spp==null)
+                    {
+                        spp = new Linha();
+                    }
+                    _obras.Add(new Contrato(s,spp));
+                    w.somaProgresso();
                 }
+                w.Close();
             _obras = _obras.OrderBy(x => x.descricao).ToList();
             }
             return _obras;

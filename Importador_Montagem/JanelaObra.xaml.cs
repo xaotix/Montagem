@@ -515,7 +515,7 @@ namespace Importador_Montagem
         {
             this.lob_online = contrato;
             InitializeComponent();
-            this.data_padrao.SelectedDate = DateTime.Now;
+            this.data_padrao.SelectedDate = this.lob_online.ultima_importacao.Getdata();
             Update();
         }
         public Linha_de_Balanco lob { get; set; } = new Linha_de_Balanco();

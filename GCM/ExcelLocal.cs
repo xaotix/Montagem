@@ -41,7 +41,7 @@ namespace GCM_Offline
             {
                 using (var pck = new OfficeOpenXml.ExcelPackage())
                 {
-                    Conexoes.Wait w = new Conexoes.Wait(10, "Carregando planilha...");
+                    Conexoes.Wait w = new Conexoes.Wait(800, "Carregando planilha...");
                     w.Show();
                     w.somaProgresso();
                     //using (var stream = File.OpenRead(path))
@@ -99,12 +99,12 @@ namespace GCM_Offline
                                 string wlinhastr = getlinhastr(wlinha);
 
 
-                                string col_J, col_B, col_N, col_D, col_E;
-                                getchaves(lob, L, out col_J, out col_B, out col_N, out col_D, out col_E);
+                                string col_J, col_B, col_N, col_D, col_E, col_A;
+                                getchaves(lob, L, out col_J, out col_B, out col_N, out col_D, out col_E, out col_A);
 
                                 var min = new DateTime(2001, 01, 01);
 
-                                if (col_J.ToUpper().Contains("ETAPA") && col_B != "")
+                                if ((col_J.ToUpper().Contains("ETAPA")| col_A == "2") && col_B != "")
                                 {
                                     Fase p = new Fase();
                                     p.area = GetValor<double>(lob.Cells["H" + L]);
@@ -130,10 +130,10 @@ namespace GCM_Offline
 
 
                                     //pula uma linha
-                                    L++;
-                                    getchaves(lob, L, out col_J, out col_B, out col_N, out col_D, out col_E);
+                                    L++; w.somaProgresso();
+                                    getchaves(lob, L, out col_J, out col_B, out col_N, out col_D, out col_E, out col_A);
                                     //procura pelas sub-etapas
-                                    while (!col_J.ToUpper().Contains("SUBETAPA") && col_B.Length > 0)
+                                    while ((!col_J.ToUpper().Contains("SUBETAPA")| col_A!="2" ) && L<751)
                                     {
                                         if (col_J.ToUpper().Contains("EXISTE") | (new Data(col_D).valido && new Data(col_E).valido))
                                         {
@@ -187,8 +187,8 @@ namespace GCM_Offline
                                             erros.Add("Linha " + L + " Células de datas  (D" + L + " e ou E" + L + "): preenchimento inválido ou em branco. Valor esperado: Data");
                                         }
 
-                                        L++;
-                                        getchaves(lob, L, out col_J, out col_B, out col_N, out col_D, out col_E);
+                                        L++; w.somaProgresso();
+                                        getchaves(lob, L, out col_J, out col_B, out col_N, out col_D, out col_E, out col_A);
                                         wlinhastr = getlinhastr(lob.Cells[L, c0, L, colunas]);
                                     }
 
@@ -206,18 +206,12 @@ namespace GCM_Offline
                                         }
                                         var figuais = p.fases.GroupBy(x => x.cod).ToList().FindAll(x => x.Count() > 1).FindAll(x => x.Key.Replace(" ", "") != "");
 
-                                        erros.AddRange(figuais.Select(x => "Há mais de uma sub-etapa com o nome " + x.Key + " Corrija a coluna 'C'"));
+                                        erros.AddRange(figuais.Select(x => "Há mais de uma sub-etapa com o nome " + x.Key + " na etapa " + p.descricao + " Corrija a coluna 'C'"));
                                         erros.AddRange(p.fases.FindAll(x => x.cod.Length != 3).Select(x => "Etapa " + p.descricao + " Campo CÓD [coluna C] inválido deve conter 3 caracteres: " + x.cod));
                                         p.SetInicios();
                                         retorno.fases.Add(p);
                                     }
-                                    //else
-                                    //{
-                                    //    erros.Add(col_J + " Nenhuma sub-etapa válida encontrada.");
 
-                                    //}
-
-                                    //se nao achar mais nenhum valor na coluna J e na coluna B
                                     if (col_J.Length == 0 && col_B.Length == 0)
                                     {
                                         //pula linhas se estão em branco durante 10 tentativas
@@ -225,9 +219,9 @@ namespace GCM_Offline
                                         int c = 1;
                                         while (c < ll && col_J.Length == 0 && col_B.Length == 0 && col_N.Length == 0)
                                         {
-                                            L++;
+                                            L++; w.somaProgresso();
                                             c++;
-                                            getchaves(lob, L, out col_J, out col_B, out col_N, out col_D, out col_E);
+                                            getchaves(lob, L, out col_J, out col_B, out col_N, out col_D, out col_E, out col_A);
                                         }
 
 
@@ -238,20 +232,25 @@ namespace GCM_Offline
                                         else
                                         {
                                             //volta uma linha para que o loop possa continuar pra proxima etapa
-                                            L--;
+                                            L--; w.SetProgresso(L,  800,"Importando dados...");
                                         }
+                                    }
+                                    else if(col_J.ToUpper().Contains("SUBETAPA"))
+                                    {
+                                        //volta uma linha para continuar o loop com as etapas
+                                        L--;
                                     }
                                 }
                                 else if (col_N.ToUpper().Contains("RECURSOS"))
                                 {
                                     retorno.Ajustes();
-                                    L++;
+                                    L++; w.somaProgresso();
                                     string titulo = "";
                                     pula_em_branco_recursos(lob, ref L, ref titulo);
 
 
 
-                                    while (titulo != "" && titulo != null)
+                                    while (titulo != "" && titulo != null && L<800)
                                     {
 
                                         pula_em_branco_recursos(lob, ref L, ref titulo);
@@ -324,14 +323,14 @@ namespace GCM_Offline
                                                 retorno.recursos__previstos.Add(pp);
                                             }
                                         }
-                                        L++;
+                                        L++; w.somaProgresso();
                                         pula_em_branco_recursos(lob, ref L, ref titulo);
 
                                     }
 
 
 
-                                    L++;
+                                    L++; w.somaProgresso();
                                     //L = GetRecursos(retorno, lob, l_data, col_recursos, col_datas, L);
 
 
@@ -477,7 +476,9 @@ namespace GCM_Offline
             }
 
             retorno.AjustaPesosEtapas();
-            retorno.CalcularEfetivosPrevistos();
+
+            /*01.06.2020 - ajustes na função que cria os efetivos.*/
+            retorno.CriarEfetivos();
 
             var fases_iguais = retorno.Subfases().GroupBy(x => x.pep).ToList().FindAll(x => x.Count() > 1);
 
@@ -958,6 +959,8 @@ namespace GCM_Offline
             //    status = false;
             //    return r;
             //}
+
+            r.CriarEfetivos();
             status = true;
             w.Close();
             return r;
@@ -1217,7 +1220,7 @@ namespace GCM_Offline
                         else if (w.Name.ToUpper() == "RECURSOS")
                         {
                             var datas = w.Cells["I3:KL3"].ToList().Select(x => new Data(x)).ToList().FindAll(x => x.valido).ToList();
-                            var efetivos = atual.recursos__previstos.FindAll(x => x.descricao.ToUpper().Contains("EFETIVO"));
+                            var efetivos = atual.recursos__previstos.FindAll(x => x.descricao.ToUpper().Contains("EFETIVO") && x.tipo == Tipo_Recurso.Recurso);
                             var outros = atual.recursos__previstos.FindAll(x => !x.descricao.ToUpper().Contains("EFETIVO") && x.tipo == Tipo_Recurso.Recurso);
                             //começa na coluna g
                             int col_0 = 9;
@@ -1604,9 +1607,10 @@ namespace GCM_Offline
             return retorno.Replace(" ","");
             //return string.Join("", wlinha.SelectMany(x => x.ToList().Select(y => y.Value != null ? y.GetValue<string>().Replace(" ", "") : "")));
         }
-        private static void getchaves(ExcelWorksheet w, int L, out string col_J, out string col_B, out string col_N, out string col_D,out string col_E)
+        private static void getchaves(ExcelWorksheet w, int L, out string col_J, out string col_B, out string col_N, out string col_D,out string col_E, out string col_A)
         {
             col_J = w.Cells["J" + L].GetValue<string>();
+            col_A = w.Cells["A" + L].GetValue<string>();
             col_B = w.Cells["B" + L].GetValue<string>();
             col_N = w.Cells["N" + L].GetValue<string>();
             col_D = w.Cells["D" + L].GetValue<string>();
@@ -1630,6 +1634,10 @@ namespace GCM_Offline
             if (col_E == null)
             {
                 col_E = "";
+            }
+            if (col_A == null)
+            {
+                col_A = "";
             }
         }
     }

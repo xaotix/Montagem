@@ -251,12 +251,24 @@ namespace GCM_Offline
             }
 
 
+
             if (subs.Count == 0)
             {
                 MessageBox.Show("Não há nenhuma etapa na linha de balanço atual. Importe uma linha de balanço.\nVá até a aba LOB e ajuste as etapas.");
                 retorno = false;
             }
 
+            var max = subs.Select(x => x.peso_fase).OrderByDescending(x => x).Distinct().ToList();
+            if (max.Count > 1)
+            {
+                var m1 = max[0];
+                var m2 = max[1];
+                if (m1 - m2 > 0.3)
+                {
+                    MessageBox.Show("Há etapas com porcentagem muito acima do valor médio (mais de 30% do peso total da obra está nessa(s) etapa(s)\n [Verifique na Aba 'Lob', coluna 'M']. \n" + string.Join("\n", subs.FindAll(x => x.peso_fase == m1).Select(x => x.ToString() + " Peso: " + (x.peso_fase * 100) + "%")));
+                    retorno = false;
+                }
+            }
             return retorno;
         }
         public List<Recurso> GetEfetivosERecursos()
@@ -773,7 +785,38 @@ namespace GCM_Offline
 
 
         }
+        public void CriarEfetivos()
+        {
+            var equipes = this.Subfases().Select(x => x.equipe).Distinct().ToList();
 
+
+            for (int i = 0; i < this.recursos__previstos.Count(); i++)
+            {
+                if (this.recursos__previstos[i].descricao.ToUpper().Contains("EFETIVO"))
+                {
+                    //se nao acha o efetivo de mesmo nome, substitui pela equipe encontrada 
+                    if (equipes.Count > 0 && equipes.Find(x => x.ToUpper().Replace(" ", "") == this.recursos__previstos[i].equipe.ToUpper().Replace(" ", "")) == null)
+                    {
+                        this.recursos__previstos[i].equipe = equipes[0];
+                        this.recursos__previstos[i].previsto = new List<Apontamento>();
+                        equipes.RemoveAt(0);
+                    }
+                    else if (equipes.Count > 0 && equipes.Find(x => x.ToUpper().Replace(" ", "") == this.recursos__previstos[i].equipe.ToUpper().Replace(" ", "")) != null)
+                    {
+                        var eq = equipes.Find(x => x.ToUpper().Replace(" ", "") == this.recursos__previstos[i].equipe.ToUpper().Replace(" ", ""));
+                        equipes.Remove(eq);
+                    }
+                    else if (equipes.Count == 0)
+                    {
+                        this.recursos__previstos[i].equipe = "";
+                        this.recursos__previstos[i].previsto = new List<Apontamento>();
+                    }
+                }
+
+            }
+
+            this.CalcularEfetivosPrevistos();
+        }
         public void CalcularEfetivosPrevistos()
         {
             List<string> equipes = this.Subfases().Select(x => x.equipe).Distinct().ToList().FindAll(x=>x.ToUpper()!="INDEFINIDO").ToList();
@@ -782,14 +825,6 @@ namespace GCM_Offline
             {
                 if(this.recursos__previstos[i].descricao.ToUpper().Contains("EFETIVO"))
                 {
-                    if(this.recursos__previstos[i].equipe.ToUpper() =="INDEFINIDO")
-                    {
-                        if(equipes.Count>0)
-                        {
-                            this.recursos__previstos[i].equipe = equipes.Last();
-                            equipes.Remove(this.recursos__previstos[i].equipe);
-                        }
-                    }
                     var tot = GetEfetivoPrevisto(this.recursos__previstos[i]);
                     this.recursos__previstos[i].valor_previsto_importado = tot.Sum(x => x.total_efetivo);
                 }

@@ -8,6 +8,7 @@
                   Closing="ModernWindow_Closing"
                   WindowState="Maximized"
                   Loaded="ModernWindow_Loaded"
+                   xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
                   >
     <Grid>
         <Grid.RowDefinitions>
@@ -31,11 +32,98 @@
                 <MenuItem Header="Visualizar XML" Click="visualiza_xml"></MenuItem>
             </MenuItem>
         </Menu>
-        <telerik:RadGridView Background="Transparent" x:Name="lista" SelectionMode="Extended" AutoGenerateColumns="False"  FontSize="11" BorderThickness="0" Grid.Row="2" IsReadOnly="True" ShowSearchPanel="True" ShowGroupPanel="False" MouseDoubleClick="lista_MouseDoubleClick">
+        <telerik:RadGridView Background="Transparent" x:Name="lista" SelectionMode="Extended" AutoGenerateColumns="False"  FontSize="10" BorderThickness="0" Grid.Row="2" IsReadOnly="True" ShowSearchPanel="True" ShowGroupPanel="False" MouseDoubleClick="lista_MouseDoubleClick">
             <telerik:RadGridView.Columns>
                 <telerik:GridViewDataColumn IsReadOnly="True"  Header="Pedido"          DataMemberBinding="{Binding contrato, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
                 <telerik:GridViewDataColumn IsReadOnly="True"  Header="Descrição"          DataMemberBinding="{Binding descricao, Mode=OneWay}" Width="*"></telerik:GridViewDataColumn>
-                <telerik:GridViewDataColumn IsReadOnly="True"  Header="Status"          DataMemberBinding="{Binding status, Mode=OneWay}" Width="*"></telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn IsReadOnly="True"  Header="Peso"          DataMemberBinding="{Binding tela.peso_planejado, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
+
+                <telerik:GridViewDataColumn Header="Eng." Width="75" DataMemberBinding="{Binding tela.er, Mode=OneWay}" IsReadOnly="True">
+                    <telerik:GridViewDataColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Height="75">
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <ProgressBar Foreground="LightSkyBlue" FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding tela.es, Mode=OneWay}" Minimum="0" Maximum="100" Grid.Row="0" />
+                                <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding tela.er, Mode=OneWay}" Minimum="0" Maximum="100" Grid.Row="1" />
+                            </Grid>
+                        </DataTemplate>
+                    </telerik:GridViewDataColumn.CellTemplate>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn Header="Fábrica" Width="75" DataMemberBinding="{Binding tela.fr, Mode=OneWay}" IsReadOnly="True">
+                    <telerik:GridViewDataColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Height="75">
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <ProgressBar Foreground="LightSkyBlue" FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding tela.fs, Mode=OneWay}" Minimum="0" Maximum="100" Grid.Row="0" />
+                                <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding tela.fr, Mode=OneWay}" Minimum="0" Maximum="100" Grid.Row="1" />
+                            </Grid>
+                        </DataTemplate>
+                    </telerik:GridViewDataColumn.CellTemplate>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn Header="Loística" Width="75" DataMemberBinding="{Binding tela.lr, Mode=OneWay}" IsReadOnly="True">
+                    <telerik:GridViewDataColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Height="75">
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <ProgressBar Foreground="LightSkyBlue" FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding tela.ls, Mode=OneWay}" Minimum="0" Maximum="100" Grid.Row="0" />
+                                <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding tela.lr, Mode=OneWay}" Minimum="0" Maximum="100" Grid.Row="1" />
+                            </Grid>
+                        </DataTemplate>
+                    </telerik:GridViewDataColumn.CellTemplate>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn Header="Montagem" Width="75" DataMemberBinding="{Binding tela.desvio, Mode=OneWay}" IsReadOnly="True">
+                    <telerik:GridViewDataColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Height="75">
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <ProgressBar Foreground="LightSkyBlue" FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding tela.previsto, Mode=OneWay}" Minimum="0" Maximum="100" Grid.Row="0" />
+                                <ProgressBar Foreground="LimeGreen" FontSize="10" Style="{StaticResource  ComPorcentagem}" Value="{Binding tela.realizado, Mode=OneWay}" Minimum="0" Maximum="100" Grid.Row="1" />
+                            </Grid>
+                        </DataTemplate>
+                    </telerik:GridViewDataColumn.CellTemplate>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn Header="Desvio" Width="100" DataMemberBinding="{Binding tela.desvio, Mode=OneWay}" IsReadOnly="True">
+                    <telerik:GridViewDataColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Height="75">
+
+
+                                <lvc:Gauge Name="gauge_desvio" Value="{Binding tela.desvio}" ToColor="Green" FromColor="DarkRed" From="0" To="-15" LabelsVisibility="Collapsed" Grid.Row="0" Margin="5,5,5,5"/>
+
+
+
+                            </Grid>
+                        </DataTemplate>
+                    </telerik:GridViewDataColumn.CellTemplate>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn Header="Dias Atraso" Width="100" DataMemberBinding="{Binding tela.dias_atraso, Mode=OneWay}" IsReadOnly="True">
+                    <telerik:GridViewDataColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Height="75">
+
+                                <lvc:Gauge Name="gauge_dias_atraso" From="0" To="15" Value="{Binding tela.dias_atraso}" ToColor="Red" FromColor="LightGreen" LabelsVisibility="Collapsed" Grid.Row="10" Margin="5,5,5,5"/>
+
+                            </Grid>
+                        </DataTemplate>
+                    </telerik:GridViewDataColumn.CellTemplate>
+                </telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn IsReadOnly="True"  Header="Status"          DataMemberBinding="{Binding status, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
                 <telerik:GridViewDataColumn IsReadOnly="True"  Header="Área"          DataMemberBinding="{Binding area, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
                 <telerik:GridViewDataColumn IsReadOnly="True"  Header="Engenheiro"          DataMemberBinding="{Binding engenheiro, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
                 <telerik:GridViewDataColumn IsReadOnly="True"  Header="Última Importação"          DataMemberBinding="{Binding ultima_importacao, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>

@@ -530,13 +530,14 @@ namespace Montagem
             this.lob = this.obra.getLOB();
 
             InitializeComponent();
-            data_padrao.SelectedDate = DateTime.Now;
             this.DataContext = this.lob;
           
 
             var subs = this.lob.Subfases();
 
-            
+
+            this.data_padrao.SelectedDate = DateTime.Now;
+
 
             //GerarVisuais();
         }
@@ -544,12 +545,12 @@ namespace Montagem
 
         private void GerarVisuais()
         {
-            
+
             if(this.data_padrao.SelectedDate!=null)
             {
                 this.lob._data_max = new Data((DateTime)this.data_padrao.SelectedDate);
-            this.GerarGrafico();
             }
+            this.GerarGrafico();
             this.lista.ItemsSource = null;
             this.lista.ItemsSource = this.lob.recursos__previstos.FindAll(x=>x.total_previsto >0 | x.realizado>0);
             this.lista_etapas.ItemsSource = null;
@@ -932,7 +933,9 @@ namespace Montagem
         private void ajusta_pesos_etapas(object sender, RoutedEventArgs e)
         {
             this.lob.AjustaPesosEtapas(this.lob.Subfases());
+  
             Update();
+            MessageBox.Show("Dados ajustados!");
         }
 
         private void editar_data_inicio(object sender, RoutedEventArgs e)

@@ -1,6 +1,7 @@
-Última Atualização: 09/06/2020
+Última Atualização: 15/06/2020
 Daniel Lins Maciel - daniel.maciel@medabil.com.br - Equipe de Inovação
 =====================================================================================================================
+V 1.1.0.15 - Correção de bug ao importar avanço no modelo novo.
 V 1.1.0.14 - Criação de Efetivos baseado no nome das equipes nas etapas.
 			 Ajustes na Linha de Balanço (Campo nome da equipe de montagem).
 V 1.1.0.13 - Ajustes na planilha Avanço: Gestão visual dos pesos das etapas.

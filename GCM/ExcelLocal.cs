@@ -827,7 +827,7 @@ namespace GCM_Offline
                             Data fim = new Data(lob.Cells["J" + i]);
                             double area_etapa = Conexoes.Utilz.Double(lob.Cells["K" + i].Text);
                             double valor_etapa = Conexoes.Utilz.Double(lob.Cells["L" + i].Text);
-                            double peso_atividade = Conexoes.Utilz.Double(lob.Cells["M" + i].Text);
+                            double peso_atividade = Conexoes.Utilz.Double(lob.Cells["M" + i].Value);
                             double tamanho_obra = Conexoes.Utilz.Double(lob.Cells["N" + i].Text);
                             string pep_sap = lob.Cells["O" + i].Text;
                             string id = lob.Cells["P" + i].Text;

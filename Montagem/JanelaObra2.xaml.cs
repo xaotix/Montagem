@@ -639,7 +639,7 @@ namespace Montagem
 
         private void exporta_avanco(object sender, RoutedEventArgs e)
         {
-            
+         
             
             this.lob.SalvarTudo();
            this.lob = this.lob.Carregar();
@@ -687,10 +687,14 @@ namespace Montagem
 
             //if(Conexoes.Utilz.Pergunta("Deseja calcular automaticamente o efetivo baseado na diária preenchida nas etapas para cada etapa?"))
             //{
-                
-               
+
+
             //}
 
+            if (Conexoes.Utilz.Pergunta("Deseja editar a data de início real? \nAo alterar esse valor, você pode definir uma data anterior ao início do cronograma e o programa criará uma planilha com mais colunas à esquerda da data de início."))
+            {
+                Editar_Inicio_Real();
+            }
             Excel.ExportarApontamentos(this.lob, this.obra, true);
             
         }
@@ -1705,6 +1709,16 @@ namespace Montagem
             Conexoes.Utilz.Abrir(GCM_Offline.Vars.versionamento);
 
 
+        }
+
+        private void edita_data_inicio_real(object sender, RoutedEventArgs e)
+        {
+            Editar_Inicio_Real();
+        }
+
+        private void Editar_Inicio_Real()
+        {
+            this.lob.inicio_real = new Data(Conexoes.Utilz.SelecionarData(lob.inicio_real.Getdata(), lob.inicio.Getdata().AddDays(-120), lob.inicio.Getdata()));
         }
     }
 }

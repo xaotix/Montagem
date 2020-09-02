@@ -18,7 +18,9 @@ namespace GCM_Offline
 {
    public class Excel
     {
-
+        public static string colz_recs { get; set; } = "WL";
+        public static string colz { get; set; } = "ZU";
+        public static int colz_apon { get; set; } = 689;
         public static Linha_de_Balanco ImportarLOB(string path, string pedido, Linha_de_Balanco atual, out bool status)
         {
             denovo:
@@ -679,7 +681,7 @@ namespace GCM_Offline
                     #endregion
 
                     #region Aba Recursos
-                    var datas_recurso = rec.Cells["I3:KL3"].ToList().Select(x => new Data(x)).ToList().FindAll(x => x.valido).ToList();
+                    var datas_recurso = rec.Cells[$"I3:{colz_recs}3"].ToList().Select(x => new Data(x)).ToList().FindAll(x => x.valido).ToList();
                     //equipamento
                     for (int i = 4; i < 42; i++)
                     {
@@ -692,7 +694,7 @@ namespace GCM_Offline
 
                         if (equipe != "" | equipamento != "")
                         {
-                            var valores = rec.Cells["I" + i + ":KL" + i].ToList().FindAll(x => x.Value != null);
+                            var valores = rec.Cells[$"I{i}:{colz_recs}{i}"].ToList().FindAll(x => x.Value != null);
                             Recurso pp = new Recurso();
                             pp.equipe = equipe;
                             pp.descricao = equipamento;
@@ -737,7 +739,7 @@ namespace GCM_Offline
 
                         if (equipe != "" | equipamento != "")
                         {
-                            var valores = rec.Cells["I" + i + ":KL" + i].ToList().FindAll(x => x.Value != null);
+                            var valores = rec.Cells[$"I{i}:{colz_recs}{i}"].ToList().FindAll(x => x.Value != null);
                             Recurso pp = new Recurso();
                             pp.equipe = equipe;
                             pp.descricao = equipamento;
@@ -774,7 +776,7 @@ namespace GCM_Offline
                         string id = rec.Cells["F" + i].Text;
                         if (motivo != "")
                         {
-                            var valores = rec.Cells["I" + i + ":KL" + i].ToList().FindAll(x => x.Value != null);
+                            var valores = rec.Cells[$"I{i}:{colz_recs}{i}"].ToList().FindAll(x => x.Value != null);
                             Recurso pp = new Recurso();
                             pp.descricao = motivo;
                             pp.tipo = Tipo_Recurso.Improdutividade;
@@ -808,10 +810,10 @@ namespace GCM_Offline
 
 
                     var celulasid = av.Cells["A1:A406"].ToList().FindAll(x => x.Value != null).ToList();
-                    var datas = av.Cells["J2:LY2"].ToList().FindAll(x => x.Value != null).Select(x => new Data(x)).ToList();
+                    var datas = av.Cells[$"J2:{colz}2"].ToList().FindAll(x => x.Value != null).Select(x => new Data(x)).ToList();
                     List<Fase> etapas = new List<Fase>();
                     #region Aba Avanço
-                    for (int i = 5; i < 206; i++)
+                    for (int i = 5; i < colz_apon; i++)
                     {
                         //vai na aba lob e pega os dados das etapas cadastradas
                         string pep = lob.Cells["D" + i].Text;
@@ -867,7 +869,7 @@ namespace GCM_Offline
                             {
                                 var lp = celav.End.Row;
                                 var lr = lp + 1;
-                                var apontamentos = av.Cells["J$@$:LY$@$".Replace("$@$", lr.ToString())].ToList().FindAll(x => x.Value != null);
+                                var apontamentos = av.Cells[$"J$@$:{colz}$@$".Replace("$@$", lr.ToString())].ToList().FindAll(x => x.Value != null);
                                 foreach (var ap in apontamentos)
                                 {
                                     var chv =av.Cells[1, ap.End.Column].Text;
@@ -893,7 +895,6 @@ namespace GCM_Offline
                         }
                     }
                     w.somaProgresso();
-
                     #endregion
 
                     r.fases.AddRange(etapas);
@@ -967,11 +968,12 @@ namespace GCM_Offline
         }
         public static bool ExportarApontamentos(Linha_de_Balanco atual, Obra obra, bool abrir, string Destino = null)
         {
+            
             atual.emissao = new Data(atual._data_max);
             if (Directory.Exists(atual.diretorio))
             {
                 atual.Salvar();
-                atual = atual.Carregar();
+                //atual = atual.Carregar();
             }
 
 
@@ -1070,10 +1072,10 @@ namespace GCM_Offline
 
                     foreach (var w in pck.Workbook.Worksheets)
                     {
-                        var max = atual._data_max.Getdata();
-                        if(atual._data_max.Getdata()< max)
+                        var dia_de_hoje = atual._data_max.Getdata();
+                        if(atual._data_max.Getdata()< dia_de_hoje)
                         {
-                            max = atual._data_max.Getdata();
+                            dia_de_hoje = atual._data_max.Getdata();
                         }
                         //preenche a linha de balanço
                         if (w.Name.ToUpper() == "RELATORIO")
@@ -1087,17 +1089,18 @@ namespace GCM_Offline
 
                             w.Cells["F" + 19].Value = atual.inicio_cronograma.Getdata();
                             w.Cells["M" + 19].Value = atual.fim_cronograma.Getdata();
+
                             w.Cells["F" + 20].Value = atual.inicio_real.Getdata();
                             w.Cells["M" + 20].Value = atual.fim_real.Getdata();
 
                             w.Cells["G" + 29].Value = atual.motivo_desvio;
                             w.Cells["A" + 1].Value = "v." + Application.ProductVersion;
-                            w.Cells["R" + 3].Value = new Data(max).Getdata(); //coloquei formula que preenche com o dia de hoje
+                            w.Cells["R" + 3].Value = new Data(dia_de_hoje).Getdata(); //coloquei formula que preenche com o dia de hoje
 
 
 
                             var efetivos = atual.Getefetivos();
-                            var dts = efetivos.SelectMany(x => x.GetAvancosAcumulados()).ToList().Select(x => x.data).GroupBy(x => x.datastr).Select(x => x.First()).ToList().FindAll(x=>x.Getdata() <=max);
+                            var dts = efetivos.SelectMany(x => x.GetAvancosAcumulados()).ToList().Select(x => x.data).GroupBy(x => x.datastr).Select(x => x.First()).ToList().FindAll(x=>x.Getdata() <=dia_de_hoje);
 
                             if(efetivos.Count>0)
                             {
@@ -1219,7 +1222,7 @@ namespace GCM_Offline
                         }
                         else if (w.Name.ToUpper() == "RECURSOS")
                         {
-                            var datas = w.Cells["I3:KL3"].ToList().Select(x => new Data(x)).ToList().FindAll(x => x.valido).ToList();
+                            var datas = w.Cells[$"I3:{colz_recs}3"].ToList().Select(x => new Data(x)).ToList().FindAll(x => x.valido).ToList();
                             var efetivos = atual.recursos__previstos.FindAll(x => x.descricao.ToUpper().Contains("EFETIVO") && x.tipo == Tipo_Recurso.Recurso);
                             var outros = atual.recursos__previstos.FindAll(x => !x.descricao.ToUpper().Contains("EFETIVO") && x.tipo == Tipo_Recurso.Recurso);
                             //começa na coluna g
@@ -1329,11 +1332,11 @@ namespace GCM_Offline
                             //w.Cells["J2"].Value = d_min;
                             //pck.Save();
 
-                            //w.Cells["J2:LY2"].Calculate();
-                            //var dtsss = w.Cells["J2:LY2"].ToList();
+                            //w.Cells[$"J2:{colz}2"].Calculate();
+                            //var dtsss = w.Cells[$"J2:{colz}2"].ToList();
                             DateTime t1 = d_min;
                            
-                            var datas= w.Cells["J2:LY2"].ToList().Select(x=> new Data(x)).ToList().FindAll(x=> x.valido).ToList();
+                            var datas= w.Cells[$"J2:{colz}2"].ToList().Select(x=> new Data(x)).ToList().FindAll(x=> x.valido).ToList();
                             foreach (var subetapa in atual.Subfases())
                             {
                                 //w.Cells["B" + (ll-1)].Value = subetapa.ToString();

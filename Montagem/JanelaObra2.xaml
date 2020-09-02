@@ -28,6 +28,7 @@
                     <MenuItem Header="Editar inicio" Click="edita_inicio_cronograma"></MenuItem>
                     <MenuItem Header="Editar fim" Click="edita_fim_cronograma"></MenuItem>
                 </MenuItem>
+                <MenuItem Header="Editar Data Início Real" Click="edita_data_inicio_real"></MenuItem>
                 <!--<MenuItem Header="Editar Dados de Etapas e Apontamentos" Click="apontamento_global"/>-->
 
                 <MenuItem Header="Exportar Avanço" Click="exporta_avanco"></MenuItem>

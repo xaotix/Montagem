@@ -1,6 +1,10 @@
-Última Atualização: 15/06/2020
+Última Atualização: 02/09/2020
 Daniel Lins Maciel - daniel.maciel@medabil.com.br - Equipe de Inovação
+===================================================================================================================
+V 1.2.0.0 - Capacidade de datas aumentada em 300% (antes 200, agora 600).
+			Possibilidade de alterar a data de início do cronograma
 =====================================================================================================================
+V 1.1.0.16 - Correção de bug ao converter datas.
 V 1.1.0.15 - Correção de bug ao importar avanço no modelo novo.
 V 1.1.0.14 - Criação de Efetivos baseado no nome das equipes nas etapas.
 			 Ajustes na Linha de Balanço (Campo nome da equipe de montagem).

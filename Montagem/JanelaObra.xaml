@@ -1,0 +1,178 @@
+﻿<mui:ModernWindow x:Class="Montagem.JanelaObra"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                  xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+                  xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation" 
+                  xmlns:local="clr-namespace:Montagem"
+                  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                  FontSize="10"
+                   mc:Ignorable="d" 
+                  Title="Montagem"
+                   SizeChanged="ModernWindow_SizeChanged"
+                  Loaded="ModernWindow_Loaded"
+                    Style="{StaticResource BlankWindow}"
+                 Closing="ModernWindow_Closing"
+
+                  >
+    <mui:ModernWindow.Resources>
+        <local:DurationToBrushConverter x:Key="DurationToBrushConverter"/>
+
+        <DataTemplate x:Key="ToolTipTemplate">
+            <Border Background="{Binding cor}" CornerRadius="5" BorderThickness="1" BorderBrush="Black">
+
+                <Grid Margin="5,5,5,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+
+                    </Grid.RowDefinitions>
+                    <WrapPanel>
+                        <Image Height="16" Width="16" Source="Resources/office-calendar.png"></Image>
+                        <Label Margin="5,0,5,0" Content="{Binding Titulo}" FontWeight="Bold" FontSize="11"></Label>
+
+                    </WrapPanel>
+                    <Separator Grid.Row="1" BorderBrush="Black" Height="2" Margin="5,5,5,5"></Separator>
+                    <DataGrid FontSize="9" ItemsSource="{Binding objeto.fases}" AutoGenerateColumns="False" Grid.Row="10" CanUserAddRows="False" IsReadOnly="True" RowDetailsVisibilityMode="Collapsed">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Cód." Binding="{Binding cod}" Width="auto" />
+                            <DataGridTextColumn Header="Desc." Binding="{Binding descricao}" Width="auto" />
+                            <DataGridTextColumn Header="Início" Binding="{Binding inicio}" Width="auto" />
+                            <DataGridTextColumn Header="Fim" Binding="{Binding fim}" Width="auto" />
+                            <DataGridTemplateColumn Header="Prev." Width="75" Visibility="Visible">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ProgressBar Style="{StaticResource  ComPorcentagem}" Value="{Binding Path=previsto, Mode=OneWay}" Minimum="0" Maximum="100" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Real." Width="75" Visibility="Visible">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ProgressBar Foreground="LimeGreen" Style="{StaticResource  ComPorcentagem}" Value="{Binding Path=realizado, Mode=OneWay}" Minimum="0" Maximum="100" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+
+            </Border>
+        </DataTemplate>
+    </mui:ModernWindow.Resources>
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu VerticalAlignment="Center" Background="Transparent" Grid.ColumnSpan="2" Margin="0,2,-0.4,1.8">
+            <MenuItem Header="Arquivo" Background="Transparent">
+                <MenuItem Header="Importar LOB" Click="importa_lob"></MenuItem>
+                <MenuItem Header="Abrir Pasta" Click="abre_pasta"></MenuItem>
+                <MenuItem Header="Salvar" Click="salvar_tudo"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Ferramentas" Background="Transparent">
+                <MenuItem Header="Editar dados da Obra" Click="MenuItem_Click"></MenuItem>
+                <MenuItem Header="Editar Pesos avanço físico e custos" Click="editar_pesos_avanco_fisico"></MenuItem>
+                <MenuItem Header="Apontamento Global" Click="apontamento_global"></MenuItem>
+            </MenuItem>
+        </Menu>
+
+
+        <TabControl Grid.Row="1"  Background="Transparent" Grid.ColumnSpan="2" Margin="0,0.2,-0.4,-0.4">
+            <TabItem Header="Resumo">
+                <Grid Name="visual">
+                    <Grid.Resources>
+
+                        <DataTemplate x:Key="ItemWithDurationTemplate">
+                            <Border Margin="0, 2, 0, 2" BorderThickness="0" BorderBrush="Black" CornerRadius="5"  Background="{Binding DataItem.cor}">
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Margin="3,0,3,0" Click="editar" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="Editar">
+                                        <WrapPanel>
+                                            <Image Width="16" Height="16" Source="Resources/document_edit3.png"></Image>
+                                        </WrapPanel>
+                                    </Button>
+                                    <Grid Margin="2,2,2,2" Grid.Column="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"></RowDefinition>
+                                            <RowDefinition Height="5"></RowDefinition>
+                                            <RowDefinition Height="*"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <WrapPanel>
+
+                                            <Label Margin="3,0,3,0" Content="{Binding DataItem.objeto.descricao }" FontSize="10" FontWeight="Bold"></Label>
+                                        </WrapPanel>
+                                        <Separator Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Separator>
+                                        <Grid Grid.Row="10">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"></RowDefinition>
+                                                <RowDefinition Height="*"></RowDefinition>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <Label VerticalAlignment="Center" FontSize="8" Grid.Row="10" Content="P:"></Label>
+                                            <Label VerticalAlignment="Center" FontSize="8" Grid.Row="10" Grid.Column="2" Content="R:"></Label>
+                                            <ProgressBar Margin="3,0,3,0" Grid.Row="10" FontSize="8" Grid.Column="1" Foreground="LightGreen" Background="LightSlateGray" Style="{StaticResource  ComPorcentagem}" Maximum="100" Value="{Binding DataItem.objeto.previsto}"></ProgressBar>
+                                            <ProgressBar Margin="3,0,3,0" Grid.Row="10" FontSize="8" Grid.Column="3" Style="{StaticResource  ComPorcentagem}" Maximum="100" Value="{Binding DataItem.objeto.realizado}"></ProgressBar>
+
+                                        </Grid>
+                                    </Grid>
+
+                                </Grid>
+
+                            </Border>
+                        </DataTemplate>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="150"></RowDefinition>
+
+                    </Grid.RowDefinitions>
+                    <telerik:RadTimeline Name="calendario" Grid.Row="0" PeriodStart="2016/01/01"  
+                      ScrollMode="ScrollOnly"
+                                            ToolTipTemplate="{StaticResource ToolTipTemplate}"  
+                        PeriodEnd="2016/06/01"  
+                      
+                        VisiblePeriodStart="2016/01/01"  
+                        VisiblePeriodEnd="2016/03/22" 
+                        StartPath="Date" 
+                                     
+                        DurationPath="Duration"
+                    TimelineItemTemplate="{StaticResource ItemWithDurationTemplate}" 
+       
+                                                 AutoSort="False"
+                                                
+                                                 >
+                        <telerik:RadTimeline.Intervals>
+                            <telerik:MonthInterval />
+                            <telerik:WeekInterval  />
+                            <telerik:DayInterval />
+                            <telerik:YearInterval />
+                        </telerik:RadTimeline.Intervals>
+                    </telerik:RadTimeline>
+
+                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+                        <Grid Width="auto" Name="grid_calendario"  Height="130">
+                            <local:RadCalendarEx x:Name="calendario_datas" DisplayDate="2008-01-01" FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Center"   Width="auto"  Orientation="Horizontal"/>
+
+                        </Grid>
+                    </ScrollViewer>
+
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</mui:ModernWindow>

@@ -38,42 +38,42 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Biblioteca_Daniel">
-      <HintPath>..\dlls\Biblioteca_Daniel.dll</HintPath>
+      <HintPath>..\..\DLLS\Biblioteca_Daniel.dll</HintPath>
     </Reference>
     <Reference Include="Conexoes">
-      <HintPath>..\dlls\Conexoes.dll</HintPath>
+      <HintPath>..\..\DLLS\Conexoes.dll</HintPath>
     </Reference>
     <Reference Include="DB">
-      <HintPath>..\dlls\DB.dll</HintPath>
+      <HintPath>..\..\DLLS\DB.dll</HintPath>
     </Reference>
     <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.4.5.2.1\lib\net40\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="FirstFloor.ModernUI">
-      <HintPath>..\dlls\FirstFloor.ModernUI.dll</HintPath>
+      <HintPath>..\..\DLLS\FirstFloor.ModernUI.dll</HintPath>
     </Reference>
     <Reference Include="FluentFTP">
-      <HintPath>..\dlls\FluentFTP.dll</HintPath>
+      <HintPath>..\..\DLLS\FluentFTP.dll</HintPath>
     </Reference>
     <Reference Include="Ionic.Zip">
-      <HintPath>..\dlls\Ionic.Zip.dll</HintPath>
+      <HintPath>..\..\DLLS\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>..\dlls\Microsoft.mshtml.dll</HintPath>
+      <HintPath>..\..\DLLS\Microsoft.mshtml.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Windows.Shell">
-      <HintPath>..\dlls\Microsoft.Windows.Shell.dll</HintPath>
+      <HintPath>..\..\DLLS\Microsoft.Windows.Shell.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack">
-      <HintPath>..\dlls\Microsoft.WindowsAPICodePack.dll</HintPath>
+      <HintPath>..\..\DLLS\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack.Shell">
-      <HintPath>..\dlls\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+      <HintPath>..\..\DLLS\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
     <Reference Include="mysql.data">
-      <HintPath>..\dlls\mysql.data.dll</HintPath>
+      <HintPath>..\..\DLLS\mysql.data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -82,16 +82,16 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics.Vectors, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\dlls\System.Numerics.Vectors.dll</HintPath>
+      <HintPath>..\..\DLLS\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Security" />
     <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Windows.Controls.DataVisualization.Toolkit">
-      <HintPath>..\dlls\System.Windows.Controls.DataVisualization.Toolkit.dll</HintPath>
+      <HintPath>..\..\DLLS\System.Windows.Controls.DataVisualization.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity">
-      <HintPath>..\dlls\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\..\DLLS\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -102,44 +102,44 @@
     </Reference>
     <Reference Include="Telerik.Windows.Controls, Version=2017.2.503.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\dlls\Telerik.Windows.Controls.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Controls.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Controls.GanttView, Version=2017.2.503.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\dlls\Telerik.Windows.Controls.GanttView.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Controls.GanttView.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Controls.GridView, Version=2017.2.503.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\dlls\Telerik.Windows.Controls.GridView.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Controls.GridView.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Data, Version=2017.2.503.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\dlls\Telerik.Windows.Data.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Data.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Scheduling.Core, Version=2017.2.503.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WPFToolkit">
-      <HintPath>..\dlls\WPFToolkit.dll</HintPath>
+      <HintPath>..\..\DLLS\WPFToolkit.dll</HintPath>
     </Reference>
     <Reference Include="Xceed.Wpf.AvalonDock">
-      <HintPath>..\dlls\Xceed.Wpf.AvalonDock.dll</HintPath>
+      <HintPath>..\..\DLLS\Xceed.Wpf.AvalonDock.dll</HintPath>
     </Reference>
     <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero">
-      <HintPath>..\dlls\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+      <HintPath>..\..\DLLS\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
     </Reference>
     <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro">
-      <HintPath>..\dlls\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+      <HintPath>..\..\DLLS\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
     </Reference>
     <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010">
-      <HintPath>..\dlls\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+      <HintPath>..\..\DLLS\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
     </Reference>
     <Reference Include="Xceed.Wpf.DataGrid">
-      <HintPath>..\dlls\Xceed.Wpf.DataGrid.dll</HintPath>
+      <HintPath>..\..\DLLS\Xceed.Wpf.DataGrid.dll</HintPath>
     </Reference>
     <Reference Include="Xceed.Wpf.Toolkit">
-      <HintPath>..\dlls\Xceed.Wpf.Toolkit.dll</HintPath>
+      <HintPath>..\..\DLLS\Xceed.Wpf.Toolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

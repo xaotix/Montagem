@@ -532,7 +532,7 @@ namespace GCM_Offline
             {
                 DateTime min = new DateTime(2001, 01, 01);
 
-                var carregar = string.Join("", Conexoes.Utilz.LerArquivo(arq, Encoding.GetEncoding(1252)));
+                var carregar = string.Join("", Conexoes.Utilz.Arquivo.Ler(arq, Encoding.GetEncoding(1252)));
                 if (carregar.Length > 0)
                 {
                     var s = Conexoes.Utilz.LerSerializado<Linha_de_Balanco>(carregar);
@@ -568,7 +568,7 @@ namespace GCM_Offline
                 diretorio = diretorio + @"\";
             }
             string arquivo = diretorio + nomearq;
-            Conexoes.Utilz.GravarArquivo(arquivo, new List<string> { s }, Encoding.GetEncoding(1252));
+            Conexoes.Utilz.Arquivo.Gravar(arquivo, new List<string> { s }, Encoding.GetEncoding(1252));
         }
         public List<Data> GetDatasApontamentos()
         {
@@ -2231,7 +2231,7 @@ namespace GCM_Offline
                 diretorio = diretorio + @"\";
             }
             string arquivo = diretorio + nomearq;
-            Conexoes.Utilz.GravarArquivo(arquivo, new List<string> { s }, Encoding.GetEncoding(1252));
+            Conexoes.Utilz.Arquivo.Gravar(arquivo, new List<string> { s }, Encoding.GetEncoding(1252));
         }
         public string diretorio { get; set; } = "";
         public string nomearq { get; set; } = "apontamentos.cfg";
@@ -2246,7 +2246,7 @@ namespace GCM_Offline
             {
                 DateTime min = new DateTime(2001, 01, 01);
 
-                var carregar = string.Join("", Conexoes.Utilz.LerArquivo(arq, Encoding.GetEncoding(1252)));
+                var carregar = string.Join("", Conexoes.Utilz.Arquivo.Ler(arq, Encoding.GetEncoding(1252)));
                 if (carregar.Length > 0)
                 {
                     var s = Conexoes.Utilz.LerSerializado<Apontamentos>(carregar);
@@ -2310,7 +2310,7 @@ namespace GCM_Offline
                 diretorio = diretorio + @"\";
             }
             string arquivo = diretorio + nomearq;
-            Conexoes.Utilz.GravarArquivo(arquivo, new List<string> { s }, Encoding.GetEncoding(1252));
+            Conexoes.Utilz.Arquivo.Gravar(arquivo, new List<string> { s }, Encoding.GetEncoding(1252));
         }
         public string diretorio { get; set; } = "";
         public string nomearq { get; set; } = "diario.cfg";
@@ -2325,7 +2325,7 @@ namespace GCM_Offline
             {
                 DateTime min = new DateTime(2001, 01, 01);
 
-                var carregar = string.Join("", Conexoes.Utilz.LerArquivo(arq, Encoding.GetEncoding(1252)));
+                var carregar = string.Join("", Conexoes.Utilz.Arquivo.Ler(arq, Encoding.GetEncoding(1252)));
                 if (carregar.Length > 0)
                 {
                     var s = Conexoes.Utilz.LerSerializado<Diario>(carregar);

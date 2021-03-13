@@ -268,7 +268,7 @@ namespace GCM_Online
             if(_subetapas==null | atualizar)
             {
                 _subetapas = new List<FaseOnline>();
-                var ss = Conexoes.DBases.BancoRM.DB.Consulta("select * from " + Vars.db + "." + Vars.tb_subetapas + " as pr where pr.id_obra='" + this.id + "'");
+                var ss = Conexoes.DBases.GetDB().Consulta("select * from " + Vars.db + "." + Vars.tb_subetapas + " as pr where pr.id_obra='" + this.id + "'");
                 foreach(var s in ss.Linhas)
                 {
                     _subetapas.Add(new FaseOnline(s));
@@ -283,7 +283,7 @@ namespace GCM_Online
             if (_efetivos == null | atualizar)
             {
                 _efetivos = new List<RecursoOnline>();
-                var ss = Conexoes.DBases.BancoRM.DB.Consulta("select * from " + Vars.db + "." + Vars.tb_efetivos + " as pr where pr.id_obra='" + this.id + "'");
+                var ss = Conexoes.DBases.GetDB().Consulta("select * from " + Vars.db + "." + Vars.tb_efetivos + " as pr where pr.id_obra='" + this.id + "'");
                 foreach (var s in ss.Linhas)
                 {
                     _efetivos.Add(new RecursoOnline(s));
@@ -343,20 +343,20 @@ namespace GCM_Online
         {
             if(this.id==0)
             {
-                this.id = (int)Conexoes.DBases.BancoRM.DB.Cadastro(GetL().Celulas, GCM_Online.Vars.db,GCM_Online.Vars.tb_obras);
+                this.id = (int)Conexoes.DBases.GetDB().Cadastro(GetL().Celulas, GCM_Online.Vars.db,GCM_Online.Vars.tb_obras);
             }
             else
             {
-            Conexoes.DBases.BancoRM.DB.Update(new List<DB.Celula> { new DB.Celula("id", id) }, GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_obras);
+            Conexoes.DBases.GetDB().Update(new List<DB.Celula> { new DB.Celula("id", id) }, GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_obras);
             }
 
 
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", this.id) }, Vars.db, Vars.tb_xml);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_obra", this.id) }, Vars.db, Vars.tb_xml);
             var ss = this.Getlob();
             //as fases ele pega da dbase normal
             ss.fases.Clear();
             var sxml = Conexoes.Utilz.RetornarSerializado<Linha_de_Balanco>(ss);
-            Conexoes.DBases.BancoRM.DB.Cadastro(new List<Celula> { new Celula("id_obra", this.id), new Celula("xml", sxml) }, Vars.db,Vars.tb_xml);
+            Conexoes.DBases.GetDB().Cadastro(new List<Celula> { new Celula("id_obra", this.id), new Celula("xml", sxml) }, Vars.db,Vars.tb_xml);
             this._xml = sxml;
         }
     }
@@ -414,11 +414,11 @@ namespace GCM_Online
         {
             if (this.id == 0)
             {
-                this.id = (int)Conexoes.DBases.BancoRM.DB.Cadastro(GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_subetapas);
+                this.id = (int)Conexoes.DBases.GetDB().Cadastro(GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_subetapas);
             }
             else if(this.id_obra>0)
             {
-                Conexoes.DBases.BancoRM.DB.Update(new List<DB.Celula> { new DB.Celula("id", id) }, GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_subetapas);
+                Conexoes.DBases.GetDB().Update(new List<DB.Celula> { new DB.Celula("id", id) }, GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_subetapas);
             }
         }
         public int id { get; set; } = 0;
@@ -522,11 +522,11 @@ namespace GCM_Online
         {
             if (this.id == 0)
             {
-                this.id = (int)Conexoes.DBases.BancoRM.DB.Cadastro(GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_efetivos);
+                this.id = (int)Conexoes.DBases.GetDB().Cadastro(GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_efetivos);
             }
             else if (this.id_obra > 0)
             {
-                Conexoes.DBases.BancoRM.DB.Update(new List<DB.Celula> { new DB.Celula("id", id) }, GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_efetivos);
+                Conexoes.DBases.GetDB().Update(new List<DB.Celula> { new DB.Celula("id", id) }, GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_efetivos);
             }
         }
         public int id { get; set; } = 0;
@@ -615,11 +615,11 @@ namespace GCM_Online
         {
             if (this.id == 0)
             {
-                this.id = (int)Conexoes.DBases.BancoRM.DB.Cadastro(GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_lancamentos);
+                this.id = (int)Conexoes.DBases.GetDB().Cadastro(GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_lancamentos);
             }
             else if (this.id_obra > 0)
             {
-                Conexoes.DBases.BancoRM.DB.Update(new List<DB.Celula> { new DB.Celula("id", id) }, GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_lancamentos);
+                Conexoes.DBases.GetDB().Update(new List<DB.Celula> { new DB.Celula("id", id) }, GetL().Celulas, GCM_Online.Vars.db, GCM_Online.Vars.tb_lancamentos);
             }
         }
         public int id { get; set; } = 0;
@@ -734,7 +734,7 @@ namespace GCM_Online
             }
 
             List<ApontamentoOnline> retorno = new List<ApontamentoOnline>();
-            var lis = Conexoes.DBases.BancoRM.DB.Consulta(comando);
+            var lis = Conexoes.DBases.GetDB().Consulta(comando);
             foreach(var p in lis.Linhas)
             {
                 retorno.Add(new ApontamentoOnline(p));
@@ -743,40 +743,40 @@ namespace GCM_Online
         }
         public static void Apagar(Contrato ob)
         {
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id", ob.id) }, Vars.db, Vars.tb_obras);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id", ob.id) }, Vars.db, Vars.tb_obras);
 
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_efetivos);
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_subetapas);
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_xml);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_efetivos);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_subetapas);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_xml);
         }
         public static void Apagar(FaseOnline ob)
         {
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id", ob.id) }, Vars.db, Vars.tb_subetapas);
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_pai", ob.id) }, Vars.db, Vars.tb_lancamentos);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id", ob.id) }, Vars.db, Vars.tb_subetapas);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_pai", ob.id) }, Vars.db, Vars.tb_lancamentos);
         }
         public static void Apagar(ApontamentoOnline ob)
         {
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id", ob.id) }, Vars.db, Vars.tb_lancamentos);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id", ob.id) }, Vars.db, Vars.tb_lancamentos);
         }
         public static void Apagar(RecursoOnline ob)
         {
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id", ob.id) }, Vars.db, Vars.tb_efetivos);
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_pai", ob.id) }, Vars.db, Vars.tb_lancamentos);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id", ob.id) }, Vars.db, Vars.tb_efetivos);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_pai", ob.id) }, Vars.db, Vars.tb_lancamentos);
         }
         public static void ApagarLancamentos(Contrato ob)
         {
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
         }
         public static void ApagarEtapas(Contrato ob)
         {
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_subetapas);
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_subetapas);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
         }
         public static void ApagarRecursos(Contrato ob)
         {
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_efetivos);
-            Conexoes.DBases.BancoRM.DB.Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_efetivos);
+            Conexoes.DBases.GetDB().Apagar(new List<Celula> { new Celula("id_obra", ob.id) }, Vars.db, Vars.tb_lancamentos);
         }
 
         public static List<Contrato> obras(bool update = false)
@@ -784,8 +784,8 @@ namespace GCM_Online
             if(_obras == null | update)
             {
                 _obras = new List<Contrato>();
-                var obs = Conexoes.DBases.BancoRM.DB.Consulta("select * from " + Vars.db + "."  + Vars.tb_obras);
-                var painel = Conexoes.DBases.BancoRM.DB.Consulta("select * from " + "comum" + "."  + Vars.pedidos_planejamento_copia);
+                var obs = Conexoes.DBases.GetDB().Consulta("select * from " + Vars.db + "."  + Vars.tb_obras);
+                var painel = Conexoes.DBases.GetDB().Consulta("select * from " + "comum" + "."  + Vars.pedidos_planejamento_copia);
 
                 Conexoes.Wait w = new Conexoes.Wait(obs.Linhas.Count, "Carregando obras...");
                 w.Show();

@@ -47,7 +47,7 @@ namespace Importador_Montagem
             Contrato p = new Contrato();
             retentar:
             bool st = false;
-            Conexoes.Utilz.Prompt(p, out st, "Preencha os campos",this);
+            Conexoes.Utilz.Propriedades(p, out st, "Preencha os campos",this);
             if (st)
             {
                 if(p.contrato=="")

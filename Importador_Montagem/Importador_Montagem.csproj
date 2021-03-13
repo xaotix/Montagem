@@ -35,10 +35,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Conexoes">
-      <HintPath>..\dlls\Conexoes.dll</HintPath>
+      <HintPath>..\..\DLLS\Conexoes.dll</HintPath>
     </Reference>
     <Reference Include="DB">
-      <HintPath>..\dlls\DB.dll</HintPath>
+      <HintPath>..\..\DLLS\DB.dll</HintPath>
     </Reference>
     <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.4.5.2.1\lib\net40\EPPlus.dll</HintPath>
@@ -53,7 +53,7 @@
       <HintPath>..\packages\LiveCharts.Wpf.0.9.7\lib\net45\LiveCharts.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="mysql.data">
-      <HintPath>..\dlls\mysql.data.dll</HintPath>
+      <HintPath>..\..\DLLS\mysql.data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -70,31 +70,31 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="Telerik.Windows.Controls">
-      <HintPath>..\dlls\Telerik.Windows.Controls.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Controls.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Controls.Chart">
-      <HintPath>..\dlls\Telerik.Windows.Controls.Chart.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Controls.Chart.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Controls.Charting">
-      <HintPath>..\dlls\Telerik.Windows.Controls.Charting.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Controls.Charting.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Controls.Data">
-      <HintPath>..\dlls\Telerik.Windows.Controls.Data.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Controls.Data.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Controls.DataVisualization">
-      <HintPath>..\dlls\Telerik.Windows.Controls.DataVisualization.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Controls.DataVisualization.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Controls.GridView">
-      <HintPath>..\dlls\Telerik.Windows.Controls.GridView.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Controls.GridView.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Controls.Input">
-      <HintPath>..\dlls\Telerik.Windows.Controls.Input.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Controls.Input.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Controls.Navigation">
-      <HintPath>..\dlls\Telerik.Windows.Controls.Navigation.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Controls.Navigation.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Data">
-      <HintPath>..\dlls\Telerik.Windows.Data.dll</HintPath>
+      <HintPath>..\..\DLLS\Telerik.Windows.Data.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />

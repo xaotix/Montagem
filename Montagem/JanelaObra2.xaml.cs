@@ -1500,7 +1500,7 @@ namespace Montagem
             }
 
 
-            Conexoes.Utilz.Prompt(pp, out status, "Preencha", this);
+            Conexoes.Utilz.Propriedades(pp, out status, "Preencha", this);
             if(status)
             {
                 this.lob.restricoes.Add(pp);
@@ -1516,7 +1516,7 @@ namespace Montagem
             if(pp is Restricao)
             {
 
-                Conexoes.Utilz.Prompt(pp, out status, "Preencha", this);
+                Conexoes.Utilz.Propriedades(pp, out status, "Preencha", this);
                 if (status)
                 {
                     this.AtualizaListas();
@@ -1524,7 +1524,7 @@ namespace Montagem
             }
             else if(pp is Observacao)
             {
-                Conexoes.Utilz.Prompt(pp, out status, "Preencha", this);
+                Conexoes.Utilz.Propriedades(pp, out status, "Preencha", this);
                 if (status)
                 {
                     this.AtualizaListas();
@@ -1532,7 +1532,7 @@ namespace Montagem
             }
             else if (pp is PlanoDeAcao)
             {
-                Conexoes.Utilz.Prompt(pp, out status, "Preencha", this);
+                Conexoes.Utilz.Propriedades(pp, out status, "Preencha", this);
                 if (status)
                 {
                     this.AtualizaListas();
@@ -1548,7 +1548,7 @@ namespace Montagem
 
 
 
-            Conexoes.Utilz.Prompt(pp, out status, "Preencha", this);
+            Conexoes.Utilz.Propriedades(pp, out status, "Preencha", this);
             if (status)
             {
                 this.lob.observacoes.Add(pp);
@@ -1682,7 +1682,7 @@ namespace Montagem
 
 
 
-            Conexoes.Utilz.Prompt(pp, out status, "Preencha", this);
+            Conexoes.Utilz.Propriedades(pp, out status, "Preencha", this);
             if (status)
             {
                 this.lob.planosdeacao.Add(pp);

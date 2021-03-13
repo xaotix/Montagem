@@ -52,7 +52,7 @@ namespace Montagem
             }
             obra.contrato = contrato;
             bool status = false;
-            Conexoes.Utilz.Prompt(obra,out status,"Nova Obra");
+            Conexoes.Utilz.Propriedades(obra,out status,"Nova Obra");
             if(!status)
             {
                 return;

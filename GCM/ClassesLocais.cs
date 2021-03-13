@@ -61,7 +61,7 @@ namespace GCM_Offline
                 }
                 var arq = pasta + "obra.cfg";
                 var ss = Conexoes.Utilz.RetornarSerializado<Obra>(this);
-                Conexoes.Utilz.GravarArquivo(arq, new List<string> { ss });
+                Conexoes.Utilz.Arquivo.Gravar(arq, new List<string> { ss });
             }
         }
         [ReadOnly(true)]
@@ -187,7 +187,7 @@ namespace GCM_Offline
             var arquivo = diretorio + @"\" + nomearq;
             if (File.Exists(arquivo))
             {
-                var pp = string.Join("", Conexoes.Utilz.LerArquivo(arquivo, Encoding.GetEncoding(1252)));
+                var pp = string.Join("", Conexoes.Utilz.Arquivo.Ler(arquivo, Encoding.GetEncoding(1252)));
 
                 var ps = Conexoes.Utilz.LerSerializado<Obra>(pp);
                 ps.diretorio = diretorio;

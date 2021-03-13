@@ -578,7 +578,7 @@ namespace Importador_Montagem
         private void MenuItem_Click_3(object sender, RoutedEventArgs e)
         {
             bool status = false;
-            var psp = Conexoes.Utilz.Prompt(this.lob_online, out status);
+            var psp = Conexoes.Utilz.Propriedades(this.lob_online, out status);
             if(status)
             {
                 this.lob_online.Salvar();

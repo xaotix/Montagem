@@ -32,19 +32,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Biblioteca_Daniel">
-      <HintPath>..\dlls\Biblioteca_Daniel.dll</HintPath>
+      <HintPath>..\..\DLLS\Biblioteca_Daniel.dll</HintPath>
     </Reference>
     <Reference Include="Conexoes">
-      <HintPath>..\dlls\Conexoes.dll</HintPath>
+      <HintPath>..\..\DLLS\Conexoes.dll</HintPath>
     </Reference>
     <Reference Include="DB">
-      <HintPath>..\dlls\DB.dll</HintPath>
+      <HintPath>..\..\DLLS\DB.dll</HintPath>
     </Reference>
     <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.4.5.2.1\lib\net40\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="mysql.data">
-      <HintPath>..\dlls\mysql.data.dll</HintPath>
+      <HintPath>..\..\DLLS\mysql.data.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

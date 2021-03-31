@@ -41,6 +41,6 @@ namespace GCM_Offline
            
         }
         public static int max_etapas { get; set; } = 200;
-        public static int max_dias { get; set; } = 365;
+        public static int max_dias { get; set; } = 600;
     }
 }

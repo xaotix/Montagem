@@ -1102,7 +1102,8 @@ namespace GCM_Offline
                             var efetivos = atual.Getefetivos();
                             var dts = efetivos.SelectMany(x => x.GetAvancosAcumulados()).ToList().Select(x => x.data).GroupBy(x => x.datastr).Select(x => x.First()).ToList().FindAll(x=>x.Getdata() <=dia_de_hoje);
 
-                            if(efetivos.Count>0)
+                         
+                            if(efetivos.Count>0 && dts.Count>0)
                             {
                                 var dia_0 = dts.Max(x => x.Getdata());
                                 var dia_1 = dia_0.AddDays(-7);

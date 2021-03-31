@@ -291,34 +291,47 @@ namespace GCM_Online
             }
             return _efetivos;
         }
-        public Contrato(DB.Linha s, DB.Linha painel)
+        public Contrato(DB.Linha montagem, DB.Linha painel)
         {
-            this.id = s.Get("id").Int;
-            this.contrato = s.Get("contrato").ToString().ToUpper();
-            this.descricao = s.Get("descricao").ToString().ToUpper();
-            this.engenheiro = s.Get("engenheiro").ToString().ToUpper();
-            this.gerente = s.Get("gerente").ToString().ToUpper();
-            this.area = s.Get("area").Double();
-            this.status = Conexoes.Utilz.StringParaEnum<GCM_Offline.Status_Montagem>(s.Get("status").ToString());
-            this.ultima_importacao = new Data(s.Get("ultima_importacao").Data);
+            if (montagem != null)
+            {
+                this.id = montagem.Get("id").Int;
+                this.contrato = montagem.Get("contrato").ToString().ToUpper();
+                this.descricao = montagem.Get("descricao").ToString().ToUpper();
+                this.engenheiro = montagem.Get("engenheiro").ToString().ToUpper();
+                this.gerente = montagem.Get("gerente").ToString().ToUpper();
+                this.area = montagem.Get("area").Double();
+                this.status = Conexoes.Utilz.StringParaEnum<GCM_Offline.Status_Montagem>(montagem.Get("status").ToString());
+                this.ultima_importacao = new Data(montagem.Get("ultima_importacao").Data);
+                this.lob_tela = this.Getlob();
+                var atual = this.lob_tela.GetTotal(this.ultima_importacao);
 
-            this.lob_tela = this.Getlob();
-            var atual = this.lob_tela.GetTotal(this.ultima_importacao);
+                this.tela.previsto = atual.previsto;
+                this.tela.realizado = atual.realizado;
+                this.tela.dias_atraso = this.lob_tela.dias_atraso(this.ultima_importacao);
+            }
+
+
             //this.previsto_obra = vv.Get("previsto_obra").Double();
-            this.tela.previsto = atual.previsto;
-            this.tela.realizado = atual.realizado;
-            this.tela.dias_atraso = this.lob_tela.dias_atraso(this.ultima_importacao);
-            this.tela.es = painel.Get("es").Double();
-            this.tela.fs = painel.Get("fs").Double();
-            this.tela.latitude = painel.Get("latitude").Double(15);
-            this.tela.longitude = painel.Get("longitude").Double(15);
-            this.tela.ls = painel.Get("ls").Double();
-            this.tela.peso_embarcado = painel.Get("peso_embarcado").Double();
-            this.tela.peso_montado = painel.Get("peso_montado").Double();
-            this.tela.peso_planejado = painel.Get("peso_planejado").Double();
-            this.tela.peso_produzido = painel.Get("peso_produzido").Double();
-            this.tela.liberado_engenharia = painel.Get("liberado_engenharia").Double();
+            if (painel != null)
+            {
+                this.tela.es = painel.Get("es").Double();
+                this.tela.fs = painel.Get("fs").Double();
+                this.tela.latitude = painel.Get("latitude").Double(15);
+                this.tela.longitude = painel.Get("longitude").Double(15);
+                this.tela.ls = painel.Get("ls").Double();
+                this.tela.peso_embarcado = painel.Get("peso_embarcado").Double();
+                this.tela.peso_montado = painel.Get("peso_montado").Double();
+                this.tela.peso_planejado = painel.Get("peso_planejado").Double();
+                this.tela.peso_produzido = painel.Get("peso_produzido").Double();
+                this.tela.liberado_engenharia = painel.Get("liberado_engenharia").Double();
 
+                if(montagem == null)
+                {
+                    this.contrato = painel.Get("pedido").ToString();
+                    this.descricao = painel.Get("nome").ToString();
+                }
+            }
         }
         public Contrato()
         {
@@ -784,27 +797,41 @@ namespace GCM_Online
             if(_obras == null | update)
             {
                 _obras = new List<Contrato>();
-                var obs = Conexoes.DBases.GetDB().Consulta("select * from " + Vars.db + "."  + Vars.tb_obras);
+                var montagem = Conexoes.DBases.GetDB().Consulta("select * from " + Vars.db + "."  + Vars.tb_obras);
                 var painel = Conexoes.DBases.GetDB().Consulta("select * from " + "comum" + "."  + Vars.pedidos_planejamento_copia);
 
-                Conexoes.Wait w = new Conexoes.Wait(obs.Linhas.Count, "Carregando obras...");
+                //Conexoes.Wait w = new Conexoes.Wait(montagem.Linhas.Count, "Carregando obras...");
+                //w.Show();
+
+                //foreach (var obra_montagem in montagem.Linhas)
+                //{
+                //    var obra_painel = painel.Linhas.Find(x => x.Get("pedido").ToString().ToUpper() == obra_montagem.Get("contrato").ToString().ToUpper());
+                //    if(obra_painel==null)
+                //    {
+                //        obra_painel = painel.Linhas.Find(x => obra_montagem.Get("contrato").ToString().ToUpper().Contains(x.Get("contrato").ToString().ToUpper()) && Conexoes.Utilz.CortarStringDireita(obra_montagem.Get("contrato").ToString(), 3) == Conexoes.Utilz.CortarStringDireita(x.Get("pedido").ToString(), 3));
+                //    }
+                //    if(obra_painel==null)
+                //    {
+                //        obra_painel = new Linha();
+                //    }
+                //    _obras.Add(new Contrato(obra_montagem,obra_painel));
+                //    w.somaProgresso();
+                //}
+                //w.Close();
+
+
+                Conexoes.Wait w = new Conexoes.Wait(montagem.Linhas.Count, "Carregando obras...");
                 w.Show();
-                foreach (var s in obs.Linhas)
+
+                foreach (var obra_painel in painel.Linhas)
                 {
-                    var spp = painel.Linhas.Find(x => x.Get("pedido").ToString().ToUpper() == s.Get("contrato").ToString().ToUpper());
-                    if(spp==null)
-                    {
-                        spp = painel.Linhas.Find(x => s.Get("contrato").ToString().ToUpper().Contains(x.Get("contrato").ToString().ToUpper()) && Conexoes.Utilz.CortarStringDireita(s.Get("contrato").ToString(), 3) == Conexoes.Utilz.CortarStringDireita(x.Get("pedido").ToString(), 3));
-                    }
-                    if(spp==null)
-                    {
-                        spp = new Linha();
-                    }
-                    _obras.Add(new Contrato(s,spp));
+                    var obra_montagem = montagem.Linhas.Find(x => x.Get("contrato").ToString().ToUpper() == obra_painel.Get("pedido").ToString().ToUpper());
+
+                    _obras.Add(new Contrato(obra_montagem, obra_painel));
                     w.somaProgresso();
                 }
                 w.Close();
-            _obras = _obras.OrderBy(x => x.descricao).ToList();
+                _obras = _obras.OrderBy(x => ((int)x.status).ToString() + " - " + x.descricao).ToList();
             }
             return _obras;
 

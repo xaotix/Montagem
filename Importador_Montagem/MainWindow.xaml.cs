@@ -39,7 +39,7 @@ namespace Importador_Montagem
         {
             this.obras = dbase.obras(true);
             this.lista.ItemsSource = null;
-            this.lista.ItemsSource = this.obras.OrderBy(x=>x.descricao).ToList();
+            this.lista.ItemsSource = this.obras;
         }
 
         private void criar_obra(object sender, RoutedEventArgs e)
@@ -108,7 +108,13 @@ namespace Importador_Montagem
         private void lista_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Contrato p = lista.SelectedItem as Contrato;
-           
+
+            if (p.status == Status_Montagem.NAO_IMPORTADA)
+            {
+                MessageBox.Show("Pedido sem apontamento de montagem. Entrar em contato com engenheiro de obra.");
+                return;
+            }
+
             if(p!=null)
             {
                 if (abertos.Find(x => x.id == p.id) == null)
@@ -130,7 +136,7 @@ namespace Importador_Montagem
         {
             JanelaObra ob = sender as JanelaObra;
             abertos.Remove(ob.lob_online);
-            this.Update();
+            //this.Update();
         }
 
         private void ModernWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -1,6 +1,7 @@
 Última Atualização: 29/10/2020
 Daniel Lins Maciel - daniel.maciel@medabil.com.br - Equipe de Inovação
 ===================================================================================================================
+V 1.2.0.2 - Ajustado bug de max de datas e erro com cronogramas com data inicial maior que a data atual
 V 1.2.0.1 - Pequena correção na planilha "Consulta Avanço"
 V 1.2.0.0 - Capacidade de datas aumentada em 300% (antes 200, agora 600).
 			Possibilidade de alterar a data de início do cronograma

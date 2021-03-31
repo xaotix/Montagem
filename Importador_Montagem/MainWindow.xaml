@@ -126,7 +126,7 @@
                 <telerik:GridViewDataColumn IsReadOnly="True"  Header="Status"          DataMemberBinding="{Binding status, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
                 <telerik:GridViewDataColumn IsReadOnly="True"  Header="Área"          DataMemberBinding="{Binding area, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
                 <telerik:GridViewDataColumn IsReadOnly="True"  Header="Engenheiro"          DataMemberBinding="{Binding engenheiro, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
-                <telerik:GridViewDataColumn IsReadOnly="True"  Header="Última Importação"          DataMemberBinding="{Binding ultima_importacao, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
+                <telerik:GridViewDataColumn IsReadOnly="True"  Header="Última Importação"          DataMemberBinding="{Binding ultima_importacao.datastr, Mode=OneWay}" Width="auto"></telerik:GridViewDataColumn>
             </telerik:RadGridView.Columns>
         </telerik:RadGridView>
     </Grid>

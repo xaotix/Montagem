@@ -275,7 +275,6 @@ namespace Montagem
                     var graf = GetGrafico(new List<Avanco> { resumo }, true, true, false, "%", "", Tipo_Grafico.Colunas);
                     this.novo_resumo.Children.Add(graf);
 
-                    painel_recursos.Children.Clear();
 
 
                     var tipos = lob.Subfases().Select(x => x.descricao).Distinct().ToList();
@@ -463,6 +462,11 @@ namespace Montagem
 
             this.planosdeacao.ItemsSource = null;
             this.planosdeacao.ItemsSource = this.lob.planosdeacao;
+
+
+            this.lista_etapas.ItemsSource = null;
+            this.lista_etapas.ItemsSource = this.lob.Subfases();
+
         }
 
         public enum Tipo_Grafico
@@ -471,55 +475,37 @@ namespace Montagem
             Colunas
         }
 
-        public Brush getcordesvio(double valor)
-        {
-            if (valor < -30)
-            {
-                return Brushes.DarkRed;
-            }
-           else if (valor < -25)
-            {
-                return Brushes.Red;
-            }
-            else if (valor < -20)
-            {
-                return Brushes.Red;
-            }
-            else if (valor < -15)
-            {
-                return Brushes.Orange;
-            }
-            else if (valor < -10)
-            {
-                return Brushes.Yellow;
-            }
-            else if (valor < -5)
-            {
-                return Brushes.Yellow;
-            }
-            else
-            {
-                return Brushes.Green;
-            }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        //public Brush getcordesvio(double valor)
+        //{
+        //    if (valor < -30)
+        //    {
+        //        return Brushes.DarkRed;
+        //    }
+        //   else if (valor < -25)
+        //    {
+        //        return Brushes.Red;
+        //    }
+        //    else if (valor < -20)
+        //    {
+        //        return Brushes.Red;
+        //    }
+        //    else if (valor < -15)
+        //    {
+        //        return Brushes.Orange;
+        //    }
+        //    else if (valor < -10)
+        //    {
+        //        return Brushes.Yellow;
+        //    }
+        //    else if (valor < -5)
+        //    {
+        //        return Brushes.Yellow;
+        //    }
+        //    else
+        //    {
+        //        return Brushes.Green;
+        //    }
+        //}
 
 
         public Obra obra { get; set; } = new Obra();
@@ -551,10 +537,10 @@ namespace Montagem
                 this.lob._data_max = new Data((DateTime)this.data_padrao.SelectedDate);
             }
             this.GerarGrafico();
-            this.lista.ItemsSource = null;
-            this.lista.ItemsSource = this.lob.recursos__previstos.FindAll(x=>x.total_previsto >0 | x.realizado>0);
-            this.lista_etapas.ItemsSource = null;
-            this.lista_etapas.ItemsSource = this.lob.Subfases();
+            //this.lista.ItemsSource = null;
+            //this.lista.ItemsSource = this.lob.recursos__previstos.FindAll(x=>x.total_previsto >0 | x.realizado>0);
+            //this.lista_etapas.ItemsSource = null;
+            //this.lista_etapas.ItemsSource = this.lob.Subfases();
             this.Title = this.obra.ToString() +  "- Montagem [v" + System.Windows.Forms.Application.ProductVersion + "]";
             //this.titulo.Content = this.obra.ToString();
 
@@ -630,10 +616,10 @@ namespace Montagem
             this.Title = obra.ToString();
         }
 
-        private void editar_pesos_avanco_fisico(object sender, RoutedEventArgs e)
-        {
+        //private void editar_pesos_avanco_fisico(object sender, RoutedEventArgs e)
+        //{
 
-        }
+        //}
 
 
 
@@ -699,16 +685,16 @@ namespace Montagem
             
         }
 
-        private void apontamento_global(object sender, RoutedEventArgs e)
-        {
-            var sel = this.lob.fases.SelectMany(x=>x.fases).ToList();
+        //private void apontamento_global(object sender, RoutedEventArgs e)
+        //{
+        //    var sel = this.lob.fases.SelectMany(x=>x.fases).ToList();
 
-            if (sel.Count > 0)
-            {
-                ApontarFases mm = new ApontarFases(sel);
-                mm.Show();
-            }
-        }
+        //    if (sel.Count > 0)
+        //    {
+        //        ApontarFases mm = new ApontarFases(sel);
+        //        mm.Show();
+        //    }
+        //}
 
         private void importa_avanco(object sender, RoutedEventArgs e)
         {
@@ -828,353 +814,353 @@ namespace Montagem
             }
         }
 
-        private void editar_recurso(object sender, RoutedEventArgs e)
-        {
-            GCM_Offline.Recurso sel = ((FrameworkElement)sender).DataContext as GCM_Offline.Recurso;
-            if(sel==null)
-            {
-                return;
-            }
-            Conexoes.Utilz.Propriedades(sel);
-        }
+        //private void editar_recurso(object sender, RoutedEventArgs e)
+        //{
+        //    GCM_Offline.Recurso sel = ((FrameworkElement)sender).DataContext as GCM_Offline.Recurso;
+        //    if(sel==null)
+        //    {
+        //        return;
+        //    }
+        //    Conexoes.Utilz.Propriedades(sel);
+        //}
 
-        private void excluir_recurso(object sender, RoutedEventArgs e)
-        {
-            GCM_Offline.Recurso sel = ((FrameworkElement)sender).DataContext as GCM_Offline.Recurso;
-            if (sel == null)
-            {
-                return;
-            }
-           if(Conexoes.Utilz.Pergunta("Tem certeza que deseja excluir? Não é possível desfazer."))
-            {
-                this.lob.recursos__previstos.Remove(sel);
-                Update(true);
-            }
-        }
+        //private void excluir_recurso(object sender, RoutedEventArgs e)
+        //{
+        //    GCM_Offline.Recurso sel = ((FrameworkElement)sender).DataContext as GCM_Offline.Recurso;
+        //    if (sel == null)
+        //    {
+        //        return;
+        //    }
+        //   if(Conexoes.Utilz.Pergunta("Tem certeza que deseja excluir? Não é possível desfazer."))
+        //    {
+        //        this.lob.recursos__previstos.Remove(sel);
+        //        Update(true);
+        //    }
+        //}
 
-        private void editar_apontamentos_recurso(object sender, RoutedEventArgs e)
-        {
-            GCM_Offline.Recurso sel = ((FrameworkElement)sender).DataContext as GCM_Offline.Recurso;
-            if (sel == null) { return; }
+        //private void editar_apontamentos_recurso(object sender, RoutedEventArgs e)
+        //{
+        //    GCM_Offline.Recurso sel = ((FrameworkElement)sender).DataContext as GCM_Offline.Recurso;
+        //    if (sel == null) { return; }
 
-            if (sel.previsto.Count > 0)
-            {
-                sel.GetApontamentos();
-                MenuLancamentos mm = new MenuLancamentos(sel.previsto);
-                mm.Title = "Previsto - " + sel.ToString();
-                mm.Owner = this;
-                mm.ShowDialog();
+        //    if (sel.previsto.Count > 0)
+        //    {
+        //        sel.GetApontamentos();
+        //        MenuLancamentos mm = new MenuLancamentos(sel.previsto);
+        //        mm.Title = "Previsto - " + sel.ToString();
+        //        mm.Owner = this;
+        //        mm.ShowDialog();
 
-                Update();
-            }
+        //        Update();
+        //    }
 
-        }
+        //}
 
-        private void editar_apontamentos_recurso_realizado(object sender, RoutedEventArgs e)
-        {
-            GCM_Offline.Recurso sel = ((FrameworkElement)sender).DataContext as GCM_Offline.Recurso;
-            if (sel == null) { return; }
+        //private void editar_apontamentos_recurso_realizado(object sender, RoutedEventArgs e)
+        //{
+        //    GCM_Offline.Recurso sel = ((FrameworkElement)sender).DataContext as GCM_Offline.Recurso;
+        //    if (sel == null) { return; }
 
-            if (sel.GetApontamentos().Count > 0)
-            {
-                sel.GetApontamentos();
-                MenuLancamentos mm = new MenuLancamentos(sel.GetApontamentos());
-                mm.Title = "Apontamentos Realizado - " + sel.ToString();
-                mm.Owner = this;
-                mm.ShowDialog();
+        //    if (sel.GetApontamentos().Count > 0)
+        //    {
+        //        sel.GetApontamentos();
+        //        MenuLancamentos mm = new MenuLancamentos(sel.GetApontamentos());
+        //        mm.Title = "Apontamentos Realizado - " + sel.ToString();
+        //        mm.Owner = this;
+        //        mm.ShowDialog();
 
-                Update();
-            }
-        }
+        //        Update();
+        //    }
+        //}
 
-        private void editar_etapa(object sender, RoutedEventArgs e)
-        {
-            GCM_Offline.Fase sel = ((FrameworkElement)sender).DataContext as GCM_Offline.Fase;
-            if (sel == null) { return; }
+        //private void editar_etapa(object sender, RoutedEventArgs e)
+        //{
+        //    GCM_Offline.Fase sel = ((FrameworkElement)sender).DataContext as GCM_Offline.Fase;
+        //    if (sel == null) { return; }
 
-            if (sel.fases.Count > 0)
-            {
-                ApontarFases mm = new ApontarFases(sel);
-                mm.Show();
-            }
-            else
-            {
-                //Conexoes.Utilz.Propriedades(sel, true, true);
-                sel.GetApontamentos();
-                MenuLancamentos mm = new MenuLancamentos(sel.GetApontamentos());
-                mm.Title = "Apontamentos - " + sel.ToString();
-                mm.Owner = this;
-                mm.ShowDialog();
+        //    if (sel.fases.Count > 0)
+        //    {
+        //        ApontarFases mm = new ApontarFases(sel);
+        //        mm.Show();
+        //    }
+        //    else
+        //    {
+        //        //Conexoes.Utilz.Propriedades(sel, true, true);
+        //        sel.GetApontamentos();
+        //        MenuLancamentos mm = new MenuLancamentos(sel.GetApontamentos());
+        //        mm.Title = "Apontamentos - " + sel.ToString();
+        //        mm.Owner = this;
+        //        mm.ShowDialog();
 
-                Update();
-            }
-        }
+        //        Update();
+        //    }
+        //}
 
-        private void adicionar_apontamento(object sender, RoutedEventArgs e)
-        {
-            Fase pp = ((FrameworkElement)sender).DataContext as Fase;
-            if (pp == null)
-            {
-                return;
-            }
-            var s = Funcoes.apontamento(pp.ToString() + " - Adicionar apontamento");
-            if (s != null)
-            {
+        //private void adicionar_apontamento(object sender, RoutedEventArgs e)
+        //{
+        //    Fase pp = ((FrameworkElement)sender).DataContext as Fase;
+        //    if (pp == null)
+        //    {
+        //        return;
+        //    }
+        //    var s = Funcoes.apontamento(pp.ToString() + " - Adicionar apontamento");
+        //    if (s != null)
+        //    {
 
-                pp.AddApontamento(s.data, s.valor, s.descricao, this.lob.Getapontamentos());
-                Update();
-            }
-        }
+        //        pp.AddApontamento(s.data, s.valor, s.descricao, this.lob.Getapontamentos());
+        //        Update();
+        //    }
+        //}
 
-        private void editar_etapa_dados(object sender, RoutedEventArgs e)
-        {
-            Fase pp = ((FrameworkElement)sender).DataContext as Fase;
+        //private void editar_etapa_dados(object sender, RoutedEventArgs e)
+        //{
+        //    Fase pp = ((FrameworkElement)sender).DataContext as Fase;
 
-            Conexoes.Utilz.Propriedades(pp,true);
-            this.Update(false);
-        }
+        //    Conexoes.Utilz.Propriedades(pp,true);
+        //    this.Update(false);
+        //}
 
-        private void ajusta_pesos_etapas(object sender, RoutedEventArgs e)
-        {
-            this.lob.AjustaPesosEtapas(this.lob.Subfases());
+        //private void ajusta_pesos_etapas(object sender, RoutedEventArgs e)
+        //{
+        //    this.lob.AjustaPesosEtapas(this.lob.Subfases());
   
-            Update();
-            MessageBox.Show("Dados ajustados!");
-        }
+        //    Update();
+        //    MessageBox.Show("Dados ajustados!");
+        //}
 
-        private void editar_data_inicio(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
-            var dt = pcs[0].inicio;
-            if (!dt.valido)
-            {
-                dt = new Data(DateTime.Now);
-            }
-            var data = new Data(Conexoes.Utilz.SelecionarData(dt.Getdata(), dt.Getdata().AddYears(-2), dt.Getdata().AddYears(2)));
-            //var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].peso_fase.ToString()));
-            if (data.valido)
-            {
-                foreach (var p in pcs)
-                {
-                    p.inicio = new Data(data.Getdata());
-                }
-                Update();
-            }
-        }
+        //private void editar_data_inicio(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(),true,  "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
+        //    var dt = pcs[0].inicio;
+        //    if (!dt.valido)
+        //    {
+        //        dt = new Data(DateTime.Now);
+        //    }
+        //    var data = new Data(Conexoes.Utilz.SelecionarData(dt.Getdata(), dt.Getdata().AddYears(-2), dt.Getdata().AddYears(2)));
+        //    //var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].peso_fase.ToString()));
+        //    if (data.valido)
+        //    {
+        //        foreach (var p in pcs)
+        //        {
+        //            p.inicio = new Data(data.Getdata());
+        //        }
+        //        Update();
+        //    }
+        //}
 
-        private void editar_data_fim(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
-            var dt = pcs[0].fim;
-            if (!dt.valido)
-            {
-                dt = new Data(DateTime.Now);
-            }
-            var data = new Data(Conexoes.Utilz.SelecionarData(dt.Getdata(), dt.Getdata().AddYears(-2), dt.Getdata().AddYears(2)));
-            //var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].peso_fase.ToString()));
-            if (data.valido)
-            {
-                foreach (var p in pcs)
-                {
-                    p.fim = new Data(data.Getdata());
-                }
-                Update();
-            }
-        }
+        //private void editar_data_fim(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
+        //    var dt = pcs[0].fim;
+        //    if (!dt.valido)
+        //    {
+        //        dt = new Data(DateTime.Now);
+        //    }
+        //    var data = new Data(Conexoes.Utilz.SelecionarData(dt.Getdata(), dt.Getdata().AddYears(-2), dt.Getdata().AddYears(2)));
+        //    //var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].peso_fase.ToString()));
+        //    if (data.valido)
+        //    {
+        //        foreach (var p in pcs)
+        //        {
+        //            p.fim = new Data(data.Getdata());
+        //        }
+        //        Update();
+        //    }
+        //}
 
-        private void editar_peso(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
-            var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].peso_fase.ToString()));
-            if (peso > 0 && peso <= 100)
-            {
-                foreach (var p in pcs)
-                {
-                    p.peso_fase = peso;
-                }
-                Update();
-            }
-        }
+        //private void editar_peso(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione",  this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
+        //    var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].peso_fase.ToString()));
+        //    if (peso > 0 && peso <= 100)
+        //    {
+        //        foreach (var p in pcs)
+        //        {
+        //            p.peso_fase = peso;
+        //        }
+        //        Update();
+        //    }
+        //}
 
-        private void edita_efetivo(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
-            var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].efetivo.ToString()));
-            if (peso >= 0)
-            {
-                foreach (var p in pcs)
-                {
-                    p.efetivo = peso;
-                }
-                //Update();
-            }
-        }
+        //private void edita_efetivo(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
+        //    var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].efetivo.ToString()));
+        //    if (peso >= 0)
+        //    {
+        //        foreach (var p in pcs)
+        //        {
+        //            p.efetivo = peso;
+        //        }
+        //        //Update();
+        //    }
+        //}
 
-        private void edita_montador(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
-            var peso = Conexoes.Utilz.Prompt("Digite o valor", pcs[0].equipe.ToString());
-            if (peso != null)
-            {
-                foreach (var p in pcs)
-                {
-                    p.equipe = peso;
-                }
-                //Update();
-            }
-        }
+        //private void edita_montador(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
+        //    var peso = Conexoes.Utilz.Prompt("Digite o valor", pcs[0].equipe.ToString());
+        //    if (peso != null)
+        //    {
+        //        foreach (var p in pcs)
+        //        {
+        //            p.equipe = peso;
+        //        }
+        //        //Update();
+        //    }
+        //}
 
-        private void edita_area(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
-            var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].efetivo.ToString()));
-            if (peso >= 0)
-            {
-                foreach (var p in pcs)
-                {
-                    p.area = peso;
-                }
-                //Update();
-            }
-        }
+        //private void edita_area(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
+        //    var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].efetivo.ToString()));
+        //    if (peso >= 0)
+        //    {
+        //        foreach (var p in pcs)
+        //        {
+        //            p.area = peso;
+        //        }
+        //        //Update();
+        //    }
+        //}
 
-        private void edita_peso_fase(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
-            var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].peso_fase.ToString()));
-            if (peso >= 0)
-            {
-                foreach (var p in pcs)
-                {
-                    p.peso_fase = peso;
-                }
-                //Update();
-            }
-        }
+        //private void edita_peso_fase(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
+        //    var peso = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", pcs[0].peso_fase.ToString()));
+        //    if (peso >= 0)
+        //    {
+        //        foreach (var p in pcs)
+        //        {
+        //            p.peso_fase = peso;
+        //        }
+        //        //Update();
+        //    }
+        //}
 
-        private void edita_etapa(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
+        //private void edita_etapa(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
          
-            }
-            var peso = Conexoes.Utilz.Prompt("Digite o valor", pcs[0].descricao.ToString());
-            if (peso != null)
-            {
-                foreach (var p in pcs)
-                {
-                    p.descricao = peso;
+        //    }
+        //    var peso = Conexoes.Utilz.Prompt("Digite o valor", pcs[0].descricao.ToString());
+        //    if (peso != null)
+        //    {
+        //        foreach (var p in pcs)
+        //        {
+        //            p.descricao = peso;
 
-                    p.GetApontamentos();
-                }
+        //            p.GetApontamentos();
+        //        }
 
-                //Update();
-            }
-        }
+        //        //Update();
+        //    }
+        //}
 
-        private void edita_cod(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
+        //private void edita_cod(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
 
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
-            var peso = Conexoes.Utilz.Prompt("Digite o valor", pcs[0].cod.ToString());
-            if (peso != null)
-            {
-                foreach (var p in pcs)
-                {
-                    p.cod = peso;
-                    p.GetApontamentos();
-                }
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
+        //    var peso = Conexoes.Utilz.Prompt("Digite o valor", pcs[0].cod.ToString());
+        //    if (peso != null)
+        //    {
+        //        foreach (var p in pcs)
+        //        {
+        //            p.cod = peso;
+        //            p.GetApontamentos();
+        //        }
 
-                //Update();
-            }
-        }
+        //        //Update();
+        //    }
+        //}
 
-        private void remover(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
-            if(pcs.Count==0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
-            if (pcs.Count > 0)
-            {
-                if (Conexoes.Utilz.Pergunta("Tem certeza que deseja deletar os itens selecionados?"))
-                {
-                    foreach (var s in pcs)
-                    {
-                        s.pai.fases.Remove(s);
-                    }
-                    Update();
-                }
-            }
-        }
+        //private void remover(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
+        //    if(pcs.Count==0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
+        //    if (pcs.Count > 0)
+        //    {
+        //        if (Conexoes.Utilz.Pergunta("Tem certeza que deseja deletar os itens selecionados?"))
+        //        {
+        //            foreach (var s in pcs)
+        //            {
+        //                s.pai.fases.Remove(s);
+        //            }
+        //            Update();
+        //        }
+        //    }
+        //}
 
-        private void adicionar_apontamento_fase(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
-            if(pcs.Count==0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
-            if (pcs.Count > 0)
-            {
-                var s = Funcoes.apontamento("Adicionar apontamento");
-                if (s != null)
-                {
+        //private void adicionar_apontamento_fase(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<Fase>().ToList();
+        //    if(pcs.Count==0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
+        //    if (pcs.Count > 0)
+        //    {
+        //        var s = Funcoes.apontamento("Adicionar apontamento");
+        //        if (s != null)
+        //        {
 
-                    foreach (var pp in pcs)
-                    {
-                        pp.SomarApontamento(s.data, s.valor, this.lob.Getapontamentos());
-                    }
-                    Update();
-                }
-            }
-        }
+        //            foreach (var pp in pcs)
+        //            {
+        //                pp.SomarApontamento(s.data, s.valor, this.lob.Getapontamentos());
+        //            }
+        //            Update();
+        //        }
+        //    }
+        //}
 
         private void editar_cronograma_inicio(object sender, RoutedEventArgs e)
         {
@@ -1195,189 +1181,189 @@ namespace Montagem
             }
         }
 
-        private void editar_equipe(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista.SelectedItems.Cast<Recurso>().ToList();
-            if (pcs.Count == 0)
-            {
-            pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.recursos__previstos, null, "Selecione", true, this);
-            if (pcs.Count == 0) { return; }
-            }
-            var peso = Conexoes.Utilz.Prompt("Digite o valor", pcs[0].equipe.ToString());
-            if (peso != null)
-            {
-                foreach (var p in pcs)
-                {
-                    p.equipe = peso;
+        //private void editar_equipe(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista.SelectedItems.Cast<Recurso>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //    pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.recursos__previstos, true, "Selecione", this);
+        //    if (pcs.Count == 0) { return; }
+        //    }
+        //    var peso = Conexoes.Utilz.Prompt("Digite o valor", pcs[0].equipe.ToString());
+        //    if (peso != null)
+        //    {
+        //        foreach (var p in pcs)
+        //        {
+        //            p.equipe = peso;
 
-                }
+        //        }
 
-                //Update();
-            }
-        }
+        //        //Update();
+        //    }
+        //}
 
-        private void apagar_recursos(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista.SelectedItems.Cast<Recurso>().ToList();
-            if (pcs.Count == 0)
-            {
-            pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.recursos__previstos, null, "Selecione", true, this);
-            if (pcs.Count == 0) { return; }
-            }
+        //private void apagar_recursos(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista.SelectedItems.Cast<Recurso>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //    pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.recursos__previstos, true, "Selecione", this);
+        //    if (pcs.Count == 0) { return; }
+        //    }
 
-            if (pcs.Count>0)
-            {
-                if(Conexoes.Utilz.Pergunta("Tem certeza que deseja excluir os recursos selecionados?"))
-                {
-                    foreach(var s in pcs)
-                    {
-                        this.lob.recursos__previstos.Remove(s);
-                    }
-                    Update();
-                }
-            }
-        }
+        //    if (pcs.Count>0)
+        //    {
+        //        if(Conexoes.Utilz.Pergunta("Tem certeza que deseja excluir os recursos selecionados?"))
+        //        {
+        //            foreach(var s in pcs)
+        //            {
+        //                this.lob.recursos__previstos.Remove(s);
+        //            }
+        //            Update();
+        //        }
+        //    }
+        //}
 
-        private void soma_dias(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
+        //private void soma_dias(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
 
-            var  pp = Funcoes.apontamento("Digite o valor", new Apontamento(), true, false, false, "");
+        //    var  pp = Funcoes.apontamento("Digite o valor", new Apontamento(), true, false, false, "");
 
-            if (pp.valor > 0)
-            {
-                if (Conexoes.Utilz.Pergunta("Tem certeza que deseja somar " + pp.valor + " dias nos itens selecionados?"))
-                {
-                    foreach (var p in pcs)
-                    {
-                        p.inicio = new Data(p.inicio.Getdata().AddDays(+pp.valor));
-                    }
-                }
-                Update();
-            }
+        //    if (pp.valor > 0)
+        //    {
+        //        if (Conexoes.Utilz.Pergunta("Tem certeza que deseja somar " + pp.valor + " dias nos itens selecionados?"))
+        //        {
+        //            foreach (var p in pcs)
+        //            {
+        //                p.inicio = new Data(p.inicio.Getdata().AddDays(+pp.valor));
+        //            }
+        //        }
+        //        Update();
+        //    }
 
-        }
+        //}
 
-        private void diminui_dias(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
+        //private void diminui_dias(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione",  this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
 
-            var pp = Funcoes.apontamento("Digite o valor", new Apontamento(), true, false, false, "");
+        //    var pp = Funcoes.apontamento("Digite o valor", new Apontamento(), true, false, false, "");
 
-            if (pp.valor > 0)
-            {
-                if (Conexoes.Utilz.Pergunta("Tem certeza que deseja diminuir " + pp.valor + " dias nos itens selecionados?"))
-                {
-                    foreach (var p in pcs)
-                    {
-                        p.inicio = new Data(p.inicio.Getdata().AddDays(-pp.valor));
-                    }
-                }
-                Update();
-            }
-        }
+        //    if (pp.valor > 0)
+        //    {
+        //        if (Conexoes.Utilz.Pergunta("Tem certeza que deseja diminuir " + pp.valor + " dias nos itens selecionados?"))
+        //        {
+        //            foreach (var p in pcs)
+        //            {
+        //                p.inicio = new Data(p.inicio.Getdata().AddDays(-pp.valor));
+        //            }
+        //        }
+        //        Update();
+        //    }
+        //}
 
-        private void soma_dias_fim(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
+        //private void soma_dias_fim(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
 
-            var pp = Funcoes.apontamento("Digite o valor", new Apontamento(), true, false, false, "");
+        //    var pp = Funcoes.apontamento("Digite o valor", new Apontamento(), true, false, false, "");
 
-            if (pp.valor > 0)
-            {
-                if (Conexoes.Utilz.Pergunta("Tem certeza que deseja somar " + pp.valor + " dias nos itens selecionados?"))
-                {
-                    foreach (var p in pcs)
-                    {
-                        p.fim = new Data(p.fim.Getdata().AddDays(pp.valor));
-                    }
-                }
-                Update();
-            }
-        }
+        //    if (pp.valor > 0)
+        //    {
+        //        if (Conexoes.Utilz.Pergunta("Tem certeza que deseja somar " + pp.valor + " dias nos itens selecionados?"))
+        //        {
+        //            foreach (var p in pcs)
+        //            {
+        //                p.fim = new Data(p.fim.Getdata().AddDays(pp.valor));
+        //            }
+        //        }
+        //        Update();
+        //    }
+        //}
 
-        private void diminui_dias_fim(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Fase>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
+        //private void diminui_dias_fim(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Fase>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.Subfases(), true, "Selecione",  this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
 
-            var pp = Funcoes.apontamento("Digite o valor", new Apontamento(), true, false, false, "");
+        //    var pp = Funcoes.apontamento("Digite o valor", new Apontamento(), true, false, false, "");
 
-            if (pp.valor > 0)
-            {
-                if (Conexoes.Utilz.Pergunta("Tem certeza que deseja diminuir " + pp.valor + " dias nos itens selecionados?"))
-                {
-                    foreach (var p in pcs)
-                    {
-                        p.fim = new Data(p.fim.Getdata().AddDays(-pp.valor));
-                    }
-                }
-                Update();
-            }
-        }
+        //    if (pp.valor > 0)
+        //    {
+        //        if (Conexoes.Utilz.Pergunta("Tem certeza que deseja diminuir " + pp.valor + " dias nos itens selecionados?"))
+        //        {
+        //            foreach (var p in pcs)
+        //            {
+        //                p.fim = new Data(p.fim.Getdata().AddDays(-pp.valor));
+        //            }
+        //        }
+        //        Update();
+        //    }
+        //}
 
-        private void editar_apontamentos_previstos(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Recurso>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.recursos__previstos, null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
+        //private void editar_apontamentos_previstos(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Recurso>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.recursos__previstos, true, "Selecione", this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
 
-            foreach (var sel in pcs)
-            {
-                sel.GetApontamentos();
+        //    foreach (var sel in pcs)
+        //    {
+        //        sel.GetApontamentos();
                
-            }
-            MenuLancamentos mm = new MenuLancamentos(pcs.SelectMany(x=>x.previsto).ToList());
-            mm.Title = "Editar Recursos Previstos";
-            mm.Owner = this;
-            mm.ShowDialog();
+        //    }
+        //    MenuLancamentos mm = new MenuLancamentos(pcs.SelectMany(x=>x.previsto).ToList());
+        //    mm.Title = "Editar Recursos Previstos";
+        //    mm.Owner = this;
+        //    mm.ShowDialog();
 
-            Update();
-        }
+        //    Update();
+        //}
 
-        private void editar_apontamentos_realizados(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Recurso>().ToList();
-            if (pcs.Count == 0)
-            {
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.recursos__previstos, null, "Selecione", true, this);
-                if (pcs.Count == 0) { return; }
-            }
+        //private void editar_apontamentos_realizados(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista_etapas.SelectedItems.Cast<GCM_Offline.Recurso>().ToList();
+        //    if (pcs.Count == 0)
+        //    {
+        //        pcs = Conexoes.Utilz.SelecionarObjetos(this.lob.recursos__previstos, true, "Selecione",  this);
+        //        if (pcs.Count == 0) { return; }
+        //    }
 
-            foreach (var sel in pcs)
-            {
-                sel.GetApontamentos();
+        //    foreach (var sel in pcs)
+        //    {
+        //        sel.GetApontamentos();
 
-            }
-            MenuLancamentos mm = new MenuLancamentos(pcs.SelectMany(x => x.GetApontamentos()).ToList());
-            mm.Title = "Editar Recursos Realizados";
-            mm.Owner = this;
-            mm.ShowDialog();
+        //    }
+        //    MenuLancamentos mm = new MenuLancamentos(pcs.SelectMany(x => x.GetApontamentos()).ToList());
+        //    mm.Title = "Editar Recursos Realizados";
+        //    mm.Owner = this;
+        //    mm.ShowDialog();
 
-            Update();
-        }
+        //    Update();
+        //}
 
         private void envia_ftp_avanco(object sender, RoutedEventArgs e)
         {
@@ -1418,7 +1404,7 @@ namespace Montagem
                     MessageBox.Show("Nenhum efetivo encontrado na lista de recursos. no campo 'Recurso' deve conter a palavra 'Efetivo' para o sistema reconhecer.");
                     return;
                 }
-                pcs = Conexoes.Utilz.SelecionarObjetos(efets, null, "Selecione", true, this);
+                pcs = Conexoes.Utilz.SelecionarObjetos(efets, true, "Selecione", this);
                 if (pcs.Count == 0) { return; }
             }
             pcs = pcs.FindAll(x => x.descricao.ToUpper().Contains("EFETIVO")).ToList();
@@ -1445,23 +1431,23 @@ namespace Montagem
             MessageBox.Show("Dados atualizados!");
             Update();
         }
-        private void ajustar_efetivo(object sender, RoutedEventArgs e)
-        {
-            var pcs = lista.SelectedItems.Cast<Recurso>().ToList().FindAll(x=>x.descricao.ToUpper().Contains("EFETIVO")).ToList();
-            AjustaEfetivo(pcs);
+        //private void ajustar_efetivo(object sender, RoutedEventArgs e)
+        //{
+        //    var pcs = lista.SelectedItems.Cast<Recurso>().ToList().FindAll(x=>x.descricao.ToUpper().Contains("EFETIVO")).ToList();
+        //    AjustaEfetivo(pcs);
         
-        }
+        //}
 
-        private void ver_avanco(object sender, RoutedEventArgs e)
-        {
-            Funcoes.VerNodesAvancos(this.lob.GetAvancosAcumulados());
-        }
+        //private void ver_avanco(object sender, RoutedEventArgs e)
+        //{
+        //    Funcoes.VerNodesAvancos(this.lob.GetAvancosAcumulados());
+        //}
 
-        private void ver_avanco_subs(object sender, RoutedEventArgs e)
-        {
-            Funcoes.VerNodesAvancos(this.lob.GetAvancosSubEtapas());
+        //private void ver_avanco_subs(object sender, RoutedEventArgs e)
+        //{
+        //    Funcoes.VerNodesAvancos(this.lob.GetAvancosSubEtapas());
 
-        }
+        //}
 
         private void Excluir_Restricao(object sender, RoutedEventArgs e)
         {
@@ -1669,10 +1655,10 @@ namespace Montagem
 
         }
 
-        private void Adicionar_Restricao(object sender, RoutedEventArgs e)
-        {
+        //private void Adicionar_Restricao(object sender, RoutedEventArgs e)
+        //{
 
-        }
+        //}
 
         private void add_plano_acao(object sender, RoutedEventArgs e)
         {

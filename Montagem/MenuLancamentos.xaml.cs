@@ -52,7 +52,7 @@ namespace Montagem
             if (pcs.Count == 0)
             {
 
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos, null, "Selecione", true, this);
+                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos,true, "Selecione", this);
                 if (pcs.Count == 0) { return; }
             }
 
@@ -76,7 +76,7 @@ namespace Montagem
             if (pcs.Count == 0)
             {
 
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos, null, "Selecione", true, this);
+                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos, true, "Selecione",  this);
                 if (pcs.Count == 0) { return; }
             }
 
@@ -100,7 +100,7 @@ namespace Montagem
             if (pcs.Count == 0)
             {
 
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos, null, "Selecione", true, this);
+                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos, true, "Selecione", this);
                 if (pcs.Count == 0) { return; }
             }
 
@@ -125,7 +125,7 @@ namespace Montagem
             if (pcs.Count == 0)
             {
 
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos, null, "Selecione", true, this);
+                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos, true, "Selecione", this);
                 if (pcs.Count == 0) { return; }
             }
 
@@ -149,7 +149,7 @@ namespace Montagem
             if (pcs.Count == 0)
             {
 
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos, null, "Selecione", true, this);
+                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos, true, "Selecione", this);
                 if (pcs.Count == 0) { return; }
             }
 
@@ -173,7 +173,7 @@ namespace Montagem
             if (pcs.Count == 0)
             {
 
-                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos, null, "Selecione", true, this);
+                pcs = Conexoes.Utilz.SelecionarObjetos(this.apontamentos, true, "Selecione", this);
                 if (pcs.Count == 0) { return; }
             }
 

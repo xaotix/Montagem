@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using Telerik.Windows.Controls;
 
 namespace Montagem
@@ -27,6 +28,25 @@ namespace Montagem
         {
             System.Windows.Forms.MessageBox.Show(e.ExceptionObject.ToString());
             return;
+        }
+
+        private void seleciona_tudo(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = null;
+            if (sender is TextBox)
+            {
+                textBox = ((TextBox)sender);
+
+            }
+
+
+            if (textBox != null)
+            {
+                textBox.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    textBox.SelectAll();
+                }));
+            }
         }
     }
 }

@@ -31,7 +31,7 @@ namespace GCM_Online
                     return false;
                 }
                 if (File.Exists(path)) { File.Delete(path); };
-                var selecao = Conexoes.Utilz.SelecionarObjetos<Contrato>(dbase.obras(), null, "Selecione", true);
+                var selecao = Conexoes.Utilz.SelecionarObjetos<Contrato>(dbase.obras(), true, "Selecione");
                 if (selecao.Count > 0)
                 {
                     File.Copy(Vars.template_resumo, path);

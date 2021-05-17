@@ -40,8 +40,8 @@
     <Reference Include="DB">
       <HintPath>..\..\DLLS\DB.dll</HintPath>
     </Reference>
-    <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPPlus.4.5.2.1\lib\net40\EPPlus.dll</HintPath>
+    <Reference Include="EPPlus">
+      <HintPath>..\..\DLLS\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="mysql.data">
       <HintPath>..\..\DLLS\mysql.data.dll</HintPath>
@@ -69,7 +69,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GCM\GCM_Offline.csproj">

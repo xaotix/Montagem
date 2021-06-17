@@ -798,38 +798,26 @@ namespace GCM_Online
             {
                 _obras = new List<Contrato>();
                 var montagem = Conexoes.DBases.GetDB().Consulta("select * from " + Vars.db + "."  + Vars.tb_obras);
-                var painel = Conexoes.DBases.GetDB().Consulta("select * from " + "comum" + "."  + Vars.pedidos_planejamento_copia);
+                var painel = Conexoes.DBases.GetDB().Consulta("select * from " + "comum" + "."  + Vars.pedidos_planejamento_copia + " as pr where pr.pedido like '%P00'");
 
-                //Conexoes.Wait w = new Conexoes.Wait(montagem.Linhas.Count, "Carregando obras...");
-                //w.Show();
 
-                //foreach (var obra_montagem in montagem.Linhas)
-                //{
-                //    var obra_painel = painel.Linhas.Find(x => x.Get("pedido").ToString().ToUpper() == obra_montagem.Get("contrato").ToString().ToUpper());
-                //    if(obra_painel==null)
-                //    {
-                //        obra_painel = painel.Linhas.Find(x => obra_montagem.Get("contrato").ToString().ToUpper().Contains(x.Get("contrato").ToString().ToUpper()) && Conexoes.Utilz.CortarStringDireita(obra_montagem.Get("contrato").ToString(), 3) == Conexoes.Utilz.CortarStringDireita(x.Get("pedido").ToString(), 3));
-                //    }
-                //    if(obra_painel==null)
-                //    {
-                //        obra_painel = new Linha();
-                //    }
-                //    _obras.Add(new Contrato(obra_montagem,obra_painel));
-                //    w.somaProgresso();
-                //}
-                //w.Close();
+                var pedidos = painel.Linhas.Select(x => x.Get("pedido").valor.ToUpper()).Distinct().ToList();
+                pedidos.AddRange(montagem.Linhas.Select(x => x.Get("contrato").valor.ToUpper()).Distinct().ToList());
+                pedidos = pedidos.Distinct().ToList();
+                pedidos = pedidos.OrderBy(x => x).ToList();
 
 
                 Conexoes.Wait w = new Conexoes.Wait(montagem.Linhas.Count, "Carregando obras...");
                 w.Show();
-
-                foreach (var obra_painel in painel.Linhas)
+                foreach (var pedido in pedidos)
                 {
-                    var obra_montagem = montagem.Linhas.Find(x => x.Get("contrato").ToString().ToUpper() == obra_painel.Get("pedido").ToString().ToUpper());
+                    var obra_montagem = montagem.Linhas.Find(x => x.Get("contrato").ToString().ToUpper() == pedido);
+                    var pedido_painel = painel.Linhas.Find(x => x.Get("pedido").ToString().ToUpper() == pedido);
 
-                    _obras.Add(new Contrato(obra_montagem, obra_painel));
+                    _obras.Add(new Contrato(obra_montagem, pedido_painel));
                     w.somaProgresso();
                 }
+
                 w.Close();
                 _obras = _obras.OrderBy(x => ((int)x.status).ToString() + " - " + x.descricao).ToList();
             }
